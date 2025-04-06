@@ -1,8 +1,7 @@
-name: Sonarqube Static Code Analysis
-
+name: Sonar Scanner Frontend
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "frontend"]
     paths: 
       - "frontend/**"
       

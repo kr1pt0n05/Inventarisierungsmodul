@@ -1,16 +1,15 @@
-name: Sonar Scanner for
+name: Sonar Scanner Backend
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main", "backend"]
     paths:
       - 'backend/**'
   pull_request:
-    branches:
-      - main
+    branches: ["main", "backend"]
     paths:
       - 'backend/**'
+
 jobs:
   build:
     name: Build and analyze

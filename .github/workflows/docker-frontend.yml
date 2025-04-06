@@ -5,9 +5,13 @@ name: Build, docker & push frontend
 
 on:
   push:
-    branches: [ "main", "workflows" ]
+    branches: ["main", "frontend"]
+    paths:
+      - 'frontend/**'
   pull_request:
-    branches: [ "main", "workflows" ]
+    branches: ["main", "frontend"]
+    paths:
+      - 'frontend/**'
 
 jobs:
   deploy:
