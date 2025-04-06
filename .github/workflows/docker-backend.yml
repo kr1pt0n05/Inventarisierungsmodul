@@ -32,4 +32,4 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags:  ${{ secrets.DOCKERHUB_USERNAME }}/inventarisierungsmodule:frontend-1.0
+          tags:  ${{ secrets.DOCKERHUB_USERNAME }}/inventarisierungsmodule:backend-1.0

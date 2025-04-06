@@ -4,6 +4,10 @@ on:
     branches: ["main", "frontend"]
     paths: 
       - "frontend/**"
+  pull_request:
+    branches: [ "main", "backend" ]
+    paths:
+      - 'backend/**'
       
 jobs:
   build:
