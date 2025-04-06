@@ -2,10 +2,11 @@ name: Sonarqube Static Code Analysis
 
 on:
   push:
-    branches: ["frontend", "backend" ]
-  pull_request:
-    branches: ["frontend", "backend" ]
-
+    branches: ["main"]
+    paths: 
+      - "frontend/**"
+      - "backend/**"
+      
 jobs:
   build:
     name: Build and analyze
