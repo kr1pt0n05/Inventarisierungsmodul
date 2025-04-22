@@ -29,9 +29,9 @@ paths:
     post:
       tags:
       - Inventarisierungsliste
-      summary: Erstellt Gegenstand in der Inventarisierungsliste.
-      description: Neues Gerät inventarisieren.
-      operationId: addInv
+      summary: Erstellt einen Gegenstand in der Inventarisierungsliste
+      description: Neues Gerät/Software inventarisieren.
+      operationId: createItem
       requestBody:
         description: Neues Gerät inventarisieren
         content:
@@ -59,8 +59,8 @@ paths:
     get:
       tags:
       - Inventarisierungsliste
-      summary: Detailansicht eines Gegenstands in der Liste
-      description: Ruft genauere Informationen zu Gegenstand ab
+      summary: Gibt einzelnen Gegenstands der Liste zurück
+      description: Ruft Informationen zu Gegenstand mit entsprechender ID ab.
       parameters:
       - name: id
         in: path
@@ -80,13 +80,13 @@ paths:
     patch:
       tags:
       - Inventarisierungsliste
-      summary: Ändert Gegenstand in der Inventarisierungsliste.
-      description: Erstellt Gegenstände.
+      summary: Ändert Gegenstand in der Inventarisierungsliste
+      description: Ändert Daten eines Gegenstandes mit gegebener ID.
       operationId: editItem
       parameters:
       - name: id
         in: path
-        description: ID des Gegenstands zum löschen
+        description: ID des Gegenstands zum bearbeiten
         required: true
         schema:
           type: integer
@@ -102,8 +102,8 @@ paths:
     delete:
       tags:
       - Inventarisierungsliste
-      summary: Löscht Gegenstände aus der Inventarisierungsliste.
-      description: Löscht Gegenstände.
+      summary: Löscht einen Gegenstande aus der Inventarisierungsliste
+      description: Deinventarisiert einen Gegenstand aus der Inventarisierungsliste. Entspricht einem Soft-Delete.
       operationId: deleteItem
       parameters:
       - name: id
@@ -126,7 +126,7 @@ paths:
       tags:
       - Inventarisierungsliste
         - Erweiterungen
-      summary: Liste der Erweiterungen eines Gegenstands
+      summary: Ruft alle Erweiterungen eines Gegenstandes ab
       description: Ruft die Liste aller bestehenden Erweiterungen eines Gegenstands ab.
       parameters:
       - name: id
@@ -148,9 +148,9 @@ paths:
       tags:
       - Inventarisierungsliste
         - Erweiterungen
-      summary: Ändert Gegenstand in der Inventarisierungsliste.
-      description: Erstellt Gegenstände.
-      operationId: editComponent
+      summary: Fügt einem Gegenstand eine Erweiterung hinzu
+      description: Erstellt eine Erweiterung und fügt diese dem spezifizierten Gegenstand hinzu.
+      operationId: addComponent
       parameters:
       - name: id
         in: path
@@ -161,9 +161,9 @@ paths:
           format: int64
       responses:
         "200":
-          description: Gegenstand wurde erfolgreich gelöscht
+          description: Erweiterung wurde hinzugefügt
         "400":
-          description: Ungültiger Artikelwert
+          description: Gegenstand zu ID konnte nicht gefunden werden
         "500":
           description: Interner Serverfehler
 
@@ -172,8 +172,8 @@ paths:
       tags:
       - Inventarisierungsliste
         - Erweiterungen
-      summary: Liste der Erweiterungen eines Gegenstands
-      description: Ruft die Liste aller bestehenden Erweiterungen eines Gegenstands ab.
+      summary: Gibt eine einzelne Erweiterung zurück
+      description: Ruft den Inhalt der spezifizierten Erweiterung eines Gegenstandes ab.
       parameters:
       - name: id
         in: path
@@ -184,16 +184,16 @@ paths:
           format: int64
       - name: component-id
         in: path
-        description: ID des Gegenstands zum löschen
+        description: ID der Erweiterung
         required: true
         schema:
           type: integer
           format: int64
       responses:
         "200":
-          description: Erfolgreiches Abrufen der Erweiterungen
+          description: Erfolgreiches Abrufen der Erweiterung
         "400":
-          description: Gegenstand zu ID konnte nicht gefunden werden
+          description: ID(s) konnte(n) nicht gefunden werden
         "500":
           description: Interner Fehler beim Abrufen des Gegenstands
 
@@ -201,29 +201,29 @@ paths:
       tags:
       - Inventarisierungsliste
         - Erweiterungen
-      summary: Ändert Gegenstand in der Inventarisierungsliste.
-      description: Erstellt Gegenstände.
+      summary: Ändert Erweiterung eines Gegenstandes
+      description: Ändert die Daten einer einzelnen Erweiterung des spezifizierten Gegenstandes.
       operationId: editComponent
       parameters:
       - name: id
         in: path
-        description: ID des Gegenstands zum löschen
+        description: ID des Gegenstands
         required: true
         schema:
           type: integer
           format: int64
       - name: component-id
         in: path
-        description: ID des Gegenstands zum löschen
+        description: ID der Erweiterung zum bearbeiten
         required: true
         schema:
           type: integer
           format: int64
       responses:
         "200":
-          description: Gegenstand wurde erfolgreich gelöscht
+          description: Gegenstand wurde erfolgreich bearbeitet
         "400":
-          description: Ungültiger Artikelwert
+          description: Ungültiger ID(s)
         "500":
           description: Interner Serverfehler
 
@@ -231,27 +231,27 @@ paths:
       tags:
       - Inventarisierungsliste
         - Erweiterungen
-      summary: Löscht Gegenstände aus der Inventarisierungsliste.
-      description: Löscht Gegenstände.
+      summary: Löscht Erweiterung eines Gegenstandes
+      description: Löscht die spezifizierte Erweiterung aus der Liste des zugehörigen Gegenstandes.
       operationId: deleteComponent
       parameters:
       - name: id
         in: path
-        description: ID des Gegenstands zum löschen
+        description: ID des Gegenstands
         required: true
         schema:
           type: integer
           format: int64
       - name: component-id
         in: path
-        description: ID des Gegenstands zum löschen
+        description: ID der Erweiterung zum löschen
         required: true
         schema:
           type: integer
           format: int64
       responses:
         "200":
-          description: Gegenstand wurde erfolgreich gelöscht
+          description: Erweiterung wurde erfolgreich gelöscht
         "400":
           description: Ungültiger Artikelwert
         "500":
@@ -280,6 +280,138 @@ paths:
           description: Gegenstand zu ID konnte nicht gefunden werden
         "500":
           description: Interner Fehler beim Abrufen des Gegenstands
+
+    post:
+      tags:
+      - Inventarisierungsliste
+        - Kommentare
+      summary: Erstellt neues Kommentar
+      description: Ein neuer Kommentar wird erstellt und dem spezifizierten Gegenstand hinzugefügt.
+      operationId: createComment
+      parameters:
+      - name: id
+        in: path
+        description: ID des Gegenstands
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Kommentar wurde erfolgreich erstellt
+        "400":
+          description: Ungültiger Artikelwert
+        "500":
+          description: Interner Serverfehler
+
+  /inventories/{id}/comments/{comment-id}:
+    delete:
+      tags:
+      - Inventarisierungsliste
+        - Kommentare
+      summary: Löscht Kommentar eines Gegenstands
+      description: Löscht das spezifizierte Kommentar des entsprechenden Gegenstandes.
+      operationId: removeComment
+      parameters:
+      - name: id
+        in: path
+        description: ID des Gegenstands
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: comment-id
+        in: path
+        description: ID des Kommentars zum löschen
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Kommentar wurde erfolgreich gelöscht
+        "400":
+          description: Ungültiger Artikelwert
+        "500":
+          description: Interner Serverfehler
+
+  /inventories/{id}/tags:
+    get:
+      tags:
+      - Inventarisierungsliste
+        - Tags
+      summary: Liste der Tags eines Gegenstands
+      description: Ruft die Liste aller benutzerdefinierten Tags eines Gegenstandes ab.
+      parameters:
+      - name: id
+        in: path
+        description: ID des Gegenstands
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Erfolgreiches Abrufen der Tags
+        "400":
+          description: Gegenstand zu ID konnte nicht gefunden werden
+        "500":
+          description: Interner Fehler beim Abrufen des Gegenstands
+
+    post:
+      tags:
+      - Inventarisierungsliste
+        - Tags
+      summary: Fügt Gegenstand Tags hinzu
+      description: Fügt dem spezifizierten Gegenstand ein Tag hinzu.
+      operationId: addTag
+      parameters:
+      - name: id
+        in: path
+        description: ID des Gegenstands
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Gegenstand wurde erfolgreich getagt
+        "400":
+          description: Ungültiger Artikelwert
+        "500":
+          description: Interner Serverfehler
+
+  /inventories/{id}/tags/{tag-id}:
+    delete:
+      tags:
+      - Inventarisierungsliste
+        - Tags
+      summary: Entfernt Tag von einem Gegenstand
+      description: Entfernt das spezifizierte Tag von dem gegebenen Gegenstand.
+      operationId: removeTag
+      parameters:
+      - name: id
+        in: path
+        description: ID des Gegenstands
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: tag-id
+        in: path
+        description: ID des Tags zum entfernen
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Tag wurde erfolgreich entfernt
+        "400":
+          description: Ungültiger Artikelwert
+        "500":
+          description: Interner Serverfehler
+
   /inventories/{id}/history:
     get:
       tags:
@@ -302,6 +434,9 @@ paths:
           description: Gegenstand zu ID konnte nicht gefunden werden
         "500":
           description: Interner Fehler beim Abrufen des Gegenstands
+
+
+
 
   /new-inv:
     get:
