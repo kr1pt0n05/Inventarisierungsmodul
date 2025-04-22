@@ -678,6 +678,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /users/{user-id}/orders:
+    get:
+      tags:
+      - user
+      summary: Offene Bestellungen.
+      description: Alle Bestellungen, die von dieser User gemacht wurden, die noch offen sind.
+      operationId: openOrders
+      parameters:
+      - name: user-id
+        in: path
+        description: User-id vom User bei den man die offenen Bestellungen sehen will
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Anzeigen von offenen Bestellungen von den jeweiligen User
+        "400":
+          description: Bestellungen konnten aufgrund fehlender/falscher Attribute nicht angezeigt werden
+        "500":
+          description: Interner Serverfehler beim Anzeigen von offenen Bestellungen
 components:
   schemas:
     Item:
