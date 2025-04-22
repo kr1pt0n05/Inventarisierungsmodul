@@ -93,7 +93,7 @@ paths:
           format: int64
       responses:
         "200":
-          description: Gegenstand wurde erfolgreich gelöscht
+          description: Gegenstand wurde erfolgreich bearbeitet
         "400":
           description: Ungültiger Artikelwert
         "500":
@@ -438,94 +438,10 @@ paths:
 
 
 
-  /new-inv:
-    get:
-      tags:
-      - Inventarisierung
-      summary: Ruft Liste der offenen Bestellungen ab
-      responses:
-        "200":
-          description: Liste mit allen noch nicht inventarisierten Gegenständen
-        "204":
-          description: Keine Elemente zum inventarisieren gefunden
-        "500":
-          description: Interner Serverfehler
-  /new-inv/{id}:
-    get:
-      tags:
-      - Inventarisierung
-      summary: Ruft einzelne Bestellung zum Inventarisieren ab
-      parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: Öffnen des Inventariserungswizard für den neuen Gegenstand
-        "500":
-          description: Interner Serverfehler beim Abrufen des Gegenstandes
-    post:
-      tags:
-      - Inventarisierung
-      summary: Schickt Gegenstand am Ende des Inventarisierungswizards zum Inventarisieren an das Backend
-      parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "201":
-          description: Gegenstand wurde erfolgreich hinzugefügt
-        "400":
-          description: Gegenstand konnte aufgrund fehlender/falscher Attribute nicht inventarisiert werden
-        "500":
-          description: Interner Fehler beim Inventarisieren
-    delete:
-      tags:
-      - Inventarisierung
-      summary: Löscht Gegenstände aus der Liste der zu inventarisierenden Gegenstände
-      parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: Gegenstand wurde erfolgreich entfernt
-        "500":
-          description: Gegenstand konnte aufgrund eines internen Fehlers nicht gelöscht werden
-  /new-inv/{id}/articles:
-    get:
-      tags:
-      - Inventarisierung
-      summary: Ruft einzelnen Gegenstand zum Inventarisieren ab
-      parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: Öffnen des Inventariserungswizard für den neuen Gegenstand
-        "500":
-          description: Interner Serverfehler beim Abrufen des Gegenstandes
   /inventories/filter:
     get:
       tags:
-      - Filter
+      - Filter (über Query Parameter umsetzen)
       summary: Finde Gegenstände mit Hilfe von Filtern
       description: "Mehrere Filter können mit komma separiert werden zB. Filter1, Filter2."
       operationId: FilterItemsByTags
@@ -561,6 +477,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+
+
+
   /statistics:
     get:
       tags:
@@ -585,29 +505,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /import:
-    get:
-      tags:
-      - Import/Export von Dateien
-      summary: Ruft Seite zum Importieren von Excel-Listen ab
-      responses:
-        "200":
-          description: Seite konnte erfolgreich abgerufen werden
-        "500":
-          description: Serverfehler beim Abrufen der Website
-    post:
-      tags:
-      - Import/Export von Dateien
-      summary: Schickt Excelliste zum Importieren an Backend
-      description: Datei muss für Umwandlung passendes Format haben
-      responses:
-        "201":
-          description: Daten wurden erfolgreich verarbeitet
-        "400":
-          description: Zu importierende Daten sind im falschen Format
-        "500":
-          description: Serverinterner Fehler beim umwandeln der Dateien
-  /export:
+
+
+
+
+  /excel-sheets:
     get:
       tags:
       - Import/Export von Dateien
@@ -630,10 +532,27 @@ paths:
           description: Excel-Liste wurde erfolgreich erstellt und zum Download bereitgestellt
         "500":
           description: Interner Fehler beim Erstellen der Excel-Liste
-  /user/logout:
+
+    post:
+      tags:
+      - Import/Export von Dateien
+      summary: Schickt Excelliste zum Importieren an Backend
+      description: Datei muss für Umwandlung passendes Format haben
+      responses:
+        "201":
+          description: Daten wurden erfolgreich verarbeitet
+        "400":
+          description: Zu importierende Daten sind im falschen Format
+        "500":
+          description: Serverinterner Fehler beim umwandeln der Dateien
+
+
+
+
+  /users/logout:
     get:
       tags:
-      - user
+      - users (noch unklar, abhängig von keycloak)
       summary: Abmelden des derzeitigen Benutzers.
       description: Abmelden des Benutzers.
       operationId: logoutUser
@@ -647,10 +566,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /user/login:
+  /users/login:
     get:
       tags:
-      - user
+      - users (noch unklar, abhängig von keycloak)
       summary: Anmeldung des Benutzers.
       description: Anmeldung in das System.
       operationId: loginUser
@@ -678,28 +597,317 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+
   /users/{user-id}/orders:
     get:
       tags:
-      - user
+      - users
+        - orders
       summary: Offene Bestellungen.
-      description: Alle Bestellungen, die von dieser User gemacht wurden, die noch offen sind.
+      description: Alle Bestellungen, die von diesem User gemacht wurden, die noch offen sind.
       operationId: openOrders
       parameters:
       - name: user-id
         in: path
-        description: User-id vom User bei den man die offenen Bestellungen sehen will
+        description: User-id vom User bei dem man die offenen Bestellungen sehen will
         required: true
         schema:
           type: integer
           format: int64
       responses:
         "200":
-          description: Anzeigen von offenen Bestellungen von den jeweiligen User
+          description: Anzeigen von offenen Bestellungen von dem jeweiligen User
         "400":
           description: Bestellungen konnten aufgrund fehlender/falscher Attribute nicht angezeigt werden
         "500":
           description: Interner Serverfehler beim Anzeigen von offenen Bestellungen
+
+    post:
+      tags:
+      - users
+        - orders
+      summary: Bestellung anlegen
+      description: Eine neue Bestellung unter dem angegebenen user speichern/erstellen.
+      operationId: createOrder
+      parameters:
+      - name: user-id
+        in: path
+        description: User-id des Users bei dem die offene Bestellung angelegt werden soll
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Bestellung wurde erfolgreich registriert
+        "400":
+          description: Bestellung konnten aufgrund fehlender/falscher Attribute nicht registriert werden
+        "500":
+          description: Interner Serverfehler beim registrieren der Bestellung
+
+  /users/{user-id}/orders/{order-id}:
+    get:
+      tags:
+      - users
+        - orders
+      summary: Ruft einzelne Bestellung ab
+      description: Die Informationen einer einzelnen Bestellung können abgerufen werden.
+      parameters:
+      - name: user-id
+        in: path
+        description: ID des Users
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: order-id
+        in: path
+        description: ID der Bestellung
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Eine Bestellung wurde übertragen
+        "204":
+          description: Bestellung nicht gefunden
+        "500":
+          description: Internal server error
+
+    patch:
+      tags:
+      - users
+        - orders
+      summary: Ändert Bestellung
+      description: Ändern der Daten einer Bestellung mit gegebener ID.
+      operationId: editOrder
+      parameters:
+      - name: user-id
+        in: path
+        description: ID des Users
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: order-id
+        in: path
+        description: ID der Bestellung
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Bestellung erfolgreich bearbeitet
+        "400":
+          description: Ungültige IDs
+        "500":
+          description: Interner Serverfehler
+
+    delete:
+      tags:
+      - users
+        - orders
+      summary: Löscht eine Bestellung
+      description: Löscht eine registrierte Bestellung.
+      operationId: deleteOrder
+      parameters:
+      - name: user-id
+        in: path
+        description: ID des Users
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: order-id
+        in: path
+        description: ID der Bestellung
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Bestellung wurde erfolgreich gelöscht
+        "400":
+          description: Ungültige IDs
+        "500":
+          description: Interner Serverfehler
+
+  /users/{user-id}/orders/{order-id}/items:
+    get:
+      tags:
+      - users
+        - orders - items
+      summary: Ruft Artikel einer Bestellung ab
+      description: Die Artikel einer einzelnen Bestellung können abgerufen werden.
+      parameters:
+      - name: user-id
+        in: path
+        description: ID des Users
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: order-id
+        in: path
+        description: ID der Bestellung
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Eine Liste an Artikeln wurde übertragen
+        "204":
+          description: Bestellung nicht gefunden
+        "500":
+          description: Internal server error
+
+    post:
+      tags:
+      - users
+        - orders - items
+      summary: Artikel anlegen
+      description: Einen neuen Artikel unter einer Bestellung ablegen/erstellen.
+      operationId: createOrderItem
+      parameters:
+      - name: user-id
+        in: path
+        description: User-id des Users bei dem die offene Bestellung angelegt werden soll
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: order-id
+        in: path
+        description: ID der Bestellung
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Artikel wurde erfolgreich registriert
+        "400":
+          description: Artikel konnten aufgrund fehlender/falscher Attribute nicht registriert werden
+        "500":
+          description: Interner Serverfehler beim registrieren der Artikel
+
+  /users/{user-id}/orders/{order-id}/items/{item-id}:
+    get:
+      tags:
+      - users
+        - orders - items
+      summary: Ruft einzelnen Artikel ab
+      description: Die Informationen eines einzelnen Artikels können abgerufen werden.
+      parameters:
+      - name: user-id
+        in: path
+        description: ID des Users
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: order-id
+        in: path
+        description: ID der Bestellung
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: item-id
+        in: path
+        description: ID des Artikels
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ein Artikel wurde übertragen
+        "204":
+          description: Artikel nicht gefunden
+        "500":
+          description: Internal server error
+
+    patch:
+      tags:
+      - users
+        - orders - items
+      summary: Ändert Artikel
+      description: Ändern der Daten eines Artikels mit gegebener ID.
+      operationId: editOrderItem
+      parameters:
+      - name: user-id
+        in: path
+        description: ID des Users
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: order-id
+        in: path
+        description: ID der Bestellung
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: item-id
+        in: path
+        description: ID des Artikels
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Artikel erfolgreich bearbeitet
+        "400":
+          description: Ungültige IDs
+        "500":
+          description: Interner Serverfehler
+
+    delete:
+      tags:
+      - users
+        - orders - items
+      summary: Löscht einen Artikel
+      description: Löscht einen Artikel einer registrierten Bestellung.
+      operationId: deleteOrderItem
+      parameters:
+      - name: user-id
+        in: path
+        description: ID des Users
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: order-id
+        in: path
+        description: ID der Bestellung
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: item-id
+        in: path
+        description: ID des Artikels
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Artikel wurde erfolgreich gelöscht
+        "400":
+          description: Ungültige IDs
+        "500":
+          description: Interner Serverfehler
+
+
 components:
   schemas:
     Item:
