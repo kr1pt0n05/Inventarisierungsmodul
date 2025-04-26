@@ -1,21 +1,4 @@
 services:
-  keycloak:
-    container_name: keycloak
-    image: quay.io/keycloak/keycloak:26.2.1
-    ports:
-      - "8080:8080"
-    environment:
-      - KC_BOOTSTRAP_ADMIN_USERNAME=
-      - KC_BOOTSTRAP_ADMIN_PASSWORD=
-      - KC_PROXY_HEADERS=xforwarded
-    command:
-      - start-dev
-    networks:
-      keycloak_network:
-        ipv4_address: 172.20.0.3
-
-
-
   webserver:
     container_name: nginx
     image: nginx:latest
@@ -27,9 +10,6 @@ services:
       - ./nginx/conf/:/etc/nginx/conf.d/:ro
       - ./certbot/www:/var/www/certbot/:ro
       - ./certbot/conf/:/etc/letsencrypt
-    networks:
-      keycloak_network:
-        ipv4_address: 172.20.0.2
 
   certbot:
     container_name: certbot
@@ -38,13 +18,4 @@ services:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt
     command: certonly --webroot -w /var/www/certbot --keep-until-expiring --email saliit01@hs-esslingen.de -d auth.insy.hs-esslingen.com --agree-tos
-
-
-networks:
-  keycloak_network:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: "172.20.0.0/24"
 
