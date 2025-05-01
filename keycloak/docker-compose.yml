@@ -1,0 +1,77 @@
+services:
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:26.2.1
+    ports:
+      - "8080:8080"
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${KC_USERNAME}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_PASSWORD}
+      - KC_PROXY_HEADERS=xforwarded
+    # - KC_PROXY_TRUSTED_ADDRESSES=172.20.0.2
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME=${HOSTNAME}
+    # - KC_HOSTNAME_ADMIN=admin.auth.insy.hs-esslingen.com:8443
+    # - KC_CONFIG_FILE=
+      - KC_DB=postgres
+      - KC_DB_USERNAME=${POSTGRES_USER}
+      - KC_DB_PASSWORD=${POSTGRES_PASSWORD}
+      - KC_DB_URL_HOST=db
+    # - KC_HTTP_MAX_QUEUED_REQUESTS=100
+    command:
+      - start
+    depends_on:
+      - db
+    networks:
+      - nginx
+      - internal
+
+
+  db:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - internal
+
+
+  webserver:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/letsencrypt
+    networks:
+      - nginx
+
+
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt
+    command: certonly --webroot -w /var/www/certbot --keep-until-expiring --email ${EMAIL} -d ${HOSTNAME} --agree-tos
+
+
+networks:
+  nginx:
+    external: true
+  internal:
+    external: false
