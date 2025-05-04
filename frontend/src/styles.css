@@ -1,2 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+.bg-insy{
+  background: #193058;
+}
+.insy-text-red{
+  background: #B6163D;
+}
