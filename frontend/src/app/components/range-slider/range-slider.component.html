@@ -1,0 +1,15 @@
+<section class="flex gap-4">
+  <mat-form-field>
+    <mat-label>Von</mat-label>
+    <input matInput type="number" [(ngModel)]="leftValue">
+  </mat-form-field>
+  <mat-form-field class="">
+    <mat-label>Bis</mat-label>
+    <input matInput type="number" [(ngModel)]="rightValue">
+  </mat-form-field>
+</section>
+
+<mat-slider min="{{minValue}}" max="{{maxValue}}" discrete="true">
+  <input [(ngModel)]="leftValue" matSliderStartThumb>
+  <input [(ngModel)]="rightValue"  matSliderEndThumb>
+</mat-slider>
