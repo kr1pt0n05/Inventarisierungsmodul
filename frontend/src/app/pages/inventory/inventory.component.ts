@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
+import {CardComponent} from '../../card/card.component';
 
 @Component({
   selector: 'app-inventory',
-  imports: [],
+  imports: [
+    CardComponent
+  ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
 })
