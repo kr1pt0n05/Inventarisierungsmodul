@@ -10,7 +10,7 @@
     <input
       name="currentFruit"
       #fruitInput
-      placeholder="Kostenstelle hinzufügen"
+      [placeholder]="inputPlaceholder"
       [(ngModel)]="currentFruit"
       [matChipInputFor]="chipGrid"
       [matAutocomplete]="auto"

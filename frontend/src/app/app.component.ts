@@ -1,4 +1,4 @@
-import {Component, signal} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 
 @Component({
@@ -9,7 +9,7 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
     RouterOutlet,
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   currentPageTitle = signal<string>("Homepage");

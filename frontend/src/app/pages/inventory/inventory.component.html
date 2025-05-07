@@ -1,70 +1,82 @@
-<div class="flex">
+<div class="flex justify-evenly">
 
 
   <!--   Filter Section START   --->
-  <div  class="w-1/3">
-    <app-card title="Kostenstellen">
-      <div card-content>
-        <app-chip/>
-      </div>
-    </app-card>
+  <div  class="w-1/5">
+    <div class="example-action-buttons">
+      <button mat-button (click)="openAllAccordion()">Expand All</button>
+      <button mat-button (click)="closeAllAccordions()">Collapse All</button>
+    </div>
 
-    <app-card title="Inventarnummer">
-      <div card-content>
+    <app-accordion title="Kostenstelle">
+      <div expansion-panel-content>
+        <app-chip
+          [inputPlaceholder]="'Kostenstelle hinzufügen'"
+          [allFruits]="['123','222','222']"
+          (changes)="updateKostenstellen($event)"
+        />
+      </div>
+    </app-accordion>
+
+    <app-accordion title="Inventarnummer">
+      <div expansion-panel-content>
         <app-range-slider/>
       </div>
-    </app-card>
+    </app-accordion>
 
-    <app-card title="Zeitraum">
-      <div card-content>
+    <app-accordion title="Zeitraum">
+      <div expansion-panel-content>
         <app-datepicker/>
       </div>
-    </app-card>
+    </app-accordion>
 
-    <app-card title="Firma">
-      <div card-content>
-        <app-chip></app-chip>
+    <app-accordion title="Firma">
+      <div expansion-panel-content>
+        <app-chip [inputPlaceholder]="'Was anderes'"
+                  (changes)="updateKostenstellen($event)"
+        ></app-chip>
       </div>
-    </app-card>
+    </app-accordion>
 
-    <app-card title="Preis">
-      <div card-content>
+    <app-accordion title="Preis">
+      <div expansion-panel-content>
         <app-range-slider/>
       </div>
-    </app-card>
+    </app-accordion>
 
-    <app-card title="Seriennummer">
-      <div card-content>
-        <p>asdunasdansdn</p>
+    <app-accordion title="Seriennummer">
+      <div expansion-panel-content>
+        <app-chip
+        />
       </div>
-    </app-card>
+    </app-accordion>
 
-    <app-card title="Standort/Nutzer">
-      <div card-content>
+    <app-accordion title="Standort/Nutzer">
+      <div expansion-panel-content>
+        <app-select-multiple/>
+      </div>
+    </app-accordion>
+
+    <app-accordion title="Bestellt von">
+      <div expansion-panel-content>
         <app-chip/>
       </div>
-    </app-card>
+    </app-accordion>
 
-    <app-card title="Bestellt von">
-      <div card-content>
+    <app-accordion title="Tags">
+      <div expansion-panel-content>
         <app-chip/>
       </div>
-    </app-card>
-
-    <app-card title="Tags">
-      <div card-content>
-        <app-chip/>
-      </div>
-    </app-card>
+    </app-accordion>
   </div>
   <!--   Filter Section END   --->
 
 
   <!--   Content Section START   --->
   <div class="w-2/3">
-    <app-card title="dasdsad">
+    <app-card title="Inventargegenstände">
       <div card-content>
-        <p>asdunasdansdn</p>
+        <app-inventory-list></app-inventory-list>
       </div>
     </app-card>
   </div>

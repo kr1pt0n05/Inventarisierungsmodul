@@ -1,6 +1,16 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {ChangeDetectionStrategy, Component, computed, inject, model, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed, effect,
+  EventEmitter,
+  inject,
+  Input,
+  model,
+  Output,
+  signal
+} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {
   MatAutocomplete,
@@ -12,6 +22,7 @@ import {MatChipGrid, MatChipInput, MatChipInputEvent, MatChipRow, MatChipsModule
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {MatIcon, MatIconModule} from '@angular/material/icon';
 import {MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'app-chip',
@@ -36,7 +47,9 @@ export class ChipComponent {
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   readonly currentFruit = model('');
   readonly fruits = signal(['8500005110']);
-  readonly allFruits: string[] = ['850302', '850000', '715501', '850206'];
+  @Input()
+  allFruits: string[] = ['850302', '850000', '715501', '850206', '850302', '850000', '715501', '850206', '850302', '850000', '715501', '850206', '850302', '850000', '715501', '850206'];
+
   readonly filteredFruits = computed(() => {
     const currentFruit = this.currentFruit().toLowerCase();
     return currentFruit
@@ -44,7 +57,16 @@ export class ChipComponent {
       : this.allFruits.slice();
   });
 
-  readonly announcer = inject(LiveAnnouncer);
+  @Input()
+  inputPlaceholder: string = "Eintrag hinzufügen";
+  @Output()
+  changes: EventEmitter<string[]> = new EventEmitter();
+
+  constructor(private announcer: LiveAnnouncer) {
+    effect(() => {
+      this.changes.emit(this.fruits())
+    });
+  }
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
