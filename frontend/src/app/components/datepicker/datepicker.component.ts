@@ -1,11 +1,13 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
+  MatDatepickerModule,
   MatDatepickerToggle,
   MatDateRangeInput,
   MatDateRangePicker
 } from '@angular/material/datepicker';
-import {MatFormField} from '@angular/material/form-field';
+import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {MatHint, MatLabel} from '@angular/material/input';
+import {provideNativeDateAdapter} from '@angular/material/core';
 
 @Component({
   selector: 'app-datepicker',
@@ -15,11 +17,15 @@ import {MatHint, MatLabel} from '@angular/material/input';
     MatDatepickerToggle,
     MatDateRangePicker,
     MatHint,
-    MatLabel
+    MatLabel,
+    MatFormFieldModule,
+    MatDatepickerModule,
   ],
   templateUrl: './datepicker.component.html',
-  styleUrl: './datepicker.component.css'
+  styleUrl: './datepicker.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatepickerComponent {
-
+  readonly minDate = new Date(2000, 0, 1, 1, 1, 1, 1);
+  readonly today = new Date();
 }

@@ -1,4 +1,4 @@
-import {Component, signal} from '@angular/core';
+import {Component, input, signal} from '@angular/core';
 import {MatSlider, MatSliderModule, MatSliderRangeThumb} from '@angular/material/slider';
 import {MatFormField} from '@angular/material/form-field';
 import {MatInput, MatLabel} from '@angular/material/input';
@@ -18,9 +18,14 @@ import {FormsModule} from '@angular/forms';
   styleUrl: './range-slider.component.css'
 })
 export class RangeSliderComponent {
-  minValue: number = 0;
-  maxValue: number = 28000;
+  minValue = input<number>(0);
+  maxValue = input<number>(100);
 
-  leftValue = this.minValue;
-  rightValue = this.maxValue;
+  leftValue = 0;
+  rightValue = 1000;
+
+  ngAfterViewInit() {
+    this.leftValue = this.minValue();
+    this.rightValue = this.maxValue();
+  }
 }

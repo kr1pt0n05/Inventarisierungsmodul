@@ -1,11 +1,9 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {
-  ChangeDetectionStrategy,
   Component,
   computed, effect,
-  EventEmitter,
-  inject,
+  EventEmitter, input,
   Input,
   model,
   Output,
@@ -20,9 +18,7 @@ import {
 } from '@angular/material/autocomplete';
 import {MatChipGrid, MatChipInput, MatChipInputEvent, MatChipRow, MatChipsModule} from '@angular/material/chips';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
-import {MatIcon, MatIconModule} from '@angular/material/icon';
-import {MatLabel} from '@angular/material/input';
-import {MatSelect} from '@angular/material/select';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'app-chip',
@@ -46,25 +42,24 @@ import {MatSelect} from '@angular/material/select';
 export class ChipComponent {
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   readonly currentFruit = model('');
-  readonly fruits = signal(['8500005110']);
-  @Input()
-  allFruits: string[] = ['850302', '850000', '715501', '850206', '850302', '850000', '715501', '850206', '850302', '850000', '715501', '850206', '850302', '850000', '715501', '850206'];
+  readonly selectedOptions = signal<string[]>([]);
 
-  readonly filteredFruits = computed(() => {
+  readonly filteredSelectedOptions = computed(() => {
     const currentFruit = this.currentFruit().toLowerCase();
     return currentFruit
-      ? this.allFruits.filter(fruit => fruit.toLowerCase().includes(currentFruit))
-      : this.allFruits.slice();
+      ? this.options().filter(fruit => fruit.toLowerCase().includes(currentFruit))
+      : this.options().slice();
   });
 
-  @Input()
-  inputPlaceholder: string = "Eintrag hinzufügen";
+  inputPlaceholder = input<string>("Put some placeholder here...");
+  options = input<string[]>(["Example 1", "Example 2", "Example 3"]);
+
   @Output()
   changes: EventEmitter<string[]> = new EventEmitter();
 
   constructor(private announcer: LiveAnnouncer) {
     effect(() => {
-      this.changes.emit(this.fruits())
+      this.changes.emit(this.selectedOptions())
     });
   }
 
@@ -73,7 +68,7 @@ export class ChipComponent {
 
     // Add our fruit
     if (value) {
-      this.fruits.update(fruits => [...fruits, value]);
+      this.selectedOptions.update(selectedOptions => [...selectedOptions, value]);
     }
 
     // Clear the input value
@@ -81,20 +76,20 @@ export class ChipComponent {
   }
 
   remove(fruit: string): void {
-    this.fruits.update(fruits => {
-      const index = fruits.indexOf(fruit);
+    this.selectedOptions.update(selectedOptions => {
+      const index = selectedOptions.indexOf(fruit);
       if (index < 0) {
-        return fruits;
+        return selectedOptions;
       }
 
-      fruits.splice(index, 1);
+      selectedOptions.splice(index, 1);
       this.announcer.announce(`Removed ${fruit}`);
-      return [...fruits];
+      return [...selectedOptions];
     });
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.fruits.update(fruits => [...fruits, event.option.viewValue]);
+    this.selectedOptions.update(selectedOptions => [...selectedOptions, event.option.viewValue]);
     this.currentFruit.set('');
     event.option.deselect();
   }

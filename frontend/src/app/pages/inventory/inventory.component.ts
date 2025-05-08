@@ -20,7 +20,6 @@ import {MatButton} from '@angular/material/button';
     RangeSliderComponent,
     DatepickerComponent,
     InventoryListComponent,
-    SelectMultipleComponent,
     AccordionComponent,
     MatButton
   ],
