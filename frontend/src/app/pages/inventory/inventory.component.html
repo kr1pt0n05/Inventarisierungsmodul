@@ -12,7 +12,7 @@
       <div expansion-panel-content>
         <app-chip
           [inputPlaceholder]="'Kostenstelle hinzufügen'"
-          [allFruits]="['123','222','222']"
+          [options]="['123','222','222']"
           (changes)="updateKostenstellen($event)"
         />
       </div>
@@ -20,7 +20,10 @@
 
     <app-accordion title="Inventarnummer">
       <div expansion-panel-content>
-        <app-range-slider/>
+        <app-range-slider
+          [minValue]="0"
+          [maxValue]="28000"
+        />
       </div>
     </app-accordion>
 
@@ -32,7 +35,9 @@
 
     <app-accordion title="Firma">
       <div expansion-panel-content>
-        <app-chip [inputPlaceholder]="'Was anderes'"
+        <app-chip
+          [inputPlaceholder]="'Firma hinzufügen'"
+          [options]="['Logitech','Steelseries','Razer']"
                   (changes)="updateKostenstellen($event)"
         ></app-chip>
       </div>
@@ -40,32 +45,46 @@
 
     <app-accordion title="Preis">
       <div expansion-panel-content>
-        <app-range-slider/>
+        <app-range-slider
+          [minValue]="0"
+          [maxValue]="2000"
+        />
       </div>
     </app-accordion>
 
     <app-accordion title="Seriennummer">
       <div expansion-panel-content>
         <app-chip
+          [inputPlaceholder]="'Seriennummer hinzufügen'"
+          [options]="['ABCDE12345','DEFGHI56789','JKLMN101112', 'ABCDE12345','DEFGHI56789','JKLMN101112', 'ABCDE12345','DEFGHI56789','JKLMN101112']"
         />
       </div>
     </app-accordion>
 
     <app-accordion title="Standort/Nutzer">
       <div expansion-panel-content>
-        <app-select-multiple/>
+        <app-chip
+          [inputPlaceholder]="'Standort oder Nutzer hinzufügen'"
+          [options]="['Andreas Heinrich','Jörg Nitzsche', 'F01.110']"
+        />
       </div>
     </app-accordion>
 
     <app-accordion title="Bestellt von">
       <div expansion-panel-content>
-        <app-chip/>
+        <app-chip
+          [inputPlaceholder]="'Besteller hinzufügen'"
+          [options]="['Emanuel Reichsöllner']"
+        />
       </div>
     </app-accordion>
 
     <app-accordion title="Tags">
       <div expansion-panel-content>
-        <app-chip/>
+        <app-chip
+          [inputPlaceholder]="'Tags hinzufügen'"
+          [options]="['Netzteil', 'Mobil', 'Zubehör', 'Laptop Bedarf', 'ASUS']"
+        />
       </div>
     </app-accordion>
   </div>

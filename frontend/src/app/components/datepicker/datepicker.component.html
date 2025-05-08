@@ -1,6 +1,6 @@
 <mat-form-field>
-  <mat-label>Enter a date range</mat-label>
-  <mat-date-range-input [rangePicker]="picker">
+  <mat-label>Zeitraum angeben</mat-label>
+  <mat-date-range-input [rangePicker]="picker" [min]="minDate" [max]="today">
     <input matStartDate placeholder="Start date">
     <input matEndDate placeholder="End date">
   </mat-date-range-input>
