@@ -1,0 +1,52 @@
+<!-- Imported from Figma, needs reworking -->
+
+<div class="flex flex-col p-8 gap-12">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <button class="p-2 border-2 border-red-600">zurück</button> <!-- Back Button placeholder -->
+            <h1 class="font-semibold text-2xl">Tischnetzteil abc 123</h1>
+            <h2>471938</h2>
+        </div>
+        <div class="p-2 bg-red-600">bearbeiten</div> <!-- Placeholder for edit button -->
+    </div>
+
+    <!-- Divider -->
+    <mat-divider></mat-divider>
+
+    <!-- Details Section -->
+    <div class="flex gap-16">
+        <div class="flex flex-col">
+            <!-- todo: create or use subcomponents instead of placeholder data -->
+            <div class="p-2">Kostenstelle</div>
+            <div class="p-2">Inventarnummer</div>
+            <div class="p-2">Firma</div>
+            <div class="p-2">Preis</div>
+            <div class="p-2">Inventarisiert am</div>
+            <div class="p-2">Seriennummer</div>
+            <div class="p-2">Standort/Nutzer:in</div>
+            <div class="p-2">Bestellt von</div>
+        </div>
+        <div class="flex flex-col">
+            <div class="p-2">KG1281</div>
+            <div class="p-2">471938</div>
+            <div class="p-2">Computerteile GmbH</div>
+            <div class="p-2">192,20 €</div>
+            <div class="p-2">12.01.2001</div>
+            <div class="p-2">SFK490LF</div>
+            <div class="p-2">F1.405</div>
+            <div class="p-2">Prof. Huber</div>
+        </div>
+    </div>
+
+    <ng-template ngFor let-name [ngForOf]="panelNames" let-i="index">
+        <mat-expansion-panel #Panels>
+            <mat-expansion-panel-header>
+                <mat-panel-title class="text-xl">{{name}}</mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>This is the primary content of the panel.</p>
+            <!-- todo: panel content -->
+        </mat-expansion-panel>
+    </ng-template>
+
+</div>
