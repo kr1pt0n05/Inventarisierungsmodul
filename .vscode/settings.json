@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "http-sonar-test-insy-hs-esslingen-com",
+        "projectKey": "Inventarisierungsmodul-backend-89wehenfefhe89"
+    }
+}
