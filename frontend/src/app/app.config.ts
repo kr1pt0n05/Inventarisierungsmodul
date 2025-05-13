@@ -27,7 +27,7 @@ export const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://auth.insy.hs-esslingen.com/realms/insy',
 
   // URL of the SPA to redirect the user to after login
-  redirectUri: window.location.origin + '/index.html',
+  redirectUri: window.location.origin + '/inventory',
 
   // The SPA's id. The SPA is registerd with this id at the auth-server
   // clientId: 'server.code',
