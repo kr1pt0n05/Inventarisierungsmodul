@@ -7,7 +7,7 @@ import {authCodeFlowConfig} from '../app.config';
 })
 export class AuthenticationService {
 
-  constructor(private oauthService: OAuthService) {
+  constructor(public oauthService: OAuthService) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
 
@@ -21,6 +21,10 @@ export class AuthenticationService {
 
   logout(): void {
     this.oauthService.revokeTokenAndLogout();
+  }
+
+  validToken(): boolean {
+    return (this.oauthService.hasValidIdToken() && this.oauthService.hasValidAccessToken());
   }
 }
 

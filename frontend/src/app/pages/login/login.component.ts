@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {CardComponent} from '../../components/card/card.component';
+import {AuthenticationService} from '../../services/authentication.service';
 
 @Component({
   selector: 'app-login',
@@ -9,5 +9,6 @@ import {CardComponent} from '../../components/card/card.component';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-
+  constructor(public authService: AuthenticationService) {
+  }
 }
