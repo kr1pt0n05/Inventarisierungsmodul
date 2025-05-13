@@ -1,5 +1,6 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {AuthenticationService} from './services/authentication.service';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,10 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
+  constructor(private authService: AuthenticationService) {
+    this.authService = authService;
+  }
+
   currentPageTitle = signal<string>("Homepage");
 
   updateCurrentPageTitle(currentPageTitle: string) {
