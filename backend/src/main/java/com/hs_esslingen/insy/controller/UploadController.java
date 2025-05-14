@@ -1,5 +1,6 @@
 package com.hs_esslingen.insy.controller;
 
+import com.hs_esslingen.insy.models.InventoryItem;
 import com.hs_esslingen.insy.services.CSVService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,10 @@ public class UploadController {
 
     @PostMapping("/csv")
     public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) throws IOException {
-        List<Object> objects = csvService.readCSVFile(file);
+        System.out.println("Upload CSV");
+        List<InventoryItem> objects = csvService.readCSVFile(file);
+
+        objects.stream().forEach(System.out::println);
 
         // To-Do: Validation of objects
 

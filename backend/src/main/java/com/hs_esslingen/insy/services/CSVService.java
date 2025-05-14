@@ -1,8 +1,10 @@
 package com.hs_esslingen.insy.services;
 
+import com.hs_esslingen.insy.models.InventoryItem;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -14,7 +16,7 @@ import java.util.List;
 @Service
 public class CSVService {
 
-    private final String DELIMITER = ";";
+    private final Character DELIMITER = ';';
 
     /*
      * BufferReader class is the preferred way for reading files.
@@ -26,14 +28,13 @@ public class CSVService {
      * So we need to convert our MultipartFile into an InputStream.
      *
      * */
-    public List<Object> readCSVFile(MultipartFile file) throws IOException {
+    public List<InventoryItem> readCSVFile(@RequestParam("file") MultipartFile file) throws IOException {
         InputStream stream = file.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        BufferedReader br = new BufferedReader(new InputStreamReader(stream));
 
-        List<Object> csv = new CsvToBeanBuilder(reader)
-                .withIgnoreEmptyLine(true)
-                .withIgnoreLeadingWhiteSpace(true)
-                .withType(Object.class)
+        List<InventoryItem> csv = new CsvToBeanBuilder(br)
+                .withType(InventoryItem.class)
+                .withSeparator(DELIMITER)
                 .build()
                 .parse();
 
