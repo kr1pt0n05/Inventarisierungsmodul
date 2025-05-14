@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f098cd5c-a01e-4169-b695-26bc132bef5a" name="Changes" comment="" />
+    <list default="true" id="f098cd5c-a01e-4169-b695-26bc132bef5a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/services/CSVService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,7 +50,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.InsyApplication.executor": "Run",
-    "git-widget-placeholder": "frontend",
+    "git-widget-placeholder": "main-backend-upload",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/Sandr/Documents/GitHub/Inventarisierungsmodul/backend",
     "node.js.detected.package.eslint": "true",
@@ -87,6 +92,7 @@
       <workItem from="1746910731618" duration="1703000" />
       <workItem from="1746958513345" duration="7941000" />
       <workItem from="1747140927054" duration="1583000" />
+      <workItem from="1747208955962" duration="3920000" />
     </task>
     <servers />
   </component>
