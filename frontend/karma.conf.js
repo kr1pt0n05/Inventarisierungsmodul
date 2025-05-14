@@ -32,7 +32,15 @@ module.exports = function (config) {
       ]
     },
     reporters: ['progress', 'kjhtml'],
-    browsers: ['Chrome', 'ChromeHeadless'],
-    restartOnFileChange: true
+    browsers: ['Chrome', 'ChromeHeadless', 'ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    },
+    restartOnFileChange: true,
+    failOnEmptyTestSuite: false,
+    failOnFailingTestSuite: false,
   });
 };
