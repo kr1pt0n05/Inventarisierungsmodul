@@ -34,7 +34,7 @@ jobs:
           install-dependencies: true
         id: setup-chrome
       - run: |
-          echo "::set-env name=CHROME_BIN::${{steps.setup-chrome.outputs.chrome-path}}"
+          echo "CHROME_BIN=${{steps.setup-chrome.outputs.chrome-path}}" >> $GITHUB_ENV
 
       - name: Install dependencies
         working-directory: frontend
