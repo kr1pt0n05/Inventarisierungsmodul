@@ -55,7 +55,7 @@ export class InventoryListComponent implements AfterViewInit{
     {costCenter: 754880850, inventoryNumber: 27598, productDescription: "HP Color Laserjet CP2025DN", company: "redcoon", price: 432.00, date: "04.04.11", serialNumber: "", location: "IT-11", orderer: "Max"},
     {costCenter: 754880850, inventoryNumber: 27599, productDescription: "HP Color Laserjet CP2025DN", company: "redcoon", price: 432.00, date: "04.04.11", serialNumber: "", location: "IT-12", orderer: "Max"},
     {costCenter: 754880850, inventoryNumber: 27600, productDescription: "HP Color Laserjet CP2025DN", company: "redcoon", price: 432.00, date: "04.04.11", serialNumber: "asdasdasdasd", location: "IT-13", orderer: "Max"},
-    {costCenter: 754880850, inventoryNumber: 2601, productDescription: "HP Color Laserjet CP2025DN", company: "redcoon", price: 432.00, date: "04.04.11", serialNumber: "", location: "IT-14", orderer: "Max"},
+    {costCenter: 754880850, inventoryNumber: 26010, productDescription: "HP Color Laserjet CP2025DN", company: "redcoon", price: 432.00, date: "04.04.11", serialNumber: "", location: "IT-14", orderer: "Max"},
     {costCenter: 754880850, inventoryNumber: 27602, productDescription: "HP Color Laserjet CP2025DN", company: "redcoon", price: 432.00, date: "04.04.11", serialNumber: "", location: "IT-15", orderer: "Max"},
     {costCenter: 754880850, inventoryNumber: 27603, productDescription: "HP Color Laserjet CP2025DN", company: "redcoon", price: 432.00, date: "04.04.11", serialNumber: "asdasdasdasd", location: "IT-16", orderer: "Max"},
     {costCenter: 754880850, inventoryNumber: 27604, productDescription: "HP Color Laserjet CP2025DN", company: "redcoon", price: 432.00, date: "04.04.11", serialNumber: "", location: "IT-17", orderer: "Max"},

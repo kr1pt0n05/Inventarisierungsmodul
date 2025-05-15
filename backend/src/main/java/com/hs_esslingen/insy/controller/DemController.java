@@ -16,4 +16,6 @@ public class DemController {
     public String hello2() {
         return "Hello World from Keycloak!";
     }
+
+
 }

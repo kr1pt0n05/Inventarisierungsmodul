@@ -11,7 +11,7 @@ public class InventoryItem {
     String inventoryNumber;
 
     @CsvBindByName(column = "Anzahl")
-    Integer quantity;
+    String quantity;
 
     @CsvBindByName(column = "Gerätetyp / Software")
     String description;
@@ -43,7 +43,7 @@ public class InventoryItem {
         return "InventarNr: " + inventoryNumber + ", Quantity: " + quantity + ", Description: " + description + ", Company: " + company + ", Price: " + price;
     }
 
-    public InventoryItem(String costCenter, String inventoryNumber, Integer quantity, String description, String company, Double price, String date, String serialNumber, String location, String orderer) {
+    public InventoryItem(String costCenter, String inventoryNumber, String quantity, String description, String company, Double price, String date, String serialNumber, String location, String orderer) {
         this.costCenter = costCenter;
         this.inventoryNumber = inventoryNumber;
         this.quantity = quantity;
@@ -72,11 +72,11 @@ public class InventoryItem {
         this.inventoryNumber = inventoryNumber;
     }
 
-    public Integer getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 

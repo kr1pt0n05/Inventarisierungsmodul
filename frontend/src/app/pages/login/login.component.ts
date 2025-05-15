@@ -10,5 +10,6 @@ import {AuthenticationService} from '../../services/authentication.service';
 })
 export class LoginComponent {
   constructor(public authService: AuthenticationService) {
+    this.authService = authService;
   }
 }

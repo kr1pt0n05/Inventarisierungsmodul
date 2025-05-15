@@ -16,6 +16,7 @@ import {NgClass} from '@angular/common';
 })
 export class AppComponent {
   constructor(public authService: AuthenticationService) {
+    this.authService = authService;
   }
 
   currentPageTitle = signal<string>("Homepage");

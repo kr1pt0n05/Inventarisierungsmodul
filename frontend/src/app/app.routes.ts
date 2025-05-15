@@ -21,7 +21,6 @@ export const routes: Routes = [
     title: 'Inventarliste',
     path: 'inventory',
     component: InventoryComponent,
-    canActivate: [DefaultGuardService],
   },
   {
     title: '404 Not Found!',
