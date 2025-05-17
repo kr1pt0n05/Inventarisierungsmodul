@@ -10,9 +10,12 @@
 
     <app-accordion title="Kostenstelle">
       <div expansion-panel-content>
-        <app-chip
-          [inputPlaceholder]="'Kostenstelle hinzufügen'"
-          [options]="['123','222','222']"
+        <app-chip-v2
+          placeholder="Kostenstelle hinzufügen"
+          heading="Kostenstellen"
+          [options]="['Option 1', 'Option 2', 'Option 3']"
+          [control]="$any(inventoryForm).get('costCenter')"
+
         />
       </div>
     </app-accordion>
@@ -39,10 +42,12 @@
 
     <app-accordion title="Firma">
       <div expansion-panel-content>
-        <app-chip
-          [inputPlaceholder]="'Firma hinzufügen'"
+        <app-chip-v2
+          placeholder="Firma hinzufügen"
+          heading="Firma"
           [options]="['Logitech','Steelseries','Razer']"
-        ></app-chip>
+          [control]="$any(inventoryForm).get('company')"
+        />
       </div>
     </app-accordion>
 
@@ -59,36 +64,44 @@
 
     <app-accordion title="Seriennummer">
       <div expansion-panel-content>
-        <app-chip
-          [inputPlaceholder]="'Seriennummer hinzufügen'"
+        <app-chip-v2
+          placeholder="Seriennummer hinzufügen"
+          heading="Seriennummer"
           [options]="['ABCDE12345','DEFGHI56789','JKLMN101112', 'ABCDE12345','DEFGHI56789','JKLMN101112', 'ABCDE12345','DEFGHI56789','JKLMN101112']"
+          [control]="$any(inventoryForm).get('serialNumber')"
         />
       </div>
     </app-accordion>
 
     <app-accordion title="Standort/Nutzer">
       <div expansion-panel-content>
-        <app-chip
-          [inputPlaceholder]="'Standort oder Nutzer hinzufügen'"
+        <app-chip-v2
+          placeholder="Standort oder Nutzer hinzufügen"
+          heading="Standort/Nutzer"
           [options]="['Andreas Heinrich','Jörg Nitzsche', 'F01.110']"
+          [control]="$any(inventoryForm).get('location')"
         />
       </div>
     </app-accordion>
 
     <app-accordion title="Bestellt von">
       <div expansion-panel-content>
-        <app-chip
-          [inputPlaceholder]="'Besteller hinzufügen'"
+        <app-chip-v2
+          placeholder="Besteller hinzufügen"
+          heading="Besteller"
           [options]="['Emanuel Reichsöllner']"
+          [control]="$any(inventoryForm).get('order')"
         />
       </div>
     </app-accordion>
 
     <app-accordion title="Tags">
       <div expansion-panel-content>
-        <app-chip
-          [inputPlaceholder]="'Tags hinzufügen'"
+        <app-chip-v2
+          placeholder="Tags hinzufügen"
+          heading="Tags"
           [options]="['Netzteil', 'Mobil', 'Zubehör', 'Laptop Bedarf', 'ASUS']"
+          [control]="$any(inventoryForm).get('tags')"
         />
       </div>
     </app-accordion>

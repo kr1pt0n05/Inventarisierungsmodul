@@ -8,21 +8,21 @@ import {ChipComponent} from '../../components/chip/chip.component';
 import {RangeSliderComponent} from '../../components/range-slider/range-slider.component';
 import {DatepickerComponent} from '../../components/datepicker/datepicker.component';
 import {InventoryListComponent} from '../../components/inventory-list/inventory-list.component';
-import {SelectMultipleComponent} from '../../components/select-multiple/select-multiple.component';
 import {AccordionComponent} from '../../components/accordion/accordion.component';
 import {MatButton} from '@angular/material/button';
 import {FormControl, FormGroup} from '@angular/forms';
+import {ChipV2Component} from '../../components/chip-v2/chip-v2.component';
 
 @Component({
   selector: 'app-inventory',
   imports: [
     CardComponent,
-    ChipComponent,
     RangeSliderComponent,
     DatepickerComponent,
     InventoryListComponent,
     AccordionComponent,
-    MatButton
+    MatButton,
+    ChipV2Component
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
@@ -36,7 +36,7 @@ export class InventoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.inventoryForm = new FormGroup({
-      costCenter: new FormControl(''),
+      costCenter: new FormControl([]),
       inventoryNumberMin: new FormControl(''),
       inventoryNumberMax: new FormControl(''),
       productDescription: new FormControl(''),
@@ -48,6 +48,7 @@ export class InventoryComponent implements OnInit {
       serialNumber: new FormControl(''),
       location: new FormControl(''),
       order: new FormControl(''),
+      tags: new FormControl(''),
     })
 
     this.inventoryForm.valueChanges.subscribe(value => {
