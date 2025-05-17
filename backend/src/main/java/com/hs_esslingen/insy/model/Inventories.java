@@ -3,7 +3,13 @@ package com.hs_esslingen.insy.model;
 import java.math.BigDecimal;
 import java.time.OffsetTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,14 +30,17 @@ public class Inventories {
 
     @ManyToOne
     @JoinColumn(name = "cost_centers_id", nullable = false)
+    @JsonBackReference
     private CostCenters costCenters;
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
+    @JsonBackReference
     private Users user;
 
     @ManyToOne
     @JoinColumn(name = "companies_id", nullable = false)
+    @JsonBackReference
     private Companies company;
 
     @Column(nullable = false)
@@ -53,24 +62,34 @@ public class Inventories {
     private OffsetTime createdAt;
 
     @Column(name = "deleted_at")
-    private OffsetTime deletedAt;
+    private OffsetTime deletedAt = null;
 
     @OneToMany(mappedBy = "inventories", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Comments> comments;
 
-    @OneToMany(mappedBy = "inventories", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Extensions> extensions;
 
-    @OneToMany(mappedBy = "inventories", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InventoryTagRelations> tagRelations;
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Set<InventoryTagRelations> tagRelations = new HashSet<>();
 
     // Konstruktor
+    /**
+     * Default constructor for the {@code Inventories} class.
+     * Initializes the {@code comments} and {@code extensions} lists as empty {@code ArrayList} instances.
+     */
     public Inventories() {
         this.comments = new ArrayList<>();
         this.extensions = new ArrayList<>();
-        this.tagRelations = new ArrayList<>();
-    }
-    public Inventories(CostCenters costCenters, Users user, Companies company, String description, String serialNumber, BigDecimal price, String location) {
+        this.tagRelations = new HashSet<>();
+        this.isDeinventoried = false;
+     }
+    public Inventories(Integer id, CostCenters costCenters, Users user, Companies company, String description, String serialNumber, BigDecimal price, String location) {
+        this.id = id;
+        this.isDeinventoried = false;
         this.costCenters = costCenters;
         this.user = user;
         this.company = company;
@@ -81,7 +100,7 @@ public class Inventories {
         this.createdAt = OffsetTime.now();
         this.comments = new ArrayList<>();
         this.extensions = new ArrayList<>();
-        this.tagRelations = new ArrayList<>();
+        this.tagRelations = new HashSet<>();
     }
 
     // Getter und Setter
@@ -142,6 +161,9 @@ public class Inventories {
     public OffsetTime getCreatedAt() {
         return createdAt;
     }
+    public void setCreatedAt(OffsetTime createdAt) {
+        this.createdAt = createdAt;
+    }
     public OffsetTime getDeletedAt() {
         return deletedAt;
     }
@@ -180,6 +202,23 @@ public class Inventories {
     public void removeExtension(Extensions extension) {
         this.extensions.remove(extension);
         extension.setInventories(null);
+    }
+
+    public Set<InventoryTagRelations> getTagRelations() {
+        return tagRelations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Inventories that = (Inventories) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 

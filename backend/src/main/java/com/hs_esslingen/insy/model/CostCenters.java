@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 
 @Entity
@@ -28,6 +30,7 @@ public class CostCenters {
     private Boolean isArchived;
 
     @OneToMany(mappedBy = "costCenters")
+    @JsonManagedReference
     private List<Inventories> inventories;
 
     // Konstruktor

@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -29,6 +32,7 @@ public class Orders {
      private OffsetTime deletedAt;
 
      @OneToMany(mappedBy = "orderId", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+     @JsonManagedReference
      private List<Article> articles;
 
      // Konstruktor

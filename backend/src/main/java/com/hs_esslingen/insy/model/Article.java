@@ -1,5 +1,8 @@
 package com.hs_esslingen.insy.model;
 import java.math.BigDecimal; // für monetary values
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -11,7 +14,8 @@ public class Article {
     private Integer id;
 
     @ManyToOne
-    @Column(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference
     private Orders orderId;
 
     @Column(name = "description")

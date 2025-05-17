@@ -1,7 +1,11 @@
 package com.hs_esslingen.insy.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -9,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -24,16 +29,16 @@ public class Tags {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "tags", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InventoryTagRelations> inventoryRelations;
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Set<InventoryTagRelations> inventoryRelations = new HashSet<>();
 
     // Konstruktor
     public Tags() {
-        this.inventoryRelations = new ArrayList<>();
+
     }
     public Tags(String name) {
         this.name = name;
-        this.inventoryRelations = new ArrayList<>();
     }
 
     // Getter und Setter
@@ -49,19 +54,18 @@ public class Tags {
     public void setName(String name) {
         this.name = name;
     }
-    
-    public List<InventoryTagRelations> getInventoryRelations() {
+    public Set<InventoryTagRelations> getInventoryRelations() {
         return inventoryRelations;
     }
-    public void setInventoryRelations(List<InventoryTagRelations> inventoryRelations) {
+    public void setInventoryRelations(Set<InventoryTagRelations> inventoryRelations) {
         this.inventoryRelations = inventoryRelations;
     }
-    public void addInventoryRelation(InventoryTagRelations inventoryRelation) {
-        this.inventoryRelations.add(inventoryRelation);
-        inventoryRelation.setTag(this);
+    public void addInventoryRelation(InventoryTagRelations inventoryTagRelations) {
+        this.inventoryRelations.add(inventoryTagRelations);
+        inventoryTagRelations.setTag(this);
     }
-    public void removeInventoryRelation(InventoryTagRelations inventoryRelation) {
-        this.inventoryRelations.remove(inventoryRelation);
-        inventoryRelation.setTag(null);
+    public void removeInventoryRelation(InventoryTagRelations inventoryTagRelations) {
+        this.inventoryRelations.remove(inventoryTagRelations);
+        inventoryTagRelations.setTag(null);
     }
 }

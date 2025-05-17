@@ -3,6 +3,8 @@ package com.hs_esslingen.insy.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,13 +25,20 @@ public class Users {
     private String name;
     
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Inventories> inventories;
 
-    @OneToMany(mappedBy = "histories")
+    @OneToMany(mappedBy = "author")
+    @JsonManagedReference
     private List<Histories> histories;
 
-    @OneToMany(mappedBy = "comments")
+    @OneToMany(mappedBy = "author")
+    @JsonManagedReference
     private List<Comments> comments;
+
+    //Auskommentiert zu Testzwecken
+    /*@Column(name = "keycloak_id", nullable = false)
+    private String keycloakID;*/
 
     // Konstruktor
     public Users() {
@@ -85,12 +94,12 @@ public class Users {
 
     public void addHistory(Histories history) {
         this.histories.add(history);
-        history.setUsers(this);
+        history.setAuthor(this);
     }
 
     public void removeHistory(Histories history) {
         this.histories.remove(history);
-        history.setUsers(null);
+        history.setAuthor(null);
     }
 
     public List<Comments> getComments() {
@@ -110,4 +119,11 @@ public class Users {
         this.comments.remove(comment);
         comment.setUsers(null);
     }
+    //Auskommentiert zu Testzwecken
+    /*public String getKeycloakID() {
+        return keycloakID;
+    }
+    public void setKeycloakID(String keycloakID) {
+        this.keycloakID = keycloakID;
+    }*/
 }

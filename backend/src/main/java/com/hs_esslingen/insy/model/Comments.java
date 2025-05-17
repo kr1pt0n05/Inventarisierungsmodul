@@ -2,6 +2,8 @@ package com.hs_esslingen.insy.model;
 
 import java.time.OffsetTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,11 +23,13 @@ public class Comments {
 
     @ManyToOne
     @JoinColumn(name = "inventory_id", nullable = false)
+    @JsonBackReference
     private Inventories inventories;
 
     @ManyToOne
     @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
-    private Users users;
+    @JsonBackReference
+    private Users author;
 
     @Column(nullable = false)
     private String description;
@@ -38,7 +42,7 @@ public class Comments {
 
     public Comments(Inventories inventories, Users users, String description) {
         this.inventories = inventories;
-        this.users = users;
+        this.author = users;
         this.description = description;
         this.createdAt = OffsetTime.now();
     }
@@ -60,11 +64,11 @@ public class Comments {
     }
 
     public Users getUsers() {
-        return users;
+        return author;
     }
 
     public void setUsers(Users users) {
-        this.users = users;
+        this.author = users;
     }
 
     public String getDescription() {

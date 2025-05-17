@@ -2,6 +2,8 @@ package com.hs_esslingen.insy.model;
 
 import java.time.OffsetTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,16 +24,17 @@ public class Histories {
 
     @ManyToOne
     @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
-    private Users users;
+    @JsonBackReference
+    private Users author;
 
     @Column(name = "attribute_changed", nullable = false)
     private String attributeChanged;
 
     @Column(nullable = false)
-    private String from;
+    private String valueFrom;
 
     @Column(nullable = false)
-    private String to;
+    private String valueTo;
 
     @Column(nullable = false)
     private OffsetTime date;
@@ -41,10 +44,10 @@ public class Histories {
     }
 
     public Histories(Users users, String attributeChanged, String from, String to) {
-        this.users = users;
+        this.author = users;
         this.attributeChanged = attributeChanged;
-        this.from = from;
-        this.to = to;
+        this.valueFrom = from;
+        this.valueTo = to;
         this.date = OffsetTime.now();
     }
 
@@ -58,12 +61,12 @@ public class Histories {
         this.id = id;
     }
 
-    public Users getUsers() {
-        return users;
+    public Users getAuthor() {
+        return author;
     }
 
-    public void setUsers(Users users) {
-        this.users = users;
+    public void setAuthor(Users users) {
+        this.author = users;
     }
 
     public String getAttributeChanged() {
@@ -74,20 +77,20 @@ public class Histories {
         this.attributeChanged = attributeChanged;
     }
 
-    public String getFrom() {
-        return from;
+    public String getValueFrom() {
+        return valueFrom;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setValueFrom(String from) {
+        this.valueFrom = from;
     }
 
-    public String getTo() {
-        return to;
+    public String getValueTo() {
+        return valueTo;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setValueTo(String to) {
+        this.valueTo = to;
     }
 
     public OffsetTime getDate() {

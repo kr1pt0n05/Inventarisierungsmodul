@@ -1,30 +1,41 @@
 package com.hs_esslingen.insy.model;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.hs_esslingen.insy.configuration.InventoryTagKey;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "inventory_tag_relations")
 public class InventoryTagRelations {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Integer id;
+
+    @EmbeddedId
+    private InventoryTagKey id = new InventoryTagKey();
 
     @ManyToOne
-    @JoinColumn(name = "inventory_id", referencedColumnName = "id", nullable = false)
+    @MapsId("inventoryId")
+    @JoinColumn(name = "inventory_id")
+    @JsonBackReference
     private Inventories inventory;
 
     @ManyToOne
-    @JoinColumn(name = "tag_id", referencedColumnName = "id", nullable = false)
+    @MapsId("tagId")
+    @JoinColumn(name = "tag_id")
+    @JsonBackReference
     private Tags tag;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     // Konstruktor
     public InventoryTagRelations() {
@@ -32,15 +43,14 @@ public class InventoryTagRelations {
     public InventoryTagRelations(Inventories inventory, Tags tag) {
         this.inventory = inventory;
         this.tag = tag;
+        this.createdAt = LocalDateTime.now();
     }
 
     // Getter und Setter
-
-    public Integer getId() {
+    public InventoryTagKey getId() {
         return id;
     }
-
-    public void setId(Integer id) {
+    public void setId(InventoryTagKey id) {
         this.id = id;
     }
 
@@ -59,5 +69,20 @@ public class InventoryTagRelations {
     public void setTag(Tags tag) {
         this.tag = tag;
     }
-    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InventoryTagRelations that = (InventoryTagRelations) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }

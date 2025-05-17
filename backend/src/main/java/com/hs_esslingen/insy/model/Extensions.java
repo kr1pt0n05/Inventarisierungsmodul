@@ -2,6 +2,9 @@ package com.hs_esslingen.insy.model;
 
 import java.math.BigDecimal;
 import java.time.OffsetTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,10 +25,12 @@ public class Extensions {
 
     @ManyToOne
     @JoinColumn(name = "inventory_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference
     private Inventories inventory;
 
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
+    @JsonBackReference
     private Companies company;
 
     private String description;
