@@ -20,5 +20,4 @@ public class StringParser {
 
         return new BigDecimal(number.toString());
     }
-
 }

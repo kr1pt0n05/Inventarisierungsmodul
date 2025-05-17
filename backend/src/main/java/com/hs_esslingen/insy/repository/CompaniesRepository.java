@@ -14,5 +14,6 @@ public interface CompaniesRepository extends JpaRepository<Companies, Integer> {
     // For example, to find a company by name:
     @Query("SELECT c FROM Companies c WHERE c.name = ?1")
     Optional<Companies> findByName(String name);
-    
+
+    Companies getCompaniesByName(String name);
 }

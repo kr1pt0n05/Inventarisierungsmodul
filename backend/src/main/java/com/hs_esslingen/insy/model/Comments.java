@@ -22,12 +22,12 @@ public class Comments {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "inventory_id", nullable = false)
+    @JoinColumn(name = "inventory_id", nullable = true)
     @JsonBackReference
     private Inventories inventories;
 
     @ManyToOne
-    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = true)
     @JsonBackReference
     private Users author;
 
@@ -79,4 +79,19 @@ public class Comments {
         return createdAt;
     }
 
+    public Users getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Users author) {
+        this.author = author;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCreatedAt(OffsetTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
