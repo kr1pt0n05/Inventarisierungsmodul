@@ -29,7 +29,7 @@ public class UploadController {
 
     @PostMapping("/csv")
     public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) throws IOException {
-        csvService.importCSV(file);
+        csvService.importCSVImproved(file);
 
         return ResponseEntity.ok().build();
     }
