@@ -1,6 +1,6 @@
 import {CardComponent} from '../../components/card/card.component';
 import {
-  Component,
+  Component, OnInit,
   QueryList,
   ViewChildren,
 } from '@angular/core';
@@ -11,6 +11,7 @@ import {InventoryListComponent} from '../../components/inventory-list/inventory-
 import {SelectMultipleComponent} from '../../components/select-multiple/select-multiple.component';
 import {AccordionComponent} from '../../components/accordion/accordion.component';
 import {MatButton} from '@angular/material/button';
+import {FormControl, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-inventory',
@@ -26,10 +27,36 @@ import {MatButton} from '@angular/material/button';
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
 })
-export class InventoryComponent {
+export class InventoryComponent implements OnInit {
 
   @ViewChildren(AccordionComponent) accordions!: QueryList<AccordionComponent>;
 
+  // Form
+  inventoryForm!: FormGroup;
+
+  ngOnInit(): void {
+    this.inventoryForm = new FormGroup({
+      costCenter: new FormControl(''),
+      inventoryNumberMin: new FormControl(''),
+      inventoryNumberMax: new FormControl(''),
+      productDescription: new FormControl(''),
+      company: new FormControl(''),
+      priceMin: new FormControl(''),
+      priceMax: new FormControl(''),
+      dateStart: new FormControl(''),
+      dateEnd: new FormControl(''),
+      serialNumber: new FormControl(''),
+      location: new FormControl(''),
+      order: new FormControl(''),
+    })
+
+    this.inventoryForm.valueChanges.subscribe(value => {
+      console.log('Name control changed:', value);
+    });
+  }
+
+
+  // Accordion
   openAllAccordion(){
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.openAll();
@@ -42,7 +69,4 @@ export class InventoryComponent {
     })
   }
 
-  updateKostenstellen(data: string[]) {
-    console.table(data);
-  }
 }
