@@ -39,14 +39,22 @@
         </div>
     </div>
 
-    <ng-template ngFor let-name [ngForOf]="panelNames" let-i="index">
-        <mat-expansion-panel #Panels>
-            <mat-expansion-panel-header>
-                <mat-panel-title class="text-xl">{{name}}</mat-panel-title>
-            </mat-expansion-panel-header>
-            <p>This is the primary content of the panel.</p>
-            <!-- todo: panel content -->
-        </mat-expansion-panel>
-    </ng-template>
+    <mat-expansion-panel *ngFor="let name of panelNames" #Panels>
+        <mat-expansion-panel-header>
+            <mat-panel-title class="text-xl">{{name}}</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <!-- Panel content -->
+        <app-dynamic-list *ngIf="name !== 'Tags' && panelContent.get(name)!().length"
+            [tableContent]="panelContent.get(name)!()" [columns]="panelContentMap.get(name)!">
+        </app-dynamic-list>
+
+        <p *ngIf="name !== 'Tags' && panelContent.get(name)!().length === 0">Keine {{name}} vorhanden</p>
+
+        <!-- todo: tags diplay -->
+        <div *ngIf="name === 'Tags'">
+            Hier könnten Tags stehen
+        </div>
+    </mat-expansion-panel>
 
 </div>

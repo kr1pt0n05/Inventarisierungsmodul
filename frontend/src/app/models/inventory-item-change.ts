@@ -1,11 +1,9 @@
 export interface InventoryItemChange {
-  costCenter: number,
-  inventoryNumber: number,
-  productDescription: string,
-  company: string,
-  price: number,
-  date: string,
-  serialNumber: string,
-  location: string,
-  orderer: string,
+  date: string;
+  inventoryNumber: number;
+  changedBy: string;
+  changedTable: string;
+  changedColumn: string;
+  oldValue: string;
+  newValue: string;
 }
