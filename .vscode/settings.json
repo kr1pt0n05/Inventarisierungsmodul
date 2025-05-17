@@ -1,15 +1,6 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "server": "10.13.13.1",
-            "port": 5432,
-            "driver": "PostgreSQL",
-            "name": "InsyDB",
-            "database": "insy",
-            "username": "insy",
-            "password": "Ce6N2xJnksS"
-        }
-    ]
+    "sonarlint.connectedMode.project": {
+        "connectionId": "http-sonar-test-insy-hs-esslingen-com",
+        "projectKey": "Inventarisierungsmodul-backend-89wehenfefhe89"
+    }
 }
