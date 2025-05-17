@@ -1,4 +1,4 @@
-package com.hs_esslingen.insy.models;
+package com.hs_esslingen.insy.DTO;
 
 import com.opencsv.bean.CsvBindByName;
 
@@ -20,7 +20,7 @@ public class InventoryItem {
     String company;
 
     @CsvBindByName(column = "Preis / €")
-    Double price;
+    String price;
 
     @CsvBindByName(column = "Datum")
     String date;
@@ -40,10 +40,11 @@ public class InventoryItem {
 
     @Override
     public String toString() {
-        return "InventarNr: " + inventoryNumber + ", Quantity: " + quantity + ", Description: " + description + ", Company: " + company + ", Price: " + price;
+        return
+                "Kostenstelle: " + costCenter + " InventarNr.: " + inventoryNumber + " Anzahl: " + quantity + " Gerätetyp/Software: " + description + " Firma: " + company + " Preis: " + price + " Datum: " + date + " Seriennummer: " + serialNumber + " Standort/Nutzer: " + location + " Besteller: " + orderer;
     }
 
-    public InventoryItem(String costCenter, String inventoryNumber, String quantity, String description, String company, Double price, String date, String serialNumber, String location, String orderer) {
+    public InventoryItem(String costCenter, String inventoryNumber, String quantity, String description, String company, String price, String date, String serialNumber, String location, String orderer) {
         this.costCenter = costCenter;
         this.inventoryNumber = inventoryNumber;
         this.quantity = quantity;
@@ -96,11 +97,11 @@ public class InventoryItem {
         this.company = company;
     }
 
-    public Double getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 

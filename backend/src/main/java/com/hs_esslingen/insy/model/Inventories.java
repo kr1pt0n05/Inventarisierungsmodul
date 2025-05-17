@@ -11,14 +11,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "inventories")
@@ -29,27 +22,27 @@ public class Inventories {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "cost_centers_id", nullable = false)
+    @JoinColumn(name = "cost_centers_id", nullable = true)
     @JsonBackReference
     private CostCenters costCenters;
 
     @ManyToOne
-    @JoinColumn(name = "users_id", nullable = false)
+    @JoinColumn(name = "users_id", nullable = true)
     @JsonBackReference
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "companies_id", nullable = false)
+    @JoinColumn(name = "companies_id", nullable = true)
     @JsonBackReference
     private Companies company;
 
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "serial_number", nullable = false)
+    @Column(name = "serial_number", nullable = true)
     private String serialNumber;
 
-    @Column(name = "is_deinventoried")
+    @Column(name = "is_deinventoried", nullable = false)
     private Boolean isDeinventoried = false;
 
     @Column(nullable = false)
