@@ -39,6 +39,7 @@ public class CSVService {
     }
 
 
+    @Transactional
     public void importCSVImproved(MultipartFile file) throws IOException {
         List<InventoryItem> objects = readCSVFile(file);
 

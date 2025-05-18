@@ -24,24 +24,24 @@ public class Inventories {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cost_centers_id", nullable = true)
+    @JoinColumn(name = "cost_centers_id", nullable = true) // true, since costCenters can not be parsed yet
     @JsonIgnore
     private CostCenters costCenters;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "users_id", nullable = true)
+    @JoinColumn(name = "users_id", nullable = false)
     @JsonIgnore
     private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "companies_id", nullable = true)
+    @JoinColumn(name = "companies_id", nullable = false)
     @JsonIgnore
     private Companies company;
 
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "serial_number", nullable = true)
+    @Column(name = "serial_number", nullable = false)
     private String serialNumber;
 
     @Column(name = "is_deinventoried", nullable = false)
@@ -50,7 +50,7 @@ public class Inventories {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String location;
 
     @Column(name = "created_at", nullable = false)
