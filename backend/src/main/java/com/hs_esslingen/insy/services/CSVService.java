@@ -61,25 +61,26 @@ public class CSVService {
         Set<String> csvObjectsUsernames = new HashSet<>();
         Set<String> csvObjectsCompanies = new HashSet<>();
 
+
         objects.forEach(obj -> {
             if(!obj.getOrderer().isEmpty() && !existingUsers.contains(obj.getOrderer())) csvObjectsUsernames.add(obj.getOrderer());
             if(!obj.getCompany().isEmpty() && !existingCompanies.contains(obj.getCompany())) csvObjectsCompanies.add(obj.getCompany());
         });
 
-        csvObjectsUsernames.parallelStream().forEach(user -> {
+/*        csvObjectsUsernames.parallelStream().forEach(user -> {
             usersMap.put(user, new Users(user));
         });
 
         csvObjectsCompanies.parallelStream().forEach(comp -> {
             companiesMap.put(comp, new Companies(comp));
-        });
+        });*/
 
-/*        csvObjectsUsernames.forEach(obj -> {
+        csvObjectsUsernames.forEach(obj -> {
             usersMap.put(obj, new Users(obj));
         });
         csvObjectsCompanies.forEach(obj -> {
             companiesMap.put(obj, new Companies(obj));
-        });*/
+        });
 
 
         // Create InventoryItems
@@ -128,103 +129,7 @@ public class CSVService {
         inventoriesRepository.saveAll(inventoriesList);
         commentsRepository.saveAll(commentsList);
     }
-
-
-    public void importCSV(MultipartFile file) throws IOException {
-        List<InventoryItem> objects = readCSVFile(file);
-
-        objects.stream().forEach(System.out::println);
-        System.out.println("\n--------------\nAnzahl Objekte: " + objects.size());
-
-        // To-Do: Validation of objects
-
-
-        // To-Do: Push to database
-
-
-        // Uncomment since CostCenters can not be parsed yet: Fix!
-/*        // Create costCenters that do not already exist
-        objects.stream().forEach(obj -> {
-            CostCenters costCenter = new CostCenters();
-
-            boolean exists = costCentersRepository.existsById(obj.getCostCenter());
-            if (!exists) {
-                System.out.println(obj.getCostCenter());
-                costCenter.setId(obj.getCostCenter());
-            }
-        });*/
-
-        // Create users if not already exist
-        objects.stream().forEach(obj -> {
-            Users user = new Users();
-            String username = obj.getOrderer();
-
-            // Avoid creating users from empty strings
-            if (!username.isEmpty()){
-                user.setName(obj.getOrderer());
-                boolean exists = usersRepository.exists(Example.of(user));
-                if(!exists) usersRepository.save(user);
-            }
-        });
-
-
-        // Create companies if not already exist
-        objects.forEach(obj -> {
-            Companies company = new Companies();
-            String name = obj.getCompany();
-
-            // Avoid creating companies from empty strings
-            if (!name.isEmpty()){
-                company.setName(obj.getCompany());
-                boolean exists = companiesRepository.exists(Example.of(company));
-                if(!exists) companiesRepository.save(company);
-            }
-        });
-
-        // Create InventoryItems
-        objects.forEach(obj -> {
-
-            try {
-                // 1. Create new inventory item & push to database
-
-                Users user = usersRepository.getUsersByName(obj.getOrderer());
-                Companies company = companiesRepository.getCompaniesByName(obj.getCompany());
-
-                Inventories inventoryItem = new Inventories();
-                inventoryItem.setId(Integer.parseInt(obj.getInventoryNumber()));
-                inventoryItem.setDescription(obj.getDescription());
-                inventoryItem.setSerialNumber(obj.getSerialNumber());
-                inventoryItem.setIsDeinventoried(false); // This is basically impossible to check through a .csv file
-                inventoryItem.setPrice(StringParser.parseString(obj.getPrice()));
-                inventoryItem.setLocation(obj.getLocation());
-                inventoryItem.setCreatedAt(OffsetTime.now());
-                inventoryItem.setDeletedAt(null);
-                inventoryItem.setCompany(company);
-                inventoryItem.setUser(user);
-
-
-                inventoriesRepository.save(inventoryItem);
-
-                // Create comments
-                if(!obj.getComment().isEmpty()){
-                    Comments comment = new Comments();
-                    comment.setDescription(obj.getComment());
-                    comment.setAuthor(user);
-                    comment.setCreatedAt(OffsetTime.now());
-                    comment.setInventories(inventoryItem);
-                    commentsRepository.save(comment);
-                }
-
-            }catch (ParseException e){
-                System.out.println(e.getMessage());
-
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-            }
-
-        });
-    }
-
+    
 
     /*
      * BufferReader class is the preferred way for reading files.
