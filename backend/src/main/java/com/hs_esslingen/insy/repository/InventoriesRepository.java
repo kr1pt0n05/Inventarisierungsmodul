@@ -12,5 +12,6 @@ import com.hs_esslingen.insy.model.Inventories;
 public interface InventoriesRepository extends JpaRepository<Inventories, Integer> {
 
     // Define custom query methods here if needed
+
     
 }

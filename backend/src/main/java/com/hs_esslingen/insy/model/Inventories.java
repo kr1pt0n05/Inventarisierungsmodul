@@ -9,16 +9,11 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "inventories")
@@ -28,28 +23,28 @@ public class Inventories {
     @Column(nullable = false)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "cost_centers_id", nullable = false)
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cost_centers_id", nullable = true)
+    @JsonIgnore
     private CostCenters costCenters;
 
-    @ManyToOne
-    @JoinColumn(name = "users_id", nullable = false)
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id", nullable = true)
+    @JsonIgnore
     private Users user;
 
-    @ManyToOne
-    @JoinColumn(name = "companies_id", nullable = false)
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "companies_id", nullable = true)
+    @JsonIgnore
     private Companies company;
 
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "serial_number", nullable = false)
+    @Column(name = "serial_number", nullable = true)
     private String serialNumber;
 
-    @Column(name = "is_deinventoried")
+    @Column(name = "is_deinventoried", nullable = false)
     private Boolean isDeinventoried = false;
 
     @Column(nullable = false)
@@ -64,16 +59,16 @@ public class Inventories {
     @Column(name = "deleted_at")
     private OffsetTime deletedAt = null;
 
-    @OneToMany(mappedBy = "inventories", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "inventories", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Comments> comments;
 
-    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Extensions> extensions;
 
-    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<InventoryTagRelations> tagRelations = new HashSet<>();
 
     // Konstruktor

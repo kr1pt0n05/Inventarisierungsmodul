@@ -55,6 +55,7 @@ public class InventoriesController {
     // Ein Element der Inventarisierungsliste abrufen
     @GetMapping("/{id}")
     public ResponseEntity<Inventories> getInventoryById(@PathVariable ("id") Integer id) {
+
         Optional<Inventories> inventory = inventoriesRepository.findById(id);
         if (inventory.isPresent()) {
             return new ResponseEntity<>(inventory.get(), HttpStatus.OK);
