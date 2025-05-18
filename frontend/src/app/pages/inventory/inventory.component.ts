@@ -12,6 +12,10 @@ import {AccordionComponent} from '../../components/accordion/accordion.component
 import {MatButton} from '@angular/material/button';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ChipV2Component} from '../../components/chip-v2/chip-v2.component';
+import {InventoriesService} from '../../services/inventories.service';
+import {InventoryItem} from '../../models/inventory-item';
+import {Observable} from 'rxjs';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-inventory',
@@ -22,7 +26,7 @@ import {ChipV2Component} from '../../components/chip-v2/chip-v2.component';
     InventoryListComponent,
     AccordionComponent,
     MatButton,
-    ChipV2Component
+    ChipV2Component,
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'

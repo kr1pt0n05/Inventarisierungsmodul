@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import {MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core';
-import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClient, withFetch} from '@angular/common/http';
 import {provideOAuthClient} from 'angular-oauth2-oidc';
 
 
@@ -15,7 +15,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideNativeDateAdapter(),
     {provide: MAT_DATE_LOCALE, useValue: 'de-DE'},
-    provideHttpClient(),
+    provideHttpClient(
+      withFetch()
+    ),
     provideOAuthClient()
   ]
 };

@@ -67,14 +67,6 @@ public class CSVService {
             if(!obj.getCompany().isEmpty() && !existingCompanies.contains(obj.getCompany())) csvObjectsCompanies.add(obj.getCompany());
         });
 
-/*        csvObjectsUsernames.parallelStream().forEach(user -> {
-            usersMap.put(user, new Users(user));
-        });
-
-        csvObjectsCompanies.parallelStream().forEach(comp -> {
-            companiesMap.put(comp, new Companies(comp));
-        });*/
-
         csvObjectsUsernames.forEach(obj -> {
             usersMap.put(obj, new Users(obj));
         });
@@ -129,7 +121,7 @@ public class CSVService {
         inventoriesRepository.saveAll(inventoriesList);
         commentsRepository.saveAll(commentsList);
     }
-    
+
 
     /*
      * BufferReader class is the preferred way for reading files.
