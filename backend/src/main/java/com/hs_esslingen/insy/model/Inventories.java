@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -30,17 +30,17 @@ public class Inventories {
 
     @ManyToOne
     @JoinColumn(name = "cost_centers_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties("inventories")
     private CostCenters costCenters;
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties({"inventories", "histories", "comments"})
     private Users user;
 
     @ManyToOne
     @JoinColumn(name = "companies_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties("inventories")
     private Companies company;
 
     @Column(nullable = false)
@@ -161,16 +161,9 @@ public class Inventories {
     public OffsetTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(OffsetTime createdAt) {
-        this.createdAt = createdAt;
-    }
     public OffsetTime getDeletedAt() {
         return deletedAt;
     }
-    public void setDeletedAt(OffsetTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
     public List<Comments> getComments() {
         return comments;
     }
@@ -188,6 +181,9 @@ public class Inventories {
         this.comments.remove(comment);
         comment.setInventories(null);
     }
+    public void setCreatedAt(OffsetTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public List<Extensions> getExtensions() {
         return extensions;
@@ -202,6 +198,10 @@ public class Inventories {
     public void removeExtension(Extensions extension) {
         this.extensions.remove(extension);
         extension.setInventories(null);
+    }
+    public void delete() {
+        this.deletedAt = OffsetTime.now();
+        this.isDeinventoried = true;
     }
 
     public Set<InventoryTagRelations> getTagRelations() {

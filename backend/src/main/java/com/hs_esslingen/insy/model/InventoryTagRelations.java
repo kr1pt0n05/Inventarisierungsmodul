@@ -39,6 +39,7 @@ public class InventoryTagRelations {
 
     // Konstruktor
     public InventoryTagRelations() {
+        this.createdAt = LocalDateTime.now();
     }
     public InventoryTagRelations(Inventories inventory, Tags tag) {
         this.inventory = inventory;

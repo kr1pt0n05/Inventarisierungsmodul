@@ -11,6 +11,6 @@ import com.hs_esslingen.insy.model.CostCenters;
 public interface CostCentersRepository extends JpaRepository<CostCenters, Integer> {
     // Custom query methods can be defined here if needed
     @Query("SELECT c FROM CostCenters c WHERE c.description = ?1")
-    CostCenters findByDescriptionContainingCostCenters(String name);
+    CostCenters findByName(String name);
 
 }
