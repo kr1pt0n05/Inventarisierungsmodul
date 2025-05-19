@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DetailsComponent } from './details.component';
 import { ComponentRef } from '@angular/core';
 
-describe('HomepageComponent', () => {
+describe('DetailsComponent', () => {
   let component: DetailsComponent;
   let componentRef: ComponentRef<DetailsComponent>;
   let fixture: ComponentFixture<DetailsComponent>;
@@ -27,4 +27,5 @@ describe('HomepageComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
 });

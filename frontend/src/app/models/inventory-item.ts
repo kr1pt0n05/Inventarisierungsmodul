@@ -8,4 +8,5 @@ export interface InventoryItem {
   serialNumber: string,
   location: string,
   orderer: string,
+  [key: string]: any
 }

@@ -60,7 +60,7 @@ export class DynamicListComponent implements AfterViewInit{
   items!: MatTableDataSource<object>;
   @ViewChild(MatSort) sort!: MatSort;
 
-  ngOnInit() {
+  ngOnChanges() {
     this.items = new MatTableDataSource(this.tableContent());
   }
 

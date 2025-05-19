@@ -2,13 +2,13 @@
 
 <div class="flex flex-col p-8 gap-12">
     <!-- Header Section -->
-    <div class="flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <button class="p-2 border-2 border-red-600">zurück</button> <!-- Back Button placeholder -->
-            <h1 class="font-semibold text-2xl">Tischnetzteil abc 123</h1>
-            <h2>471938</h2>
+    <div class="flex justify-between">
+        <div class="flex flex-wrap items-center gap-4">
+            <button class="p-2 max-h-10 border-2 border-red-600 flex">zurück</button> <!-- Back Button placeholder -->
+            <h1 class="font-semibold text-2xl">{{inventoryItem().productDescription}}</h1>
+            <h2>{{inventoryItem().inventoryNumber}}</h2>
         </div>
-        <div class="p-2 bg-red-600">bearbeiten</div> <!-- Placeholder for edit button -->
+        <div class="p-2 max-h-10 bg-red-600">bearbeiten</div> <!-- Placeholder for edit button -->
     </div>
 
     <!-- Divider -->
@@ -17,44 +17,36 @@
     <!-- Details Section -->
     <div class="flex gap-16">
         <div class="flex flex-col">
-            <!-- todo: create or use subcomponents instead of placeholder data -->
-            <div class="p-2">Kostenstelle</div>
-            <div class="p-2">Inventarnummer</div>
-            <div class="p-2">Firma</div>
-            <div class="p-2">Preis</div>
-            <div class="p-2">Inventarisiert am</div>
-            <div class="p-2">Seriennummer</div>
-            <div class="p-2">Standort/Nutzer:in</div>
-            <div class="p-2">Bestellt von</div>
+            <div *ngFor="let field of getItemColumnIds()" class="p-2">{{inventoryItemColumns.get(field)}}</div>
         </div>
         <div class="flex flex-col">
-            <div class="p-2">KG1281</div>
-            <div class="p-2">471938</div>
-            <div class="p-2">Computerteile GmbH</div>
-            <div class="p-2">192,20 €</div>
-            <div class="p-2">12.01.2001</div>
-            <div class="p-2">SFK490LF</div>
-            <div class="p-2">F1.405</div>
-            <div class="p-2">Prof. Huber</div>
+            <div *ngFor="let field of getItemColumnIds()" class="p-2">{{inventoryItem()[field]}}
+                <span *ngIf="field === 'price'">€</span>
+            </div>
         </div>
     </div>
 
+    <!-- Additional Data -->
     <mat-expansion-panel *ngFor="let name of panelNames" #Panels>
         <mat-expansion-panel-header>
             <mat-panel-title class="text-xl">{{name}}</mat-panel-title>
         </mat-expansion-panel-header>
 
         <!-- Panel content -->
-        <app-dynamic-list *ngIf="name !== 'Tags' && panelContent.get(name)!().length"
-            [tableContent]="panelContent.get(name)!()" [columns]="panelContentMap.get(name)!">
+        <app-dynamic-list *ngIf="name !== 'Tags' && panelContent.get(name)!().length; else noData"
+            [tableContent]="panelContent.get(name)!()" [columns]="panelColumnMaps.get(name)!">
         </app-dynamic-list>
 
-        <p *ngIf="name !== 'Tags' && panelContent.get(name)!().length === 0">Keine {{name}} vorhanden</p>
+        <mat-chip-set *ngIf="name === 'Tags'">
+            <ng-template *ngIf="tags()!.length === 0; else noData">
+                <mat-chip *ngFor="let tag of tags()" role="listitem">{{tag}}</mat-chip>
+            </ng-template>
+        </mat-chip-set>
 
-        <!-- todo: tags diplay -->
-        <div *ngIf="name === 'Tags'">
-            Hier könnten Tags stehen
-        </div>
+        <ng-template #noData>
+            <p>Keine {{name}} vorhanden.</p>
+        </ng-template>
+
     </mat-expansion-panel>
 
 </div>

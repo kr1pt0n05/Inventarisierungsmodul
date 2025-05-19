@@ -18,7 +18,7 @@ import { MatChipsModule } from '@angular/material/chips';
     NgIf,
     MatChipsModule,
     DynamicListComponent
-],
+  ],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css'
 })
@@ -27,14 +27,22 @@ export class DetailsComponent {
 
   @ViewChildren('Panels') panels!: QueryList<MatExpansionPanel>;
 
-  inventoryItem = input<InventoryItem>();
+  inventoryItem = input<InventoryItem>(
+    {
+      costCenter: 123,
+      inventoryNumber: 123456,
+      productDescription: 'Artikelbeschreibung',
+      company: 'Firma',
+      price: 0,
+      date: '27.05.2023',
+      serialNumber: '0987654321',
+      location: 'F1.312',
+      orderer: 'Name'
+    }
+  );
   extensions = input<InventoryExtension[]>([]);
-  notes = input<InventoryItemNotes[]>([
-    { note: 'test',
-      date: '12134',
-      author: 'dg' }
-  ]);
-  tags = input<string[]>();
+  notes = input<InventoryItemNotes[]>([]);
+  tags = input<string[]>([]);
   changes = input([], { transform: mergeChangeLocation });
 
   panelContent = new Map<string, any>([
@@ -46,6 +54,16 @@ export class DetailsComponent {
 
   // Defines the column headers for the different panels
   // The keys of the maps are the keys of the objects in the arrays
+  inventoryItemColumns = new Map<string, string>([
+    ['costCenter', 'Kostenstelle'],
+    ['inventoryNumber', 'Inventarnummer'],
+    ['company', 'Firma'],
+    ['price', 'Preis'],
+    ['date', 'Bestelldatum'],
+    ['serialNumber', 'Seriennummer'],
+    ['location', 'Standort/Nutzer:in'],
+    ['orderer', 'Bestellt von'],
+  ]);
   extensionColumns = new Map<string, string>([
     ['productDescription', 'Erweiterungstyp'],
     ['company', 'Bestellt bei'],
@@ -68,7 +86,7 @@ export class DetailsComponent {
     ['changedBy', 'Geändert von']
   ]);
 
-  panelContentMap = new Map<string, Map<string, string>>([
+  panelColumnMaps = new Map<string, Map<string, string>>([
     ['Erweiterungen', this.extensionColumns],
     ['Notizen', this.notesColumns],
     ['Historie', this.changesColumns]
@@ -82,6 +100,13 @@ export class DetailsComponent {
     });
   }
 
+  /**
+* Returns the attribute names (column IDs) as an array.
+* @returns {string[]} Array of column IDs
+*/
+  getItemColumnIds(): string[] {
+    return Array.from(this.inventoryItemColumns.keys());
+  }
 
 }
 
