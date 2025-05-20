@@ -1,6 +1,6 @@
 package com.hs_esslingen.insy.configuration;
 
-
+// Not used anymore
 // Used to store attributes of a PATCH request
 // to be used in the InventoriesController.updateInventory method
 // to update only the specified fields of an inventory item

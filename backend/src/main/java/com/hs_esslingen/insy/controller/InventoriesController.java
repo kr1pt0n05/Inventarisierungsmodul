@@ -2,10 +2,17 @@ package com.hs_esslingen.insy.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import com.hs_esslingen.insy.configuration.PatchFieldDTO;
 
+import com.hs_esslingen.insy.configuration.InventoryCreateRequest;
+import com.hs_esslingen.insy.configuration.InventorySpecification;
+
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hs_esslingen.insy.model.Companies;
@@ -48,8 +56,18 @@ public class InventoriesController {
 
     // Alle Elemente der Inventarisierungsliste abrufen
     @GetMapping
-    public List<Inventories> getAllInventories() {
-        return inventoriesRepository.findAll();
+    public Page<Inventories> getAllInventories(
+        @RequestParam(required = false) List<Integer> tags,
+        @RequestParam(required = false) Integer minId,
+        @RequestParam(required = false) Integer maxId,
+        @RequestParam(required = false) Boolean isDeinventoried,
+        @PageableDefault(size = 50) Pageable pageable) {
+
+        Specification<Inventories> spec = Specification
+        .where(InventorySpecification.hasTagId(tags))
+        .and(InventorySpecification.idBetween(minId, maxId))
+        .and(InventorySpecification.isDeinventoried(isDeinventoried));
+        return inventoriesRepository.findAll(spec, pageable);
     }
 
     // Ein Element der Inventarisierungsliste abrufen
@@ -66,12 +84,77 @@ public class InventoriesController {
 
     // Ein Element der Inventarisierungsliste hinzufügen
     @PostMapping
-    public ResponseEntity<Inventories> addInventory(@RequestBody Inventories inventory) {
+    public ResponseEntity<Inventories> addInventory(@RequestBody InventoryCreateRequest request) {
+
+        // Inventargegenstand mit ID schon vorhanden?
+        if(inventoriesRepository.existsById(request.inventories_id)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // ID bereits vorhanden
+        }
+
         try {
-            Inventories inventories = inventoriesRepository.save(new Inventories (inventory.getId(), inventory.getCostCenters(), inventory.getUser(), inventory.getCompany(), inventory.getDescription(), inventory.getSerialNumber(), inventory.getPrice(), inventory.getLocation()));
-            return new ResponseEntity<>(inventories, HttpStatus.CREATED);
+            // CostCenter holen oder erstellen
+            CostCenters costCenter = costCentersRepository.findByName(request.cost_center);
+            if (costCenter == null) {
+                costCenter = new CostCenters(request.cost_center);
+                costCentersRepository.save(costCenter);
+            }
+
+            // Company holen oder erstellen
+            Companies company = companiesRepository.findByName(request.company)
+                .orElseGet(() -> companiesRepository.save(new Companies(request.company)));
+
+            // Existiert der User in der Datenbank?
+            Users user = null;
+            // Wenn user als integer-id übergeben
+            if (request.orderer instanceof Integer userId) {
+                user = usersRepository.findById(userId).orElse(null);
+                if (user == null) {
+                    return ResponseEntity.badRequest().body(null); // ID ungültig
+                }
+            // Wenn user als string übergeben
+            } else if (request.orderer instanceof String userName) {
+                user = usersRepository.findByName(userName)
+                    .orElseGet(() -> usersRepository.save(new Users(userName)));
+            } else {
+                return ResponseEntity.badRequest().build(); // falscher Typ
+            }
+
+            Inventories inventory = new Inventories(
+                request.inventories_id,
+                costCenter,
+                user,
+                company,
+                request.inventories_description,
+                request.inventories_serial_number,
+                request.inventories_price,
+                request.inventories_location
+            );
+
+            // Wenn Tags übergeben wurden: Tags mit inventar verknüpfen
+            if (request.tags != null) {
+                for (Integer tagId : request.tags) {
+                    // Ist die Tag-Id gültig?
+                    Tags tag = tagsRepository.findById(tagId).orElse(null);
+                    if (tag != null) {
+                        // Verknüpfung zwischen Inventar und Tag erstellen
+                        // und in die Listen der beiden Objekte einfügen
+                        InventoryTagRelations rel = new InventoryTagRelations();
+                        rel.setInventory(inventory);
+                        rel.setTag(tag);
+
+                        inventory.getTagRelations().add(rel);
+                        tag.getInventoryRelations().add(rel);
+                    }
+                }
+            }
+
+            inventoriesRepository.save(inventory);
+            user.addInventory(inventory);
+            company.addInventory(inventory);
+            return new ResponseEntity<>(inventory, HttpStatus.CREATED);
+
         } catch (Exception e) {
-            // TODO: handle exception
+            e.printStackTrace(); // zum debuggen
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -87,7 +170,6 @@ public class InventoriesController {
             inventoriesRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            // TODO: handle exception
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -97,31 +179,32 @@ public class InventoriesController {
     // und dann in PatchFieldDTO fields gespeichert
     // und an die Inventarisierungsservice-Methode weitergegeben
     @PatchMapping("/{id}")
-    public ResponseEntity<Inventories> updateInventory(@PathVariable Integer id, @RequestBody List<PatchFieldDTO> fields) {
-        Optional<Inventories> inventoryoptional = inventoriesRepository.findById(id);
-        if (inventoryoptional.isPresent()) {
-            Inventories inventory = inventoryoptional.get();
-            for (PatchFieldDTO field : fields) {
-                String fieldName = field.getFieldName();
-                Object fieldValue = field.getFieldValue();
-                if ("null".equals(fieldValue)) {
-                    fieldValue = null;
-                }
-                    
-                switch (fieldName) {
+    public ResponseEntity<Inventories> updateInventory(@PathVariable Integer id, @RequestBody List<Map<String, Object>> patchDataList) {
 
+        Optional<Inventories> inventoryOptional = inventoriesRepository.findById(id);
+        if (inventoryOptional.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Inventories inventory = inventoryOptional.get();
+
+        for (Map<String, Object> patchData : patchDataList) {
+            for (Map.Entry<String, Object> entry : patchData.entrySet()) {
+                String fieldName = entry.getKey();
+                Object fieldValue = entry.getValue();
+
+                switch (fieldName) {
                     case "costCenter":
-                        if(field.getFieldValue() != null) {
+                        if (fieldValue != null) {
                             // Existiert die Kostenstelle bereits in der Datenbank?
-                            CostCenters costCenter = costCentersRepository.findByDescriptionContainingCostCenters(field.getFieldValue().toString());
+                            CostCenters costCenter = costCentersRepository.findByName(fieldValue.toString());
                             // Wenn nicht, erstelle eine neue Kostenstelle
                             if (costCenter == null) {
-                                costCenter = new CostCenters(field.getFieldValue().toString());
+                                costCenter = new CostCenters(fieldValue.toString());
                                 costCentersRepository.save(costCenter);
                             }
                             inventory.setCostCenters(costCenter);
                         }
-                        inventory.setCostCenters((CostCenters) fieldValue);
                         break;
                     case "inventories_description":
                         if (fieldValue != null) {
@@ -129,21 +212,20 @@ public class InventoriesController {
                         }
                         break;
                     case "company":
-                        if(field.getFieldValue() != null) {
-                            
+                        if (fieldValue != null) {
                             Companies company = companiesRepository
-                                // Existiert die Firma bereits in der Datenbank?
-                                .findByName(field.getFieldValue().toString())
-                                // Wenn nicht, erstelle eine neue Firma
-                                .orElseGet(() -> {
-                                    Companies newCompany = new Companies(field.getFieldValue().toString());
-                                    return companiesRepository.save(newCompany);
-                                }); 
+                                    // Existiert die Firma bereits in der Datenbank?
+                                    .findByName(fieldValue.toString())
+                                    // Wenn nicht, erstelle eine neue Firma
+                                    .orElseGet(() -> {
+                                        Companies newCompany = new Companies(fieldValue.toString());
+                                        return companiesRepository.save(newCompany);
+                                    });
                             // Setze die Firma in der Inventarisierung
                             inventory.setCompany(company);
                         }
                         break;
-                    
+
                     case "inventories_price":
                         if (fieldValue != null) {
                             inventory.setPrice(new BigDecimal(fieldValue.toString()));
@@ -162,64 +244,29 @@ public class InventoriesController {
                     case "orderer":
                         // Annahme: user-id wird übergeben
                         // und nicht der username
-                        if (field.getFieldValue() != null) {
+                        if (fieldValue != null) {
                             Users user = usersRepository.findById((Integer) fieldValue).orElse(null);
                             // Existiert der User bereits in der Datenbank?
                             if (user != null) {
                                 inventory.setUser(user);
                             } else {
-                                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+                                // Wenn nicht, erstelle einen neuen User
+                                user = new Users();
+                                user.setId((Integer) fieldValue);
+                                usersRepository.save(user);
+                                inventory.setUser(user);
                             }
                         }
                         break;
-                    case "tags":
-                        if (fieldValue != null){
-                            List<String> tagInputs = (List<String>) fieldValue;
-                            for (String tagInput : tagInputs) {
-                                Tags tag = null;
-
-                                try {
-                                    Integer tagId = Integer.parseInt(tagInput);
-                                    tag = tagsRepository.findById(tagId).orElse(null);
-                                } catch (NumberFormatException e) {
-                                    // kein Integer, also Name
-                                }
-
-                                if (tag == null) {
-                                    tag = tagsRepository.findByName(tagInput).orElse(null);
-                                    if (tag == null) {
-                                        tag = new Tags(tagInput);
-                                        tagsRepository.save(tag);
-                                    }
-                                }
-
-                                // Überprüfen, ob die Beziehung bereits existiert
-                                Tags finalTag = tag;
-
-                                boolean alreadyLinked = inventory.getTagRelations().stream()
-                                    .anyMatch(rel -> rel.getTag().equals(finalTag));
-
-                                if (!alreadyLinked) {
-                                    InventoryTagRelations rel = new InventoryTagRelations();
-                                    rel.setInventory(inventory);
-                                    rel.setTag(finalTag);
-
-                                    inventory.getTagRelations().add(rel);
-                                    finalTag.getInventoryRelations().add(rel);
-                                }
-                            }
-                        }
-                        break;
-
-                    default:
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                        default:
+                            // Unbekanntes Feld, ignoriere es
+                            break;
                 }
-            }
-            Inventories updatedInventory = inventoriesRepository.save(inventory);
-            return new ResponseEntity<>(updatedInventory, HttpStatus.OK);
-        } else {
-            return  new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }   
         }
+        Inventories updatedInventory = inventoriesRepository.save(inventory);
+        return new ResponseEntity<>(updatedInventory, HttpStatus.OK);
     }
     @PutMapping("/{id}")
     public ResponseEntity<String> putMethodName(@PathVariable Integer id, @RequestBody Inventories entity) {

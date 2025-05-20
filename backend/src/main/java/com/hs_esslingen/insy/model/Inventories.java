@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -23,19 +20,19 @@ public class Inventories {
     @Column(nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cost_centers_id", nullable = true) // true, since costCenters can not be parsed yet
-    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "cost_centers_id", nullable = false)
+    @JsonIgnoreProperties("inventories")
     private CostCenters costCenters;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id", nullable = false)
-    @JsonIgnore
+    @JsonIgnoreProperties({"inventories", "histories", "comments"})
     private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "companies_id", nullable = false)
-    @JsonIgnore
+    @JsonIgnoreProperties("inventories")
     private Companies company;
 
     @Column(nullable = false)
@@ -156,16 +153,9 @@ public class Inventories {
     public OffsetTime getCreatedAt() {
         return createdAt;
     }
-    public void setCreatedAt(OffsetTime createdAt) {
-        this.createdAt = createdAt;
-    }
     public OffsetTime getDeletedAt() {
         return deletedAt;
     }
-    public void setDeletedAt(OffsetTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
     public List<Comments> getComments() {
         return comments;
     }
@@ -183,6 +173,9 @@ public class Inventories {
         this.comments.remove(comment);
         comment.setInventories(null);
     }
+    public void setCreatedAt(OffsetTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public List<Extensions> getExtensions() {
         return extensions;
@@ -197,6 +190,10 @@ public class Inventories {
     public void removeExtension(Extensions extension) {
         this.extensions.remove(extension);
         extension.setInventories(null);
+    }
+    public void delete() {
+        this.deletedAt = OffsetTime.now();
+        this.isDeinventoried = true;
     }
 
     public Set<InventoryTagRelations> getTagRelations() {
