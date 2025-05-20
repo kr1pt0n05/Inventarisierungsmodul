@@ -1,10 +1,14 @@
+import {Company} from './company';
+import {User} from './user';
+
 export interface InventoryItem {
   // costCenter: number,
   id: number,
+  user: User,
   description: string,
-  company: string,
+  company: Company,
   price: number,
-  date: string,
+  createdAt: string,
   serialNumber: string,
   location: string,
   orderer: string,

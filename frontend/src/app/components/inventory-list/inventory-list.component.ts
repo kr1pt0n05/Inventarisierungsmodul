@@ -13,6 +13,7 @@ import {InventoryItem} from '../../models/inventory-item';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {InventoriesService} from '../../services/inventories.service';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-inventory-list',
