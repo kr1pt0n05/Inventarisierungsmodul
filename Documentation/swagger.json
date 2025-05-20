@@ -54,15 +54,15 @@
         "description": "Neues Gerät/Software inventarisieren.",
         "operationId": "createItem",
         "requestBody": {
-          "description": "Neues Gerät inventarisieren. Ausgewählte Tags werden beim Erstellen in einem JSON-Array übergeben. Falls keine Tags ausgewählt wurden wird ein leeres JSON-Array übergeben.",
+          "description": "Neues Gerät inventarisieren. Ausgewählte Tags werden beim Erstellen in einem JSON-Array übergeben. Falls keine Tags ausgewählt wurden wird ein leeres JSON-Array übergeben. inventories_id muss eindeutig sein, sonst wird ein Fehler 400 zurückgegeben. Bei der Erstellung wird ein Inventar-Objekt zurückgegeben, das die ID des neu erstellten Objekts enthält. .\n Infos zu Feldern:\n  - inventories_id: Nur noch nicht verwendete integer id's sind möglich\n  - company: Die company kann mit ihrer id übergeben werden, wenn sie bereits erstellt wurde. Wenn der sie noch nicht erstellt wurde, kann sie als String übergeben werden. Dann wird ein neuer Eintrag in dem companies-table erstellt und dem Inventargegenstand zugewiesen.  \n  - company\n",  
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ItemCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -1801,8 +1801,14 @@
             "example": "F99.234"
           },
           "orderer": {
-            "type": "string",
-            "example": "Peter"
+            "type": "integer",
+            "example": 5
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
           }
         }
       },
@@ -1891,7 +1897,10 @@
             "type": "array",
             "items": {
               "type": "integer"
-            }
+            },
+            "example": [
+              1, 2
+            ]
           }
         }
       },

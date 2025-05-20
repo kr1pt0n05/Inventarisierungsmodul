@@ -2,11 +2,9 @@ import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {
   Component,
-  computed, effect,
-  EventEmitter, input,
-  Input,
+  computed,
+  input,
   model,
-  Output,
   signal
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
@@ -54,13 +52,8 @@ export class ChipComponent {
   inputPlaceholder = input<string>("Put some placeholder here...");
   options = input<string[]>(["Example 1", "Example 2", "Example 3"]);
 
-  @Output()
-  changes: EventEmitter<string[]> = new EventEmitter();
 
   constructor(private announcer: LiveAnnouncer) {
-    effect(() => {
-      this.changes.emit(this.selectedOptions())
-    });
   }
 
   add(event: MatChipInputEvent): void {

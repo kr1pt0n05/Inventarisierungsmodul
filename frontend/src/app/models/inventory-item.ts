@@ -1,7 +1,7 @@
 export interface InventoryItem {
-  costCenter: number,
-  inventoryNumber: number,
-  productDescription: string,
+  // costCenter: number,
+  id: number,
+  description: string,
   company: string,
   price: number,
   date: string,

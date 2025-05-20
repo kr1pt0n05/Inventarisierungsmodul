@@ -6,22 +6,22 @@
 
   <table mat-table [dataSource]="inventoryItems" matSort>
 
-    <!-- Kostenstelle Column -->
+<!--    &lt;!&ndash; Kostenstelle Column &ndash;&gt;
     <ng-container matColumnDef="costCenter">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Kst/Lab </th>
       <td mat-cell *matCellDef="let element"> {{element.costCenter}} </td>
-    </ng-container>
+    </ng-container>-->
 
     <!-- Inventarnummer Column -->
-    <ng-container matColumnDef="inventoryNumber">
+    <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Inventarnummer </th>
-      <td mat-cell *matCellDef="let element"> {{element.inventoryNumber}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
     </ng-container>
 
     <!-- Produktbeschreibung Column -->
-    <ng-container matColumnDef="productDescription">
+    <ng-container matColumnDef="description">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Produktbeschreibung </th>
-      <td mat-cell *matCellDef="let element"> {{element.productDescription}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.description}} </td>
     </ng-container>
 
     <!-- Unternehmen Column -->
