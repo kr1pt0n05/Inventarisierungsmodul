@@ -93,7 +93,6 @@ public class CSVService {
                 inventoryItem.setPrice(StringParser.parseString(obj.getPrice()));
                 inventoryItem.setLocation(obj.getLocation());
                 inventoryItem.setCreatedAt(now);
-                inventoryItem.setDeletedAt(null);
                 inventoryItem.setCompany(company);
                 inventoryItem.setUser(user);
 

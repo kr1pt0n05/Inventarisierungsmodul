@@ -51,7 +51,8 @@ export class InventoryListComponent implements AfterViewInit{
 
   ngOnInit() {
     this.inventoryService.getInventories().subscribe((inventories) =>{
-      this.inventoryItems.data = inventories;
+      this.inventoryItems.data = inventories.content;
+      console.log(inventories.content);
     })
   }
 

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -21,16 +23,16 @@ public class Inventories {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "cost_centers_id", nullable = false)
+    @JoinColumn(name = "cost_centers_id", nullable = true)
     @JsonIgnoreProperties("inventories")
     private CostCenters costCenters;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
     @JsonIgnoreProperties({"inventories", "histories", "comments"})
     private Users user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "companies_id", nullable = false)
     @JsonIgnoreProperties("inventories")
     private Companies company;

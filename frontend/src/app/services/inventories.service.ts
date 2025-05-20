@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {InventoryItem} from '../models/inventory-item';
+import {Inventories} from '../models/inventories';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class InventoriesService {
     this.http = http;
   }
 
-  getInventories(): Observable<InventoryItem[]> {
-    return this.http.get<InventoryItem[]>(`http://localhost:8080/inventories`);
+  getInventories(): Observable<Inventories> {
+    return this.http.get<Inventories>(`http://localhost:8080/inventories`);
   }
 }
