@@ -27,7 +27,7 @@
     <!-- Unternehmen Column -->
     <ng-container matColumnDef="company">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Unternehmen </th>
-      <td mat-cell *matCellDef="let element"> {{element.company}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.company.name}} </td>
     </ng-container>
 
     <!-- Preis Column -->
@@ -39,7 +39,7 @@
     <!-- Datum Column -->
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Datum </th>
-      <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.createdAt}} </td>
     </ng-container>
 
     <!-- Seriennummer Column -->
@@ -57,7 +57,7 @@
     <!-- Besteller Column -->
     <ng-container matColumnDef="orderer">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Besteller </th>
-      <td mat-cell *matCellDef="let element"> {{element.orderer}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.user.name}} </td>
     </ng-container>
 
 
