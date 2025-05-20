@@ -21,7 +21,7 @@ public class Comments {
     private Inventories inventories;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
     @JsonBackReference
     private Users author;
 
