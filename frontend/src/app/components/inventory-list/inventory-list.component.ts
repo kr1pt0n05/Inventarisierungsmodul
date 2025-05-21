@@ -45,15 +45,25 @@ export class InventoryListComponent implements AfterViewInit{
   }
 
   displayedColumns = ['id', 'description', 'company', 'price', 'date', 'serialNumber', 'location', 'orderer'];
-  inventoryItems = new MatTableDataSource<InventoryItem>();
+  inventoryItems = new MatTableDataSource<any>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit() {
     this.inventoryService.getInventories().subscribe((inventories) =>{
-      this.inventoryItems.data = inventories.content;
-      console.log(inventories.content);
+      this.inventoryItems.data = inventories.content.map((item: InventoryItem) => ({
+        id: item.id,
+        user: item.user.name,
+        description: item.description,
+        company: item.company.name,
+        price: item.price,
+        createdAt: item.createdAt,
+        serialNumber: item.serialNumber,
+        location: item.location,
+        orderer: item.user.name,
+      }));
+      console.log(this.inventoryItems.data);
     })
   }
 
@@ -66,5 +76,7 @@ export class InventoryListComponent implements AfterViewInit{
     const filterValue = (event.target as HTMLInputElement).value;
     this.inventoryItems.filter = filterValue.trim().toLowerCase();
   }
+
+
 
 }
