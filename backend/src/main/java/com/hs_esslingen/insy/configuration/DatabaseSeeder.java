@@ -2,7 +2,6 @@
 package com.hs_esslingen.insy.configuration;
 
 import java.math.BigDecimal;
-import java.time.OffsetTime;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -84,7 +83,6 @@ public class DatabaseSeeder implements CommandLineRunner {
         inv.setCompany(comp1);  
         inv.setCostCenters(costCenter); 
         inv.setUser(testUser); 
-        inv.setCreatedAt(OffsetTime.now());
 
         inventoriesRepository.save(inv);
 
