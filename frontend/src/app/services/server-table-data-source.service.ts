@@ -47,7 +47,6 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   // Subscribe to its PageEvent and call API with selected pages, every time user changes pages.
   set paginator(paginator: MatPaginator) {
     this._paginator = paginator;
-    this._paginator.length = 1000; // CHANGE THIS WITH AN API CALL
     this._paginator.page.subscribe((page: PageEvent) => {
         this.fetchData(page.pageIndex, page.pageSize);
     })
@@ -67,6 +66,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
         location: item.location,
         orderer: item.user.name,
       }));
+      if(this._paginator) this._paginator.length = inventories.totalElements;
     })
   }
 
