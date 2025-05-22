@@ -18,8 +18,10 @@ interface Page{
 })
 export class ServerTableDataSourceService<T> extends DataSource<T> {
 
+
   // Data obtained by an API. Containts current page and +-2 prefetched Pages.
   private readonly _data: BehaviorSubject<any[]>;
+
 
   // API
   private _service: InventoriesService  = inject(InventoriesService);
