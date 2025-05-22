@@ -14,7 +14,7 @@ import {MatSort} from '@angular/material/sort';
 export class ServerTableDataSourceService<T> extends DataSource<T> {
 
   // Data obtained by an API and passed to Mat-Table
-  private readonly _data: BehaviorSubject<any[]>;
+  private readonly _data: BehaviorSubject<T[]>;
 
   // API
   private _service: InventoriesService  = inject(InventoriesService);
