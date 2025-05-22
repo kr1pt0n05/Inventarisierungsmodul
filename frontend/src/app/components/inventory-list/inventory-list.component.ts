@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -6,10 +6,9 @@ import {
   MatHeaderCell,
   MatHeaderCellDef,
   MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
-  MatTable, MatTableDataSource,
+  MatTable,
 } from '@angular/material/table';
-import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/paginator';
-import {InventoryItem} from '../../models/inventory-item';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {InventoriesService} from '../../services/inventories.service';
@@ -42,27 +41,15 @@ import {ServerTableDataSourceService} from '../../services/server-table-data-sou
 })
 export class InventoryListComponent implements AfterViewInit{
 
-  constructor(private inventoryService: InventoriesService) {
-    this.inventoryService = inventoryService;
-  }
-
   displayedColumns = ['id', 'description', 'company', 'price', 'date', 'serialNumber', 'location', 'orderer'];
   inventoryItems = new ServerTableDataSourceService<any>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  ngOnInit() {
-  }
-
   ngAfterViewInit() {
     this.inventoryItems.paginator = this.paginator;
     //this.inventoryItems.sort = this.sort;
-  }
-
-  filterInventoryItems(event: Event){
-    const filterValue = (event.target as HTMLInputElement).value;
-/*    this.inventoryItems.filter = filterValue.trim().toLowerCase();*/
   }
 
 }

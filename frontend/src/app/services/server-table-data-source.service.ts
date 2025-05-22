@@ -8,12 +8,17 @@ import {InventoryItem} from '../models/inventory-item';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 
+interface Page{
+  pageIndex: number,
+  pageSize: number,
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ServerTableDataSourceService<T> extends DataSource<T> {
 
-  // Data obtained by an API and passed to Mat-Table
+  // Data obtained by an API. Containts current page and +-2 prefetched Pages.
   private readonly _data: BehaviorSubject<any[]>;
 
   // API
@@ -21,6 +26,12 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
 
   // Paginator
   private _paginator: MatPaginator | undefined;
+
+  // Cache to track loaded pages and their corresponding page sizes.
+  // When the paginator navigates to a page, it checks this cache.
+  // If the page exists, it slices `_data` and assigns it to `_paginateData` for use in the Mat-Table.
+  // If the page is not cached, a new API call will be triggered to fetch the data.
+  private _pageCache: Map<Page, any> = new Map();
 
   constructor() {
     super();
