@@ -8,12 +8,13 @@ import {
   MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
   MatTable, MatTableDataSource,
 } from '@angular/material/table';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {MatPaginator, MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {InventoryItem} from '../../models/inventory-item';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {InventoriesService} from '../../services/inventories.service';
 import {DatePipe} from '@angular/common';
+import {ServerTableDataSourceService} from '../../services/server-table-data-source.service';
 
 @Component({
   selector: 'app-inventory-list',
@@ -34,6 +35,7 @@ import {DatePipe} from '@angular/common';
     MatInput,
     MatFormField,
     MatLabel,
+    DatePipe,
   ],
   templateUrl: './inventory-list.component.html',
   styleUrl: './inventory-list.component.css'
@@ -45,38 +47,22 @@ export class InventoryListComponent implements AfterViewInit{
   }
 
   displayedColumns = ['id', 'description', 'company', 'price', 'date', 'serialNumber', 'location', 'orderer'];
-  inventoryItems = new MatTableDataSource<any>();
+  inventoryItems = new ServerTableDataSourceService<any>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit() {
-    this.inventoryService.getInventories().subscribe((inventories) =>{
-      this.inventoryItems.data = inventories.content.map((item: InventoryItem) => ({
-        id: item.id,
-        user: item.user.name,
-        description: item.description,
-        company: item.company.name,
-        price: item.price,
-        createdAt: item.createdAt,
-        serialNumber: item.serialNumber,
-        location: item.location,
-        orderer: item.user.name,
-      }));
-      console.log(this.inventoryItems.data);
-    })
   }
 
   ngAfterViewInit() {
-    this.inventoryItems.paginator = this.paginator;
-    this.inventoryItems.sort = this.sort;
+/*    this.inventoryItems.paginator = this.paginator;
+    this.inventoryItems.sort = this.sort;*/
   }
 
   filterInventoryItems(event: Event){
     const filterValue = (event.target as HTMLInputElement).value;
-    this.inventoryItems.filter = filterValue.trim().toLowerCase();
+/*    this.inventoryItems.filter = filterValue.trim().toLowerCase();*/
   }
-
-
 
 }
