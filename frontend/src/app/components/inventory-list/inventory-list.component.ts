@@ -56,8 +56,8 @@ export class InventoryListComponent implements AfterViewInit{
   }
 
   ngAfterViewInit() {
-/*    this.inventoryItems.paginator = this.paginator;
-    this.inventoryItems.sort = this.sort;*/
+    this.inventoryItems.paginator = this.paginator;
+    //this.inventoryItems.sort = this.sort;
   }
 
   filterInventoryItems(event: Event){
