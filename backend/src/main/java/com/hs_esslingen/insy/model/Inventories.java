@@ -1,13 +1,14 @@
 package com.hs_esslingen.insy.model;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import lombok.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,22 +16,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
-@Entity
 @Data
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
+@Entity
 @Table(name = "inventories")
 public class Inventories {
 
     @Id
+    @EqualsAndHashCode.Include
     @Column(nullable = false)
     private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "cost_centers_id", nullable = true)
     @JsonIgnoreProperties("inventories")
-    private CostCenters costCenters;
+    private CostCenters costCenter;
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
@@ -39,7 +41,7 @@ public class Inventories {
 
     @ManyToOne
     @JoinColumn(name = "companies_id", nullable = false)
-    @JsonIgnoreProperties("inventories")
+    @JsonIgnoreProperties({"inventories", "extensions"})
     private Companies company;
 
     @Column(nullable = false)
@@ -59,7 +61,8 @@ public class Inventories {
     private String location;
 
     @Column(name = "created_at", nullable = false)
-    private final OffsetDateTime createdAt = OffsetDateTime.now(ZoneId.of("Europe/Berlin"));
+    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
+
 
     @Column(name = "deleted_at")
     @Builder.Default
@@ -75,10 +78,13 @@ public class Inventories {
     @JsonIgnore
     private List<Extensions> extensions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Builder.Default
-    @JsonIgnore
-    private Set<InventoryTagRelations> tagRelations = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+        name = "inventory_tag",
+        joinColumns = @JoinColumn(name = "inventory_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tags> tags = new HashSet<>();
 
     // Konstruktor
     @Builder
@@ -86,7 +92,7 @@ public class Inventories {
             String serialNumber, BigDecimal price, String location) {
         this.id = id;
         this.isDeinventoried = false;
-        this.costCenters = costCenters;
+        this.costCenter = costCenters;
         this.user = user;
         this.company = company;
         this.description = description;
@@ -95,7 +101,7 @@ public class Inventories {
         this.location = location;
         this.extensions = new ArrayList<>();
         this.comments = new ArrayList<>();
-        this.tagRelations = new HashSet<>();
+        this.tags = new HashSet<>();
     }
 
     // Getter und Setter
@@ -126,20 +132,9 @@ public class Inventories {
         }
     }
 
-    public void addTagRelation(InventoryTagRelations tagRelation) {
-        if (this.tagRelations.add(tagRelation)) {
-            tagRelation.setInventory(this);
-        }
-    }
-
-    public void removeTagRelation(InventoryTagRelations tagRelation) {
-        if (this.tagRelations.remove(tagRelation)) {
-            tagRelation.setInventory(null);
-        }
-    }
-
     public void delete() {
         this.deletedAt = OffsetTime.now();
         this.isDeinventoried = true;
     }
+
 }

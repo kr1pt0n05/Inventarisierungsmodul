@@ -9,24 +9,29 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.hs_esslingen.insy.model.Inventories;
-import com.hs_esslingen.insy.model.InventoryTagRelations;
+import com.hs_esslingen.insy.model.Tags;
 
 // Klasse zur Implementierung von Filterfunktionen für die Inventargegnstände
 // Filter werden als Query-Parameter in der URL übergeben
 // und in der InventoriesController-Klasse verarbeitet
 public class InventorySpecification {
 
+    private InventorySpecification() {
+        // Privater Konstruktor, um Instanziierung zu verhindern
+    }
+
     // Filter Inventargegenstände nach ihrer Tag-ID
     public static Specification<Inventories> hasTagId(List<Integer> tagIds) {
-        return (root, query, cb) -> {
-            // Wenn keine Tag-ID gesetzt ist keinen Filter anwenden
-            if (tagIds == null || tagIds.isEmpty()) {
-                return cb.conjunction();
-            }
-            Join<Inventories, InventoryTagRelations> tagJoin = root.join("tagRelations", JoinType.LEFT);
-            return tagJoin.get("tag").get("id").in(tagIds);
-        };
-    }
+    return (root, query, cb) -> {
+        if (tagIds == null || tagIds.isEmpty()) {
+            return cb.conjunction();
+        }
+        // Direkt auf das ManyToMany Set "tags" joinen
+        Join<Inventories, Tags> tagJoin = root.join("tags", JoinType.LEFT);
+        return tagJoin.get("id").in(tagIds);
+    };
+}
+
 
 
     public static Specification<Inventories> idBetween(Integer minId, Integer maxId) {

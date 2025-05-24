@@ -1,6 +1,6 @@
-package com.hs_esslingen.insy.services;
+package com.hs_esslingen.insy.service;
 
-import com.hs_esslingen.insy.DTO.InventoryItem;
+import com.hs_esslingen.insy.dto.InventoryItem;
 import com.hs_esslingen.insy.model.*;
 import com.hs_esslingen.insy.repository.*;
 import com.hs_esslingen.insy.utils.StringParser;

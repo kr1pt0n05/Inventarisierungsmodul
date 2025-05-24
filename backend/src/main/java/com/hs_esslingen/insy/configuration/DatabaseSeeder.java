@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.hs_esslingen.insy.model.Companies;
 import com.hs_esslingen.insy.model.Inventories;
-import com.hs_esslingen.insy.model.InventoryTagRelations;
 import com.hs_esslingen.insy.model.Tags;
 import com.hs_esslingen.insy.repository.CompaniesRepository;
 import com.hs_esslingen.insy.repository.CostCentersRepository;
@@ -81,19 +80,16 @@ public class DatabaseSeeder implements CommandLineRunner {
         inv.setSerialNumber("ABC123");
         inv.setLocation("Lagerraum 1");
         inv.setCompany(comp1);  
-        inv.setCostCenters(costCenter); 
+        inv.setCostCenter(costCenter); 
         inv.setUser(testUser); 
 
+        // Tags
+        inv.getTags().add(tag1);
+
+        // Füge Tags das Iventar hinzu
+        tag1.getInventories().add(inv);
+
         inventoriesRepository.save(inv);
-
-        InventoryTagRelations rel = new InventoryTagRelations();
-        rel.setInventory(inv);
-        rel.setTag(tag1);
-
-        inv.getTagRelations().add(rel);
-        tag1.getInventoryRelations().add(rel);
-
-        inventoriesRepository.save(inv); // nochmal speichern, damit Relation mitkommt
     }
 }
 

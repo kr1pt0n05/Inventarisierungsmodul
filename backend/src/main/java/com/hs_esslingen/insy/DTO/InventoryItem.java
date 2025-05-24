@@ -1,4 +1,4 @@
-package com.hs_esslingen.insy.DTO;
+package com.hs_esslingen.insy.dto;
 
 import com.opencsv.bean.CsvBindByName;
 
