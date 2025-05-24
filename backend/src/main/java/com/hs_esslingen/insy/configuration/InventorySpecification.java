@@ -3,6 +3,7 @@ package com.hs_esslingen.insy.configuration;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -40,6 +41,23 @@ public class InventorySpecification {
                 return cb.greaterThanOrEqualTo(root.get("id"), minId);
             } else if (maxId != null) {
                 return cb.lessThanOrEqualTo(root.get("id"), maxId);
+            }
+            return cb.conjunction();
+        };
+    }
+
+    public static Specification<Inventories> priceBetween(Integer minPrice, Integer maxPrice) {
+        return (root, query, cb) -> {
+            // Wenn keine Query-Parameter gesetzt sind keinen Filter anwenden
+            if(minPrice == null && maxPrice == null) {
+                return cb.conjunction();
+            }
+            else if (minPrice != null && maxPrice != null) {
+                return cb.between(root.get("price"), BigDecimal.valueOf(minPrice), BigDecimal.valueOf(maxPrice));
+            } else if (minPrice != null) {
+                return cb.greaterThanOrEqualTo(root.get("price"), BigDecimal.valueOf(minPrice));
+            } else if (maxPrice != null) {
+                return cb.lessThanOrEqualTo(root.get("price"), BigDecimal.valueOf(maxPrice));
             }
             return cb.conjunction();
         };

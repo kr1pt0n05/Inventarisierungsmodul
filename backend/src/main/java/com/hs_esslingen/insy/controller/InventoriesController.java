@@ -7,6 +7,18 @@ import java.util.Optional;
 
 import com.hs_esslingen.insy.configuration.InventoryCreateRequest;
 import com.hs_esslingen.insy.configuration.InventorySpecification;
+import com.hs_esslingen.insy.model.Companies;
+import com.hs_esslingen.insy.model.CostCenters;
+import com.hs_esslingen.insy.model.Inventories;
+import com.hs_esslingen.insy.model.InventoryTagRelations;
+import com.hs_esslingen.insy.model.Tags;
+import com.hs_esslingen.insy.model.Users;
+import com.hs_esslingen.insy.repository.CompaniesRepository;
+import com.hs_esslingen.insy.repository.CostCentersRepository;
+import com.hs_esslingen.insy.repository.InventoriesRepository;
+import com.hs_esslingen.insy.repository.TagsRepository;
+import com.hs_esslingen.insy.repository.UsersRepository;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hs_esslingen.insy.model.Companies;
-import com.hs_esslingen.insy.model.CostCenters;
-import com.hs_esslingen.insy.model.Inventories;
-import com.hs_esslingen.insy.model.InventoryTagRelations;
-import com.hs_esslingen.insy.model.Tags;
-import com.hs_esslingen.insy.model.Users;
-import com.hs_esslingen.insy.repository.CompaniesRepository;
-import com.hs_esslingen.insy.repository.CostCentersRepository;
-import com.hs_esslingen.insy.repository.InventoriesRepository;
-import com.hs_esslingen.insy.repository.TagsRepository;
-import com.hs_esslingen.insy.repository.UsersRepository;
-import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @RestController
@@ -60,6 +61,8 @@ public class InventoriesController {
         @RequestParam(required = false) List<Integer> tags,
         @RequestParam(required = false) Integer minId,
         @RequestParam(required = false) Integer maxId,
+        @RequestParam(required = false) Integer minPrice,
+        @RequestParam(required = false) Integer maxPrice,
         @RequestParam(required = false) Boolean isDeinventoried,
         @PageableDefault(size = 50) Pageable pageable) {
 
@@ -149,6 +152,7 @@ public class InventoriesController {
             }
 
             inventoriesRepository.save(inventory);
+            usersRepository.save(user);
             user.addInventory(inventory);
             company.addInventory(inventory);
             return new ResponseEntity<>(inventory, HttpStatus.CREATED);
@@ -179,7 +183,8 @@ public class InventoriesController {
     // und dann in PatchFieldDTO fields gespeichert
     // und an die Inventarisierungsservice-Methode weitergegeben
     @PatchMapping("/{id}")
-    public ResponseEntity<Inventories> updateInventory(@PathVariable Integer id, @RequestBody List<Map<String, Object>> patchDataList) {
+    public ResponseEntity<Inventories> updateInventory(@PathVariable Integer id,
+            @RequestBody Map<String, Object> patchData) {
 
         Optional<Inventories> inventoryOptional = inventoriesRepository.findById(id);
         if (inventoryOptional.isEmpty()) {
@@ -188,82 +193,80 @@ public class InventoriesController {
 
         Inventories inventory = inventoryOptional.get();
 
-        for (Map<String, Object> patchData : patchDataList) {
-            for (Map.Entry<String, Object> entry : patchData.entrySet()) {
-                String fieldName = entry.getKey();
-                Object fieldValue = entry.getValue();
+        for (Map.Entry<String, Object> entry : patchData.entrySet()) {
+            String fieldName = entry.getKey();
+            Object fieldValue = entry.getValue();
 
-                switch (fieldName) {
-                    case "costCenter":
-                        if (fieldValue != null) {
-                            // Existiert die Kostenstelle bereits in der Datenbank?
-                            CostCenters costCenter = costCentersRepository.findByName(fieldValue.toString());
-                            // Wenn nicht, erstelle eine neue Kostenstelle
-                            if (costCenter == null) {
-                                costCenter = new CostCenters(fieldValue.toString());
-                                costCentersRepository.save(costCenter);
-                            }
-                            inventory.setCostCenters(costCenter);
+            switch (fieldName) {
+                case "costCenter":
+                    if (fieldValue != null) {
+                        // Existiert die Kostenstelle bereits in der Datenbank?
+                        CostCenters costCenter = costCentersRepository.findByName(fieldValue.toString());
+                        // Wenn nicht, erstelle eine neue Kostenstelle
+                        if (costCenter == null) {
+                            costCenter = new CostCenters(fieldValue.toString());
+                            costCentersRepository.save(costCenter);
                         }
-                        break;
-                    case "inventories_description":
-                        if (fieldValue != null) {
-                            inventory.setDescription((String) fieldValue);
-                        }
-                        break;
-                    case "company":
-                        if (fieldValue != null) {
-                            Companies company = companiesRepository
-                                    // Existiert die Firma bereits in der Datenbank?
-                                    .findByName(fieldValue.toString())
-                                    // Wenn nicht, erstelle eine neue Firma
-                                    .orElseGet(() -> {
-                                        Companies newCompany = new Companies(fieldValue.toString());
-                                        return companiesRepository.save(newCompany);
-                                    });
-                            // Setze die Firma in der Inventarisierung
-                            inventory.setCompany(company);
-                        }
-                        break;
+                        inventory.setCostCenters(costCenter);
+                    }
+                    break;
+                case "inventories_description":
+                    if (fieldValue != null) {
+                        inventory.setDescription((String) fieldValue);
+                    }
+                    break;
+                case "company":
+                    if (fieldValue != null) {
+                        Companies company = companiesRepository
+                                // Existiert die Firma bereits in der Datenbank?
+                                .findByName(fieldValue.toString())
+                                // Wenn nicht, erstelle eine neue Firma
+                                .orElseGet(() -> {
+                                    Companies newCompany = new Companies(fieldValue.toString());
+                                    return companiesRepository.save(newCompany);
+                                });
+                        // Setze die Firma in der Inventarisierung
+                        inventory.setCompany(company);
+                    }
+                    break;
 
-                    case "inventories_price":
-                        if (fieldValue != null) {
-                            inventory.setPrice(new BigDecimal(fieldValue.toString()));
-                        }
-                        break;
-                    case "inventories_serialNumber":
-                        if (fieldValue != null) {
-                            inventory.setSerialNumber((String) fieldValue);
-                        }
-                        break;
-                    case "inventories_location":
-                        if (fieldValue != null) {
-                            inventory.setLocation((String) fieldValue);
-                        }
-                        break;
-                    case "orderer":
-                        // Annahme: user-id wird übergeben
-                        // und nicht der username
-                        if (fieldValue != null) {
-                            Users user = usersRepository.findById((Integer) fieldValue).orElse(null);
-                            // Existiert der User bereits in der Datenbank?
-                            if (user != null) {
-                                inventory.setUser(user);
-                            } else {
+                case "inventories_price":
+                    if (fieldValue != null) {
+                        inventory.setPrice(new BigDecimal(fieldValue.toString()));
+                    }
+                    break;
+                case "inventories_serialNumber":
+                    if (fieldValue != null) {
+                        inventory.setSerialNumber((String) fieldValue);
+                    }
+                    break;
+                case "inventories_location":
+                    if (fieldValue != null) {
+                        inventory.setLocation((String) fieldValue);
+                    }
+                    break;
+                case "orderer":
+                    // Annahme: user-id wird übergeben
+                    // und nicht der username
+                    if (fieldValue != null) {
+                        Users user = usersRepository.findById((Integer) fieldValue).orElse(null);
+                        // Existiert der User bereits in der Datenbank?
+                        if (user != null) {
+                            inventory.setUser(user);
+                        } else {
 
-                                // Wenn nicht, erstelle einen neuen User
-                                user = new Users();
-                                user.setId((Integer) fieldValue);
-                                usersRepository.save(user);
-                                inventory.setUser(user);
-                            }
+                            // Wenn nicht, erstelle einen neuen User
+                            user = new Users();
+                            user.setId((Integer) fieldValue);
+                            usersRepository.save(user);
+                            inventory.setUser(user);
                         }
-                        break;
-                        default:
-                            // Unbekanntes Feld, ignoriere es
-                            break;
-                }
-            }   
+                    }
+                    break;
+                default:
+                    // Unbekanntes Feld, ignoriere es
+                    break;
+            }
         }
         Inventories updatedInventory = inventoriesRepository.save(inventory);
         return new ResponseEntity<>(updatedInventory, HttpStatus.OK);

@@ -13,13 +13,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Data;
 
 @Entity
+@Data
+@Builder
 @Table(name = "tags")
 public class Tags {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)    
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Integer id;
 
@@ -28,39 +32,25 @@ public class Tags {
 
     @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private Set<InventoryTagRelations> inventoryRelations = new HashSet<>();
+    private Set<InventoryTagRelations> inventoryRelations;
 
-    // Konstruktor
+    @Builder
     public Tags() {
-
+        this.inventoryRelations = new HashSet<>();
     }
+
+    @Builder
     public Tags(String name) {
         this.name = name;
+        inventoryRelations = new HashSet<>();
     }
 
     // Getter und Setter
-    public Integer getId() {
-        return id;
-    }
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public Set<InventoryTagRelations> getInventoryRelations() {
-        return inventoryRelations;
-    }
-    public void setInventoryRelations(Set<InventoryTagRelations> inventoryRelations) {
-        this.inventoryRelations = inventoryRelations;
-    }
     public void addInventoryRelation(InventoryTagRelations inventoryTagRelations) {
         this.inventoryRelations.add(inventoryTagRelations);
         inventoryTagRelations.setTag(this);
     }
+
     public void removeInventoryRelation(InventoryTagRelations inventoryTagRelations) {
         this.inventoryRelations.remove(inventoryTagRelations);
         inventoryTagRelations.setTag(null);

@@ -7,18 +7,22 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-
-
 @Entity
+@Data
+@Builder
+@NoArgsConstructor
 @Table(name = "cost_centers")
 public class CostCenters {
-    
+
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,25 +31,24 @@ public class CostCenters {
     String description;
 
     @Column(name = "is_archived")
-    private Boolean isArchived;
+    @Builder.Default
+    private Boolean isArchived = false;
 
     @OneToMany(mappedBy = "costCenters")
+    @Builder.Default
     @JsonManagedReference
-    private List<Inventories> inventories;
+    private List<Inventories> inventories = new ArrayList<>();
 
     // Konstruktor
 
-    public CostCenters() {
-        this.inventories = new ArrayList<>();
-        this.isArchived = false;
-    }
-
+    @Builder
     public CostCenters(String description) {
         this.description = description;
         this.isArchived = false;
         this.inventories = new ArrayList<>();
     }
-    
+
+    @Builder
     public CostCenters(String description, Boolean isArchived) {
         this.description = description;
         this.isArchived = isArchived;
@@ -53,37 +56,11 @@ public class CostCenters {
     }
 
     // Getter und Setter
-    public Integer getId() {
-        return id;
-    }
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getIsArchived() {
-        return isArchived;
-    }
-
-    public void setIsArchived(Boolean isArchived) {
-        this.isArchived = isArchived;
-    }
-    public List<Inventories> getInventories() {
-        return inventories;
-    }
-    public void setInventories(List<Inventories> inventories) {
-        this.inventories = inventories;
-    }
     public void addInventory(Inventories inventory) {
         this.inventories.add(inventory);
         inventory.setCostCenters(this);
     }
+
     public void removeInventory(Inventories inventory) {
         this.inventories.remove(inventory);
         inventory.setCostCenters(null);

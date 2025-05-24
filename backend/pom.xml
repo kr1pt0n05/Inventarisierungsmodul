@@ -66,6 +66,13 @@
     		<artifactId>jakarta.persistence-api</artifactId>
     		<version>3.1.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.38</version>
+			<scope>provided</scope>
+		</dependency>
      <dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
@@ -81,5 +88,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
