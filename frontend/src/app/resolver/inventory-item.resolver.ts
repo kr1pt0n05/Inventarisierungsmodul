@@ -13,13 +13,13 @@ import { InventoriesService } from '../services/inventories.service';
 })
 
 export class InventoryItemResolver implements Resolve<InventoryItem> {
+  debug = false; // Set to true to use mock data
   constructor(private readonly inventoriesService: InventoriesService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<InventoryItem> {
     let inventoryItem = null;
-    const debug = true; // Set to true to use mock data
 
-    if (debug) {
+    if (this.debug) {
       inventoryItem = of({
         costCenter: "123",
         id: parseInt(route.paramMap.get('id')!),

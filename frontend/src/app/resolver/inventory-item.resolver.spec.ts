@@ -5,7 +5,6 @@ import { InventoryItemResolver } from './inventory-item.resolver';
 
 describe('InventoryItemResolver', () => {
   let resolver: InventoryItemResolver;
-  let inventoriesServiceSpy: jasmine.SpyObj<InventoriesService>;
 
   beforeEach(() => {
     const spy = jasmine.createSpyObj('InventoriesService', ['getInventoryById']);
@@ -29,8 +28,8 @@ describe('InventoryItemResolver', () => {
       }
     } as unknown as ActivatedRouteSnapshot;
     const state = {} as RouterStateSnapshot;
+    resolver.debug = true; // Enable mock data
 
-    // debug is hardcoded to true in resolver
     const result$ = resolver.resolve(route, state);
     result$.subscribe(result => {
       expect(result).toBeTruthy();
@@ -47,6 +46,7 @@ describe('InventoryItemResolver', () => {
       }
     } as unknown as ActivatedRouteSnapshot;
     const state = {} as RouterStateSnapshot;
+    resolver.debug = true; // Enable mock data
 
     const result$ = resolver.resolve(route, state);
     result$.subscribe(result => {
