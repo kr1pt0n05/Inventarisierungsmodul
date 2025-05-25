@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.hs_esslingen.insy.dto.InventoriesCreateRequestDTO;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.model.Inventories;
 import com.hs_esslingen.insy.service.InventoriesService;
 
 import org.springframework.beans.factory.annotation.Autowired;

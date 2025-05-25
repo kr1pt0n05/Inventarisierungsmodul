@@ -42,7 +42,6 @@ public interface InventoriesMapper {
         return new Companies(companyName);
     }
 
-
     @Named("mapCostCenterFromName")
     default CostCenters mapCostCenter(String costCenterName) {
         if (costCenterName == null)
@@ -51,25 +50,24 @@ public interface InventoriesMapper {
     }
 
     @Named("mapUserDynamic")
-default Users mapUserDynamic(Object value) {
-    if (value == null) {
-        return null;
+    default Users mapUserDynamic(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Integer id) {
+            Users user = new Users();
+            user.setId(id);
+            return user;
+        } else if (value instanceof String name) {
+            return new Users(name);
+        } else {
+            throw new IllegalArgumentException("Unsupported orderer type: " + value.getClass());
+        }
     }
-    if (value instanceof Integer id) {
-        Users user = new Users();
-        user.setId(id);
-        return user;
-    } else if (value instanceof String name) {
-        return new Users(name); // vorausgesetzt du hast den passenden Konstruktor
-    } else {
-        throw new IllegalArgumentException("Unsupported orderer type: " + value.getClass());
-    }
-}
 
-    
-     default LocalDateTime mapCreatedAt(LocalDateTime createdAt) {
+    default LocalDateTime mapCreatedAt(LocalDateTime createdAt) {
         return createdAt;
-    } 
+    }
 
     // Mapping der Tag-IDs zu Tag-Entitäten
     default Set<Tags> mapTags(List<Integer> tagIds) {

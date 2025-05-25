@@ -14,23 +14,29 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor 
+@AllArgsConstructor
 public class InventoriesResponseDTO {
+
     private Integer id;
+
     private String description;
+
     private String serialNumber;
+
     private BigDecimal price;
+
     private String location;
 
     private String costCenter;
+    
     private String company;
+
     private String orderer;
+
     private Boolean isDeinventoried;
+
     @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdAt;
 
     private List<TagDTO> tags;
-
 }
-
-

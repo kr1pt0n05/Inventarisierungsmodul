@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import lombok.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
 
 @Data
@@ -31,17 +27,14 @@ public class Inventories {
 
     @ManyToOne
     @JoinColumn(name = "cost_centers_id", nullable = true)
-    @JsonIgnoreProperties("inventories")
     private CostCenters costCenter;
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
-    @JsonIgnoreProperties({ "inventories", "histories", "comments" })
     private Users user;
 
     @ManyToOne
     @JoinColumn(name = "companies_id", nullable = false)
-    @JsonIgnoreProperties({"inventories", "extensions"})
     private Companies company;
 
     @Column(nullable = false)
@@ -63,27 +56,20 @@ public class Inventories {
     @Column(name = "created_at", nullable = false)
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
-
     @Column(name = "deleted_at")
     @Builder.Default
     private OffsetTime deletedAt = null;
 
     @OneToMany(mappedBy = "inventories", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @JsonIgnore
     private List<Comments> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @JsonIgnore
     private List<Extensions> extensions = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(
-        name = "inventory_tag",
-        joinColumns = @JoinColumn(name = "inventory_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+    @JoinTable(name = "inventory_tag", joinColumns = @JoinColumn(name = "inventory_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tags> tags = new HashSet<>();
 
     // Konstruktor
@@ -119,16 +105,29 @@ public class Inventories {
         }
     }
 
+    // Adds an extension to the inventory and updates the price accordingly
     public void addExtension(Extensions extension) {
         if (!this.extensions.contains(extension)) {
             this.extensions.add(extension);
             extension.setInventory(this);
+
+            if (this.price == null) {
+                this.price = BigDecimal.ZERO;
+            }
+            if (extension.getPrice() != null) {
+                this.price = this.price.add(extension.getPrice());
+            }
         }
     }
 
+    // Removes an extension from the inventory and updates the price accordingly
     public void removeExtension(Extensions extension) {
         if (this.extensions.remove(extension)) {
-            extension.setInventory(this);
+            extension.setInventory(null);
+
+            if (this.price != null && extension.getPrice() != null) {
+                this.price = this.price.subtract(extension.getPrice());
+            }
         }
     }
 

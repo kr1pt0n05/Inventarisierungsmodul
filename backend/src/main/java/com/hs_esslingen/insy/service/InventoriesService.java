@@ -61,13 +61,12 @@ public class InventoriesService {
         this.inventoriesMapper = inventoriesMapper;
     }
 
-
     /**
      * Retrieves an inventory item by its ID.
      *
      * @param id the ID of the inventory item
      * @return ResponseEntity containing the inventory item if found,
-     * or a 404 Not Found status if the item does not exist.
+     *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<InventoriesResponseDTO> getInventoryById(Integer id) {
         Optional<Inventories> inventory = inventoriesRepository.findById(id);
@@ -115,10 +114,10 @@ public class InventoriesService {
             // Wenn ja dann eine Exception werfen
             throw new IllegalArgumentException("Inventar-ID bereits vorhanden: " + dto.inventoriesId);
         }
-        // 1. ID setzen
+        // ID setzen
         inventory.setId(dto.inventoriesId);
 
-        // 2. CostCenter holen oder erstellen
+        // CostCenter holen oder erstellen
         CostCenters costCenter = costCentersRepository.findByName(dto.costCenter);
         if (costCenter == null) {
             costCenter = new CostCenters(dto.costCenter);
@@ -126,15 +125,15 @@ public class InventoriesService {
         }
         inventory.setCostCenter(costCenter);
 
-        // 3. Company holen oder erstellen
+        // Company holen oder erstellen
         Companies company = companiesRepository.findByName(dto.company)
                 .orElseGet(() -> companiesRepository.save(new Companies(dto.company)));
         inventory.setCompany(company);
 
-        // 4. User holen oder erstellen
+        // User holen oder erstellen
         Users user = resolveUser(dto.orderer);
 
-        // 5. Primitive Felder setzen
+        // Restliche Felder setzen
         inventory.setDescription(dto.description);
         inventory.setSerialNumber(dto.serialNumber);
         inventory.setPrice(dto.price);
@@ -162,9 +161,10 @@ public class InventoriesService {
     /**
      * Deletes an inventory item by its ID.
      * If the item does not exist, returns a 404 Not Found status.
+     * 
      * @param id
      * @return ResponseEntity with no content if the item was deleted,
-     * or a 404 Not Found status if the item does not exist.
+     *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<Void> deleteInventory(Integer id) {
         Optional<Inventories> inventory = inventoriesRepository.findById(id);
@@ -176,14 +176,16 @@ public class InventoriesService {
         }
     }
 
-
     /**
      * Updates an existing inventory item with the provided patch data.
-     * The patch data is a map where the keys are field names and the values are the new values for those fields.
+     * The patch data is a map where the keys are field names and the values are the
+     * new values for those fields.
+     * 
      * @param id
      * @param patchData
-     * @return ResponseEntity of type InventoriesResponseDTO containing the updated inventory item,
-     * or a 404 Not Found status if the item does not exist.
+     * @return ResponseEntity of type InventoriesResponseDTO containing the updated
+     *         inventory item,
+     *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<InventoriesResponseDTO> updateInventory(Integer id, Map<String, Object> patchData) {
         Optional<Inventories> inventoryOptional = inventoriesRepository.findById(id);
