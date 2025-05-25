@@ -10,7 +10,7 @@
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
               <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-              <a (click)="updateCurrentPageTitle('Startseite')" routerLink="/" routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Startseite</a>
+              <a (click)="updateCurrentPageTitle('Startseite')" routerLink="/homepage" routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Startseite</a>
               <a (click)="updateCurrentPageTitle('Inventarliste')" routerLink="/inventory" routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Inventarliste</a>
             </div>
           </div>
