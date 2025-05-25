@@ -1,20 +1,17 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import { AuthConfig, provideOAuthClient } from 'angular-oauth2-oidc';
 import { routes } from './app.routes';
-import {MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core';
-import {provideHttpClient, withFetch} from '@angular/common/http';
-import {provideOAuthClient} from 'angular-oauth2-oidc';
-
-
-import { AuthConfig } from 'angular-oauth2-oidc';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideNativeDateAdapter(),
-    {provide: MAT_DATE_LOCALE, useValue: 'de-DE'},
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
     provideHttpClient(
       withFetch()
     ),
@@ -51,4 +48,3 @@ export const authCodeFlowConfig: AuthConfig = {
 
   showDebugInformation: true,
 };
-

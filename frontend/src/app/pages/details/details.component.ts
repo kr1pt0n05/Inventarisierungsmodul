@@ -1,14 +1,43 @@
+import { NgForOf, NgIf } from '@angular/common';
 import { afterNextRender, Component, input, QueryList, ViewChildren } from '@angular/core';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
-import { InventoryItem } from '../../models/inventory-item';
-import { InventoryExtension } from '../../models/inventory-extension';
-import { InventoryItemNotes } from '../../models/inventory-item-notes';
-import { InventoryItemChange } from '../../models/inventory-item-change';
-import { NgForOf, NgIf } from '@angular/common';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
-import { MatChipsModule } from '@angular/material/chips';
+import { InventoryExtension } from '../../models/inventory-extension';
+import { InventoryItem } from '../../models/inventory-item';
+import { InventoryItemChange } from '../../models/inventory-item-change';
+import { InventoryItemNotes } from '../../models/inventory-item-notes';
+import { Tag } from '../../models/tag';
 
+/**
+ * Component for displaying detailed information about an inventory item.
+ *
+ * This component organizes and displays the main attributes of an inventory item as well as its related
+ * extensions, notes, tags, and change history. The information is grouped into expandable panels using
+ * Angular Material Expansion Panels. Each panel uses a dynamic list or chip set to present its data.
+ *
+ * ## Inputs
+ * - `inventoryItemInput`: The main inventory item to display (type: InventoryItem).
+ * - `extensions`: Array of extension objects related to the inventory item (type: InventoryExtension[]).
+ * - `notes`: Array of notes related to the inventory item (type: InventoryItemNotes[]).
+ * - `changes`: Array of change history entries (type: InventoryItemChange[]) for the inventory item.
+ *
+ * ## Features
+ * - Displays item attributes in a two-column layout.
+ * - Shows related extensions, notes, and change history in expandable panels with dynamic column headers.
+ * - Displays an items tags as chips.
+ * - Automatically opens all expansion panels after rendering.
+ * - Handles empty states for each panel.
+ *
+ * @example
+ * <app-details
+ *   [inventoryItemInput]="item"
+ *   [extensions]="itemExtensions"
+ *   [notes]="itemNotes"
+ *   [changes]="itemChanges">
+ * </app-details>
+ */
 @Component({
   selector: 'app-details',
   imports: [
@@ -23,47 +52,45 @@ import { MatChipsModule } from '@angular/material/chips';
   styleUrl: './details.component.css'
 })
 export class DetailsComponent {
-  panelNames: string[] = ['Erweiterungen', 'Notizen', 'Tags', 'Historie'];
+  panelIdNameMap = new Map<string, string>([
+    ['extensions', 'Erweiterungen'],
+    ['notes', 'Notizen'],
+    ['tags', 'Tags'],
+    ['changes', 'Historie']
+  ]);
 
   @ViewChildren('Panels') panels!: QueryList<MatExpansionPanel>;
 
-  inventoryItem = input<InventoryItem>(
-    {
-      costCenter: 123,
-      inventoryNumber: 123456,
-      productDescription: 'Artikelbeschreibung',
-      company: 'Firma',
-      price: 0,
-      date: '27.05.2023',
-      serialNumber: '0987654321',
-      location: 'F1.312',
-      orderer: 'Name'
-    }
-  );
+  inventoryItem = input.required<InventoryItem>();
   extensions = input<InventoryExtension[]>([]);
   notes = input<InventoryItemNotes[]>([]);
-  tags = input<string[]>([]);
+  tags: Tag[] = [];
+  // The transform merges table and column names for change history entries to display them in a single column
   changes = input([], { transform: mergeChangeLocation });
 
+  inventoryItemInternal!: Map<string, string>;
+
   panelContent = new Map<string, any>([
-    ['Erweiterungen', this.extensions],
-    ['Notizen', this.notes],
-    ['Historie', this.changes]
+    ['extensions', this.extensions],
+    ['notes', this.notes],
+    ['changes', this.changes]
   ]);
 
 
   // Defines the column headers for the different panels
-  // The keys of the maps are the keys of the objects in the arrays
+  // The keys are the internal names of the columns, the values are the display names
   inventoryItemColumns = new Map<string, string>([
     ['costCenter', 'Kostenstelle'],
-    ['inventoryNumber', 'Inventarnummer'],
+    ['id', 'Inventarnummer'],
+    ['description', 'Geräte-/Softwaretyp'],
     ['company', 'Firma'],
     ['price', 'Preis'],
     ['date', 'Bestelldatum'],
     ['serialNumber', 'Seriennummer'],
     ['location', 'Standort/Nutzer:in'],
-    ['orderer', 'Bestellt von'],
+    ['orderer', 'Bestellt von']
   ]);
+
   extensionColumns = new Map<string, string>([
     ['productDescription', 'Erweiterungstyp'],
     ['company', 'Bestellt bei'],
@@ -73,11 +100,13 @@ export class DetailsComponent {
     ['orderer', 'Hinzugefügt von'],
     ['date', 'Hinzugefügt am']
   ]);
+
   notesColumns = new Map<string, string>([
     ['note', 'Notiz'],
     ['author', 'Hinzugefügt von'],
     ['date', 'Hinzugefügt am']
   ]);
+
   changesColumns = new Map<string, string>([
     ['date', 'Geändert am'],
     ['change', 'Änderung'],
@@ -100,26 +129,76 @@ export class DetailsComponent {
     });
   }
 
-  /**
-* Returns the attribute names (column IDs) as an array.
-* @returns {string[]} Array of column IDs
-*/
-  getItemColumnIds(): string[] {
+  ngOnChanges() {
+    if (this.inventoryItem() && JSON.stringify(this.inventoryItem()) !== '{}') {
+      this.inventoryItemInternal = new Map<string, string>([
+        ['description', this.inventoryItem().description],
+        ['costCenter', this.inventoryItem().costCenter.toString()],
+        ['id', this.inventoryItem().id.toString()],
+        ['company', this.inventoryItem().company],
+        ['price', this.inventoryItem().price.toString()],
+        ['date', this.inventoryItem().createdAt],
+        ['serialNumber', this.inventoryItem().serialNumber],
+        ['location', this.inventoryItem().location],
+        ['orderer', this.inventoryItem().orderer]
+      ]);
+      this.tags = this.inventoryItem().tags;
+      console.log(this.tags);
+    } else {
+      this.inventoryItemInternal = new Map<string, string>();
+      for (let id of this.inventoryItemColumns.keys()) {
+        this.inventoryItemInternal.set(id, id.toLocaleUpperCase());
+      }
+    }
+  }
+
+  // Helper methods are needed bvecause the result of .keys() changes when called from a template
+  getTagNames(): string[] {
+    return this.tags.map(tag => tag.name);
+  }
+
+  getInventoryItemIds(): string[] {
     return Array.from(this.inventoryItemColumns.keys());
+  }
+
+  getPanelIds(): string[] {
+    return Array.from(this.panelIdNameMap.keys());
   }
 
 }
 
-function mergeChangeLocation(rawChanges: InventoryItemChange[]) {
+// Defines the table and column display names for the change history entries
+const changesTableNames = new Map<string, string>([
+]);
+const changesColumnNames = new Map<string, string>([
+]);
+
+/**
+ * Helper function to merge table and column names for change history entries.
+ * @param {InventoryItemChange[]} rawChanges - The raw change history entries.
+ * @returns {any[]} The transformed change history entries.
+ */
+function mergeChangeLocation(rawChanges: InventoryItemChange[]): InventoryItemChangeInternal[] {
   let changes = rawChanges.map((change: InventoryItemChange) => {
+    const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable;
+    const changedColumnDisplayName = changesColumnNames.get(change.changedColumn) ?? change.changedColumn;
     return {
       date: change.date,
       inventoryNumber: change.inventoryNumber,
       changedBy: change.changedBy,
-      change: change.changedTable + ' - ' + change.changedColumn,
+      change: `${changedTableDisplayName} -${changedColumnDisplayName}`,
       oldValue: change.oldValue,
       newValue: change.newValue
     };
   })
   return changes;
+}
+
+interface InventoryItemChangeInternal {
+  date: string;
+  inventoryNumber: number;
+  changedBy: string;
+  change: string;
+  oldValue: string;
+  newValue: string;
 }
