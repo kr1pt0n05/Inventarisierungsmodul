@@ -6,7 +6,6 @@ import {InventoriesService} from './inventories.service';
 import {Inventories} from '../models/inventories';
 import {InventoryItem} from '../models/inventory-item';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
 
 interface Page{
   pageIndex: number,

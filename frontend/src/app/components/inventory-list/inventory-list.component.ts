@@ -11,7 +11,6 @@ import {
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
-import {InventoriesService} from '../../services/inventories.service';
 import {DatePipe} from '@angular/common';
 import {ServerTableDataSourceService} from '../../services/server-table-data-source.service';
 
@@ -49,6 +48,7 @@ export class InventoryListComponent implements AfterViewInit{
 
   ngAfterViewInit() {
     this.inventoryItems.paginator = this.paginator;
+    this.paginator._intl.itemsPerPageLabel = "Artikel pro Seite:";
     //this.inventoryItems.sort = this.sort;
   }
 
