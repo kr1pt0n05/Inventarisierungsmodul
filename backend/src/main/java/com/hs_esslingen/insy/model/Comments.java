@@ -1,15 +1,22 @@
 package com.hs_esslingen.insy.model;
 
-import java.time.OffsetTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@Builder
+@NoArgsConstructor
 @Table(name = "comments")
 public class Comments {
-    
+
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -29,63 +36,13 @@ public class Comments {
     private String description;
 
     @Column(name = "created_at", nullable = false)
-    private OffsetTime createdAt;
+    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
-    public Comments() {
-    }
 
+    @Builder
     public Comments(Inventories inventories, Users users, String description) {
         this.inventories = inventories;
         this.author = users;
         this.description = description;
-        this.createdAt = OffsetTime.now();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Inventories getInventories() {
-        return inventories;
-    }
-
-    public void setInventories(Inventories inventories) {
-        this.inventories = inventories;
-    }
-
-    public Users getUsers() {
-        return author;
-    }
-
-    public void setUsers(Users users) {
-        this.author = users;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public OffsetTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public Users getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Users author) {
-        this.author = author;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setCreatedAt(OffsetTime createdAt) {
-        this.createdAt = createdAt;
     }
 }
