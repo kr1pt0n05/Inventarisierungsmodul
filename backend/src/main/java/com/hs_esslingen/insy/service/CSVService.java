@@ -1,12 +1,11 @@
-package com.hs_esslingen.insy.services;
+package com.hs_esslingen.insy.service;
 
-import com.hs_esslingen.insy.DTO.InventoryItem;
+import com.hs_esslingen.insy.dto.InventoryItem;
 import com.hs_esslingen.insy.model.*;
 import com.hs_esslingen.insy.repository.*;
 import com.hs_esslingen.insy.utils.StringParser;
 import com.opencsv.bean.CsvToBeanBuilder;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.ParseException;
 import java.time.OffsetTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,14 +23,12 @@ public class CSVService {
     private final Character DELIMITER = ';';
 
     private final InventoriesRepository inventoriesRepository;
-    private final CostCentersRepository costCentersRepository;
     private final UsersRepository usersRepository;
     private final CompaniesRepository companiesRepository;
     private final CommentsRepository commentsRepository;
 
-    public CSVService(InventoriesRepository inventoriesRepository, CostCentersRepository costCentersRepository, UsersRepository usersRepository, CompaniesRepository companiesRepository, CommentsRepository commentsRepository) {
+    public CSVService(InventoriesRepository inventoriesRepository, UsersRepository usersRepository, CompaniesRepository companiesRepository, CommentsRepository commentsRepository) {
         this.inventoriesRepository = inventoriesRepository;
-        this.costCentersRepository = costCentersRepository;
         this.usersRepository = usersRepository;
         this.companiesRepository = companiesRepository;
         this.commentsRepository = commentsRepository;
@@ -92,7 +88,6 @@ public class CSVService {
                 inventoryItem.setIsDeinventoried(false); // This is basically impossible to check through a .csv file
                 inventoryItem.setPrice(StringParser.parseString(obj.getPrice()));
                 inventoryItem.setLocation(obj.getLocation());
-                inventoryItem.setCreatedAt(now);
                 inventoryItem.setCompany(company);
                 inventoryItem.setUser(user);
 
@@ -103,13 +98,9 @@ public class CSVService {
                     Comments comment = new Comments();
                     comment.setDescription(obj.getComment());
                     comment.setAuthor(user);
-                    comment.setCreatedAt(now);
                     comment.setInventories(inventoryItem);
                     commentsList.add(comment);
                 }
-
-            }catch (ParseException e){
-                System.out.println(e.getMessage());
 
             }catch (Exception e){
                 System.out.println(e.getMessage());

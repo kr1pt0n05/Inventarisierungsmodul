@@ -1,9 +1,9 @@
 package com.hs_esslingen.insy.model;
 
-import java.time.OffsetTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,15 +11,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import jakarta.persistence.Id;
 
 @Entity
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "histories")
 public class Histories {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (nullable = false)
+    @Column(nullable = false)
     private Integer id;
 
     @ManyToOne
@@ -37,63 +45,14 @@ public class Histories {
     private String valueTo;
 
     @Column(nullable = false)
-    private OffsetTime date;
+    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
     // Konstruktor
-    public Histories() {
-    }
-
+    @Builder
     public Histories(Users users, String attributeChanged, String from, String to) {
         this.author = users;
         this.attributeChanged = attributeChanged;
         this.valueFrom = from;
         this.valueTo = to;
-        this.date = OffsetTime.now();
-    }
-
-    // Getter und Setter
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Users getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Users users) {
-        this.author = users;
-    }
-
-    public String getAttributeChanged() {
-        return attributeChanged;
-    }
-
-    public void setAttributeChanged(String attributeChanged) {
-        this.attributeChanged = attributeChanged;
-    }
-
-    public String getValueFrom() {
-        return valueFrom;
-    }
-
-    public void setValueFrom(String from) {
-        this.valueFrom = from;
-    }
-
-    public String getValueTo() {
-        return valueTo;
-    }
-
-    public void setValueTo(String to) {
-        this.valueTo = to;
-    }
-
-    public OffsetTime getDate() {
-        return date;
     }
 }
