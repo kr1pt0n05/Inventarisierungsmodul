@@ -11,11 +11,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+
+@AllArgsConstructor
+@Data
 @Entity
 @Builder
 @Getter
@@ -44,6 +44,7 @@ public class Tags {
     @Builder
     public Tags(String name) {
         this.name = name;
+
         inventories = new HashSet<>();
     }
 }
