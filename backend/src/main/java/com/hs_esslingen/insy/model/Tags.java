@@ -16,9 +16,9 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Data;
 
-@Entity
 @Data
 @Builder
+@Entity
 @Table(name = "tags")
 public class Tags {
 
@@ -44,6 +44,14 @@ public class Tags {
         this.name = name;
         inventoryRelations = new HashSet<>();
     }
+
+    @Builder
+    public Tags(Integer id, String name, Set<InventoryTagRelations> inventoryRelations) {
+    this.id = id;
+    this.name = name;
+    this.inventoryRelations = inventoryRelations != null ? inventoryRelations : new HashSet<>();
+}
+
 
     // Getter und Setter
     public void addInventoryRelation(InventoryTagRelations inventoryTagRelations) {

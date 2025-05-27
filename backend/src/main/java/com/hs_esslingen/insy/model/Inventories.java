@@ -18,6 +18,7 @@ import jakarta.persistence.*;
 @Entity
 @Data
 @Builder
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Table(name = "inventories")
@@ -116,7 +117,7 @@ public class Inventories {
     public void addExtension(Extensions extension) {
         if (!this.extensions.contains(extension)) {
             this.extensions.add(extension);
-            extension.setInventory(this);
+            extension.setInventory(this);;
         }
     }
 

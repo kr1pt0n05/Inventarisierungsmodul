@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Integer> {
     // Custom query methods can be defined here if needed
-    // For example, to find a user by id: 
-    //Optional<Users> findById(Integer id);
+    // For example, to find a user by id:
+    //@Query("SELECT u FROM Users u WHERE u.id = ?1")
 
     @Query("SELECT u FROM Users u WHERE u.name = ?1")
     Optional<Users> findByName(String name);

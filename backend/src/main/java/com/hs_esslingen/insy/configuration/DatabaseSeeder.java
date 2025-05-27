@@ -2,10 +2,12 @@
 package com.hs_esslingen.insy.configuration;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.hs_esslingen.insy.model.Comments;
 import com.hs_esslingen.insy.model.Companies;
 import com.hs_esslingen.insy.model.Inventories;
 import com.hs_esslingen.insy.model.InventoryTagRelations;
@@ -17,6 +19,7 @@ import com.hs_esslingen.insy.repository.TagsRepository;
 import com.hs_esslingen.insy.repository.UsersRepository;
 import com.hs_esslingen.insy.model.Users;
 import com.hs_esslingen.insy.model.CostCenters;
+import com.hs_esslingen.insy.repository.CommentsRepository;
 
 
 
@@ -34,6 +37,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final InventoriesRepository inventoriesRepository;
     private final UsersRepository usersRepository;
     private final CostCentersRepository costCentersRepository;
+    private final CommentsRepository commentsRepository;
 
 
     public DatabaseSeeder(
@@ -41,13 +45,15 @@ public class DatabaseSeeder implements CommandLineRunner {
         CompaniesRepository companiesRepository,
         InventoriesRepository inventoriesRepository,
         UsersRepository usersRepository,
-        CostCentersRepository costCentersRepository
+        CostCentersRepository costCentersRepository,
+        CommentsRepository commentsRepository
     ) {
         this.tagsRepository = tagsRepository;
         this.companiesRepository = companiesRepository;
         this.inventoriesRepository = inventoriesRepository;
         this.usersRepository = usersRepository;
         this.costCentersRepository = costCentersRepository;
+        this.commentsRepository = commentsRepository;
     }
 
     @Override
@@ -83,9 +89,11 @@ public class DatabaseSeeder implements CommandLineRunner {
         inv.setCompany(comp1);  
         inv.setCostCenters(costCenter); 
         inv.setUser(testUser); 
-
+        inv.addComment(new Comments(inv, testUser, "test"));
         inventoriesRepository.save(inv);
 
+
+        
         InventoryTagRelations rel = new InventoryTagRelations();
         rel.setInventory(inv);
         rel.setTag(tag1);

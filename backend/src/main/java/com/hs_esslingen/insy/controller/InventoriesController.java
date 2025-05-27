@@ -133,7 +133,7 @@ public class InventoriesController {
                 request.inventories_location
             );
 
-            // Wenn Tags übergeben wurden: Tags mit inventar verknüpfen
+             // Wenn Tags übergeben wurden: Tags mit inventar verknüpfen
             if (request.tags != null) {
                 for (Integer tagId : request.tags) {
                     // Ist die Tag-Id gültig?

@@ -5,7 +5,9 @@ import java.time.ZoneId;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "comments")
 public class Comments {
@@ -28,20 +31,21 @@ public class Comments {
     private Inventories inventories;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = true)
-    @JsonBackReference
+    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Users author;
 
     @Column(nullable = false)
     private String description;
 
     @Column(name = "created_at", nullable = false)
-    private final OffsetDateTime createdAt = OffsetDateTime.now(ZoneId.of("Europe/Berlin"));
+    private OffsetDateTime createdAt;
 
     @Builder
     public Comments(Inventories inventories, Users users, String description) {
         this.inventories = inventories;
         this.author = users;
         this.description = description;
+        this.createdAt = OffsetDateTime.now(ZoneId.of("Europe/Berlin"));
     }
 }
