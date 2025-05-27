@@ -1,7 +1,8 @@
 package com.hs_esslingen.insy.model;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,7 +45,7 @@ public class Histories {
     private String valueTo;
 
     @Column(nullable = false)
-    private final OffsetDateTime date = OffsetDateTime.now(ZoneId.of("Europe/Berlin"));
+    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
     // Konstruktor
     @Builder

@@ -1,6 +1,6 @@
 package com.hs_esslingen.insy.model;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -39,7 +39,7 @@ public class Comments {
     private String description;
 
     @Column(name = "created_at", nullable = false)
-    private OffsetDateTime createdAt;
+    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
     @Builder
     public Comments(Inventories inventories, Users users, String description) {

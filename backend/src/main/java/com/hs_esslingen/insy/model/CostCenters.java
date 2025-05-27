@@ -36,7 +36,7 @@ public class CostCenters {
     @Builder.Default
     private Boolean isArchived = false;
 
-    @OneToMany(mappedBy = "costCenters")
+    @OneToMany(mappedBy = "costCenter")
     @Builder.Default
     @JsonManagedReference
     private List<Inventories> inventories = new ArrayList<>();
@@ -60,11 +60,11 @@ public class CostCenters {
     // Getter und Setter
     public void addInventory(Inventories inventory) {
         this.inventories.add(inventory);
-        inventory.setCostCenters(this);
+        inventory.setCostCenter(this);
     }
 
     public void removeInventory(Inventories inventory) {
         this.inventories.remove(inventory);
-        inventory.setCostCenters(null);
+        inventory.setCostCenter(null);
     }
 }
