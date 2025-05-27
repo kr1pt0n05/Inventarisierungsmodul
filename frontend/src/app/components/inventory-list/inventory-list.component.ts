@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -6,14 +6,13 @@ import {
   MatHeaderCell,
   MatHeaderCellDef,
   MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
-  MatTable, MatTableDataSource,
+  MatTable,
 } from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {InventoryItem} from '../../models/inventory-item';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
-import {InventoriesService} from '../../services/inventories.service';
 import {DatePipe} from '@angular/common';
+import {ServerTableDataSourceService} from '../../services/server-table-data-source.service';
 
 @Component({
   selector: 'app-inventory-list',
@@ -34,37 +33,23 @@ import {DatePipe} from '@angular/common';
     MatInput,
     MatFormField,
     MatLabel,
+    DatePipe,
   ],
   templateUrl: './inventory-list.component.html',
   styleUrl: './inventory-list.component.css'
 })
 export class InventoryListComponent implements AfterViewInit{
 
-  constructor(private inventoryService: InventoriesService) {
-    this.inventoryService = inventoryService;
-  }
-
   displayedColumns = ['id', 'description', 'company', 'price', 'date', 'serialNumber', 'location', 'orderer'];
-  inventoryItems = new MatTableDataSource<InventoryItem>();
+  inventoryItems = new ServerTableDataSourceService<any>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  ngOnInit() {
-    this.inventoryService.getInventories().subscribe((inventories) =>{
-      this.inventoryItems.data = inventories.content;
-      console.log(inventories.content);
-    })
-  }
-
   ngAfterViewInit() {
     this.inventoryItems.paginator = this.paginator;
-    this.inventoryItems.sort = this.sort;
-  }
-
-  filterInventoryItems(event: Event){
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.inventoryItems.filter = filterValue.trim().toLowerCase();
+    this.paginator._intl.itemsPerPageLabel = "Artikel pro Seite:";
+    //this.inventoryItems.sort = this.sort;
   }
 
 }

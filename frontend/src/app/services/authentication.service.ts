@@ -20,7 +20,7 @@ export class AuthenticationService {
   }
 
   logout(): void {
-    this.oauthService.revokeTokenAndLogout();
+    this.oauthService.logOut();
   }
 
   validToken(): boolean {
