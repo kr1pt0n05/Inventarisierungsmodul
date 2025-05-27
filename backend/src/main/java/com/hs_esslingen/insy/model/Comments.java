@@ -1,18 +1,22 @@
 package com.hs_esslingen.insy.model;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Entity
 @Data
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "comments")
 public class Comments {
@@ -27,21 +31,23 @@ public class Comments {
     @JsonBackReference
     private Inventories inventories;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = true)
-    @JsonBackReference
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Users author;
 
     @Column(nullable = false)
     private String description;
 
     @Column(name = "created_at", nullable = false)
-    private final OffsetDateTime createdAt = OffsetDateTime.now(ZoneId.of("Europe/Berlin"));
+    @Builder.Default
+    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
     @Builder
     public Comments(Inventories inventories, Users users, String description) {
         this.inventories = inventories;
         this.author = users;
         this.description = description;
+        this.createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
     }
 }

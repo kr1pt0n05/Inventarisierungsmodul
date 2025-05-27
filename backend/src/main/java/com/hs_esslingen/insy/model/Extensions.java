@@ -1,7 +1,7 @@
 package com.hs_esslingen.insy.model;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "extensions")
 public class Extensions {
@@ -49,7 +51,8 @@ public class Extensions {
     private BigDecimal price;
 
     @Column(name = "created_at", nullable = false)
-    private final OffsetDateTime createdAt = OffsetDateTime.now(ZoneId.of("Europe/Berlin"));
+    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
+
 
     @Builder
     public Extensions(Inventories inventory, Companies company, String description, String serialNumber,
