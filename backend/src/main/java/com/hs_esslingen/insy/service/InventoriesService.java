@@ -5,6 +5,7 @@ import com.hs_esslingen.insy.repository.CostCentersRepository;
 import com.hs_esslingen.insy.repository.InventoriesRepository;
 import com.hs_esslingen.insy.repository.TagsRepository;
 import com.hs_esslingen.insy.repository.UsersRepository;
+import com.hs_esslingen.insy.utils.OrderByUtils;
 import com.hs_esslingen.insy.configuration.InventorySpecification;
 import com.hs_esslingen.insy.dto.InventoriesCreateRequestDTO;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
@@ -16,15 +17,18 @@ import com.hs_esslingen.insy.model.Companies;
 import com.hs_esslingen.insy.model.Users;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,17 +37,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class InventoriesService {
 
-    @Autowired
     private final InventoriesRepository inventoriesRepository;
-    @Autowired
     private final UsersRepository usersRepository;
-    @Autowired
     private final CompaniesRepository companiesRepository;
-    @Autowired
     private final CostCentersRepository costCentersRepository;
-    @Autowired
     private final TagsRepository tagsRepository;
-    @Autowired
     private final InventoriesMapper inventoriesMapper;
 
     public InventoriesService(
@@ -78,6 +76,26 @@ public class InventoriesService {
         }
     }
 
+    /**
+     * Retrieves all inventory items based on the provided filters.
+     *
+     * @param tags            List of tag IDs to filter by
+     * @param minId           Minimum ID for filtering
+     * @param maxId           Maximum ID for filtering
+     * @param minPrice        Minimum price for filtering
+     * @param maxPrice        Maximum price for filtering
+     * @param isDeinventoried Whether to filter by deinventoried status
+     * @param orderer         Name of the orderer to filter by
+     * @param company         Name of the company to filter by
+     * @param location        Location to filter by
+     * @param costCenter      Cost center to filter by
+     * @param serialNumber    Serial number to filter by
+     * @param orderBy         Field to order results by
+     * @param direction       Direction of ordering (asc/desc)
+     * @param pageable        Pagination information
+     * @return Page of InventoriesResponseDTO containing the filtered inventory
+     *         items
+     */
     public Page<InventoriesResponseDTO> getAllInventories(
             List<Integer> tags,
             Integer minId,
@@ -85,18 +103,74 @@ public class InventoriesService {
             Integer minPrice,
             Integer maxPrice,
             Boolean isDeinventoried,
+            String orderer,
+            String company,
+            String location,
+            String costCenter,
+            String serialNumber,
+            LocalDate createdAfter,
+            LocalDate createdBefore,
+            String orderBy,
+            String direction,
             Pageable pageable) {
+
+
+        // Umwandlung der Query-Parameter von LocalDate in LocalDateTime
+        // Damit die Filterung auf die Datenbank funktioniert
+
+        // Setzt den Startzeitpunkt auf 00:00 Uhr, um alle Einträge ab diesem Datum zu berücksichtigen
+        LocalDateTime createdAfterTime = createdAfter != null ? createdAfter.atStartOfDay() : null;
+        // Setzt den Endzeipunkt auf 23:59:59, um alle Einträge bis zu diesem Datum zu berücksichtigen
+        LocalDateTime createdBeforeTime = createdBefore != null ? createdBefore.plusDays(1).atStartOfDay().minusNanos(1) : null;
+
 
         Specification<Inventories> spec = Specification
                 .where(InventorySpecification.hasTagId(tags))
                 .and(InventorySpecification.idBetween(minId, maxId))
                 .and(InventorySpecification.priceBetween(minPrice, maxPrice))
-                .and(InventorySpecification.isDeinventoried(isDeinventoried));
+                .and(InventorySpecification.isDeinventoried(isDeinventoried))
+                .and(InventorySpecification.hasOrderer(orderer))
+                .and(InventorySpecification.hasCompany(company))
+                .and(InventorySpecification.hasLocation(location))
+                .and(InventorySpecification.hasCostCenter(costCenter))
+                .and(InventorySpecification.hasSerialNumber(serialNumber))
+                .and(InventorySpecification.createdBetween(createdAfterTime, createdBeforeTime));
+
+
+        // Sortierung erstellen
+        if (orderBy != null && !orderBy.isEmpty()) {
+            // Überprüfen, ob das orderBy-Feld erlaubt ist
+            if (!OrderByUtils.ALLOWED_ORDER_BY_FIELDS.contains(orderBy)) {
+                throw new IllegalArgumentException("Ungültiges orderBy-Feld: " + orderBy);
+            }
+
+            // STandardmäßig auf aufsteigende Sortierung setzen
+            Sort.Direction sortDirection = Sort.Direction.ASC;
+            // Wenn die Richtung "desc" ist, dann auf absteigende Sortierung setzen
+            if ("desc".equalsIgnoreCase(direction)) {
+                sortDirection = Sort.Direction.DESC;
+            }
+
+            // Überprüfen, ob das orderBy-Feld verschachtelt ist (z. B. "user.name")
+            // Wenn es verschachtelt ist, dann muss die Sortierung über eine angepasste Specification gemacht werden
+            if (isNestedField(orderBy)) {
+                // Sortierung über verschachtelte Felder wird NICHT im Pageable gesetzt,
+                // sondern muss über eine angepasste Specification gemacht werden – siehe unten.
+                if (isNestedField(orderBy)) {
+                    spec = spec.and(
+                            InventorySpecification.sortByNestedField(orderBy, Sort.Direction.fromString(direction)));
+                }
+
+            // Wenn es nicht verschachtelt ist, dann kann die Sortierung direkt im Pageable gesetzt werden
+            } else {
+                Sort sort = Sort.by(sortDirection, orderBy);
+                pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+            }
+        }
 
         Page<Inventories> page = inventoriesRepository.findAll(spec, pageable);
 
         return page.map(inventoriesMapper::toDto);
-
     }
 
     /**
@@ -281,5 +355,10 @@ public class InventoriesService {
                     .orElseGet(() -> usersRepository.save(new Users(userName)));
         }
         throw new IllegalArgumentException("orderer muss Integer oder String sein.");
+    }
+
+    // Utility: check if orderBy is nested (z. B. "user.name")
+    private boolean isNestedField(String orderBy) {
+        return orderBy != null && orderBy.contains(".");
     }
 }

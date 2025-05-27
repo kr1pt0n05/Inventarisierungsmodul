@@ -1,6 +1,5 @@
 package com.hs_esslingen.insy.model;
 
-import com.hs_esslingen.insy.model.Inventories;
 import java.util.HashSet;
 import java.util.Set;
 

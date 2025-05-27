@@ -1,5 +1,7 @@
 package com.hs_esslingen.insy.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,8 +30,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/inventories")
 public class InventoriesController {
 
-    @Autowired
-    private InventoriesService inventoriesService;
+    
+    private final InventoriesService inventoriesService;
+
+    InventoriesController(@Autowired InventoriesService inventoriesService) {
+        this.inventoriesService = inventoriesService;
+    }
 
     // Alle Elemente der Inventarisierungsliste abrufen
     @GetMapping
@@ -39,9 +46,20 @@ public class InventoriesController {
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) Boolean isDeinventoried,
+            @RequestParam(required = false) String orderer,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String costCenter,
+            @RequestParam(required = false) String serialNumber,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdAfter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdBefore,
+            @RequestParam(required = false) String orderBy,
+            @RequestParam(required = false, defaultValue = "asc") String direction,
             @PageableDefault(size = 50) Pageable pageable) {
 
-        return inventoriesService.getAllInventories(tags, minId, maxId, minPrice, maxPrice, isDeinventoried, pageable);
+        return inventoriesService.getAllInventories(tags, minId, maxId, minPrice, maxPrice,
+            isDeinventoried, orderer, company, location, costCenter, serialNumber, createdAfter,
+            createdBefore, orderBy, direction, pageable);
     }
 
     // Ein Element der Inventarisierungsliste abrufen

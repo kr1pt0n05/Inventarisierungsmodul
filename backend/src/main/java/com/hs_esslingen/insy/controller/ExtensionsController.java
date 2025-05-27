@@ -9,7 +9,6 @@ import com.hs_esslingen.insy.service.ExtensionsService;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,8 +24,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/inventories/{id}/components")
 public class ExtensionsController {
     
-    @Autowired
-    private ExtensionsService extensionsService;
+    private final ExtensionsService extensionsService;
+    
+    ExtensionsController(ExtensionsService extensionsService) {
+        this.extensionsService = extensionsService;
+    }
     
     @GetMapping
     public ResponseEntity<List<ExtensionsResponseDTO>> getAllExtensions(@PathVariable Integer id) {
