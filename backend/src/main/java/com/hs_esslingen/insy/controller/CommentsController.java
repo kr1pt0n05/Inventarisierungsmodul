@@ -3,8 +3,9 @@ package com.hs_esslingen.insy.controller;
 import java.util.List;
 
 import com.hs_esslingen.insy.dto.Comment;
-import com.hs_esslingen.insy.services.CommentsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hs_esslingen.insy.model.Comments;
+import com.hs_esslingen.insy.service.CommentsService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/inventories/{id}/comments")
 public class CommentsController {
-    @Autowired
-    private CommentsService commentsService;
+    
+    private final CommentsService commentsService;
+    
+    CommentsController(CommentsService commentsService) {
+        this.commentsService = commentsService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Comment>> getCommentsByInventoryId(@PathVariable("id") Integer id) {
