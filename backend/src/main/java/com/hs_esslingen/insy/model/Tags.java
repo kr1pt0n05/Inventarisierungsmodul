@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Entity
 @Builder
 @Getter
@@ -44,6 +45,7 @@ public class Tags {
     @Builder
     public Tags(String name) {
         this.name = name;
+
         inventories = new HashSet<>();
     }
 }

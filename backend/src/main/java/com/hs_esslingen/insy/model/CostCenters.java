@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Data
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "cost_centers")
 public class CostCenters {

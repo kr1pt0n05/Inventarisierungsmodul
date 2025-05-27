@@ -2,11 +2,15 @@
 package com.hs_esslingen.insy.configuration;
 
 import java.math.BigDecimal;
+
+
 import java.util.List;
+
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.hs_esslingen.insy.model.Comments;
 import com.hs_esslingen.insy.model.Companies;
 import com.hs_esslingen.insy.model.Inventories;
 import com.hs_esslingen.insy.model.Tags;
@@ -17,6 +21,7 @@ import com.hs_esslingen.insy.repository.TagsRepository;
 import com.hs_esslingen.insy.repository.UsersRepository;
 import com.hs_esslingen.insy.model.Users;
 import com.hs_esslingen.insy.model.CostCenters;
+import com.hs_esslingen.insy.repository.CommentsRepository;
 
 /**
  * This class is used to seed the database with initial data.
@@ -33,18 +38,24 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final InventoriesRepository inventoriesRepository;
     private final UsersRepository usersRepository;
     private final CostCentersRepository costCentersRepository;
+    private final CommentsRepository commentsRepository;
 
     public DatabaseSeeder(
-            TagsRepository tagsRepository,
-            CompaniesRepository companiesRepository,
-            InventoriesRepository inventoriesRepository,
-            UsersRepository usersRepository,
-            CostCentersRepository costCentersRepository) {
+
+        TagsRepository tagsRepository,
+        CompaniesRepository companiesRepository,
+        InventoriesRepository inventoriesRepository,
+        UsersRepository usersRepository,
+        CostCentersRepository costCentersRepository,
+        CommentsRepository commentsRepository
+    ) {
+
         this.tagsRepository = tagsRepository;
         this.companiesRepository = companiesRepository;
         this.inventoriesRepository = inventoriesRepository;
         this.usersRepository = usersRepository;
         this.costCentersRepository = costCentersRepository;
+        this.commentsRepository = commentsRepository;
     }
 
     @Override
@@ -90,6 +101,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         inv.setUser(testUser);
         inv.getTags().add(tag1);
         tag1.getInventories().add(inv);
+        inv.addComment(new Comments(inv, testUser, "test"));
         inventoriesRepository.save(inv);
 
         // Weitere Inventories (IDs werden automatisch generiert – außer 1)
@@ -107,7 +119,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         // Setze bei zwei Inventories isDeinventoried = true
         newInventories.get(2).setIsDeinventoried(true); // Canon Drucker
         newInventories.get(7).setIsDeinventoried(true); // MacBook
-
+        
         inventoriesRepository.saveAll(newInventories);
     }
 
