@@ -5,6 +5,7 @@ import com.hs_esslingen.insy.dto.ExtensionsResponseDTO;
 import com.hs_esslingen.insy.model.Companies;
 import com.hs_esslingen.insy.model.Extensions;
 import com.hs_esslingen.insy.model.Inventories;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

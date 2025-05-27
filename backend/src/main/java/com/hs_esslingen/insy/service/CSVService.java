@@ -23,14 +23,12 @@ public class CSVService {
     private final Character DELIMITER = ';';
 
     private final InventoriesRepository inventoriesRepository;
-    private final CostCentersRepository costCentersRepository;
     private final UsersRepository usersRepository;
     private final CompaniesRepository companiesRepository;
     private final CommentsRepository commentsRepository;
 
-    public CSVService(InventoriesRepository inventoriesRepository, CostCentersRepository costCentersRepository, UsersRepository usersRepository, CompaniesRepository companiesRepository, CommentsRepository commentsRepository) {
+    public CSVService(InventoriesRepository inventoriesRepository, UsersRepository usersRepository, CompaniesRepository companiesRepository, CommentsRepository commentsRepository) {
         this.inventoriesRepository = inventoriesRepository;
-        this.costCentersRepository = costCentersRepository;
         this.usersRepository = usersRepository;
         this.companiesRepository = companiesRepository;
         this.commentsRepository = commentsRepository;
