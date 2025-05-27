@@ -46,8 +46,8 @@ module.exports = function (config) {
          * Report metadata array:
          * - metadata[0] = browser name
          * - metadata[1] = browser version
-         * - metadata[2] = plataform name
-         * - metadata[3] = plataform version
+         * - metadata[2] = platform name
+         * - metadata[3] = platform version
          */
         return 'sonarqube_report.xml';
       },
