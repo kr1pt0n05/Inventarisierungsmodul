@@ -2,7 +2,7 @@ package com.hs_esslingen.insy.controller;
 
 import java.util.List;
 
-import com.hs_esslingen.insy.DTO.Comment;
+import com.hs_esslingen.insy.dto.Comment;
 import com.hs_esslingen.insy.services.CommentsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

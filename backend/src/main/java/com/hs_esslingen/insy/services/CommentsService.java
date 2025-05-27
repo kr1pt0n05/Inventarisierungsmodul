@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.hs_esslingen.insy.DTO.Comment;
+import com.hs_esslingen.insy.dto.Comment;
 import com.hs_esslingen.insy.model.Inventories;
 import com.hs_esslingen.insy.repository.InventoriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,6 @@ public class CommentsService {
                 .map(comment -> Comment.builder()
                         .id(comment.getId())
                         .description(comment.getDescription())
-                        .createdAt(comment.getCreatedAt())
                         .author(comment.getAuthor() != null ? comment.getAuthor().getName() : "Unknown")
                         .build())
                 .collect(Collectors.toList());
@@ -48,7 +47,6 @@ public class CommentsService {
         Comments comment = Comments.builder()
                 .inventories(inventory.get())
                 .description(commentDTO.getDescription())
-                .createdAt(OffsetDateTime.now(ZoneId.of("Europe/Berlin")))
                 .author(inventory.get().getUser())
                 .build();
 
@@ -58,7 +56,6 @@ public class CommentsService {
         return Comment.builder()
                 .id(savedComment.getId())
                 .description(savedComment.getDescription())
-                .createdAt(savedComment.getCreatedAt())
                 .author(savedComment.getAuthor().getName())
                 .build();
     }

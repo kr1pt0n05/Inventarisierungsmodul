@@ -1,4 +1,4 @@
-package com.hs_esslingen.insy.DTO;
+package com.hs_esslingen.insy.dto;
 
 import java.time.OffsetDateTime;
 

@@ -46,6 +46,5 @@ public class Comments {
         this.inventories = inventories;
         this.author = users;
         this.description = description;
-        this.createdAt = OffsetDateTime.now(ZoneId.of("Europe/Berlin"));
     }
 }
