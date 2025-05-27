@@ -58,6 +58,7 @@ public class CommentsService {
         return Comment.builder()
                 .id(savedComment.getId())
                 .description(savedComment.getDescription())
+                .createdAt(savedComment.getCreatedAt())
                 .author(savedComment.getAuthor().getName())
                 .build();
     }
