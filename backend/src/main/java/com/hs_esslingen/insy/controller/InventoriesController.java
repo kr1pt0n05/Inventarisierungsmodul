@@ -33,7 +33,7 @@ public class InventoriesController {
     
     private final InventoriesService inventoriesService;
 
-    InventoriesController(@Autowired InventoriesService inventoriesService) {
+    InventoriesController(InventoriesService inventoriesService) {
         this.inventoriesService = inventoriesService;
     }
 

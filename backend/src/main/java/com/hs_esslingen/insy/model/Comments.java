@@ -30,8 +30,8 @@ public class Comments {
     @JsonBackReference
     private Inventories inventories;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Users author;
 
@@ -39,6 +39,7 @@ public class Comments {
     private String description;
 
     @Column(name = "created_at", nullable = false)
+    @Builder.Default
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
     @Builder
@@ -46,5 +47,6 @@ public class Comments {
         this.inventories = inventories;
         this.author = users;
         this.description = description;
+        this.createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
     }
 }
