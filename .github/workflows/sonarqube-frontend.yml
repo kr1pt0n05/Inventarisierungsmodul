@@ -1,19 +1,19 @@
 name: Sonar Scanner Frontend
 on:
   push:
-    branches: ["main", "frontend"]
-    paths: 
+    branches: ["main", "frontend", "sonarqube-frontend"]
+    paths:
       - "frontend/**"
   pull_request:
-    branches: [ "main", "backend" ]
+    branches: [ "main", "frontend" ]
     paths:
-      - 'backend/**'
-      
+      - 'frontend/**'
+
 jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
