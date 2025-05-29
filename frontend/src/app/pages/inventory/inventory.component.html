@@ -25,8 +25,8 @@
         <app-range-slider
           [minValue]="0"
           [maxValue]="28000"
-          [controlMin]="$any(inventoryForm).get('inventoryNumberMin')"
-          [controlMax]="$any(inventoryForm).get('inventoryNumberMax')"
+          [controlMin]="$any(inventoryForm).get('minId')"
+          [controlMax]="$any(inventoryForm).get('maxId')"
         /> <!-- $any needed to bypass Typescript type checking.  -->
       </div>
     </app-accordion>
@@ -56,8 +56,8 @@
         <app-range-slider
           [minValue]="0"
           [maxValue]="2000"
-          [controlMin]="$any(inventoryForm).get('priceMin')"
-          [controlMax]="$any(inventoryForm).get('priceMax')"
+          [controlMin]="$any(inventoryForm).get('minPrice')"
+          [controlMax]="$any(inventoryForm).get('maxPrice')"
         /> <!-- $any needed to bypass Typescript type checking.  -->
       </div>
     </app-accordion>
@@ -90,7 +90,7 @@
           placeholder="Besteller hinzufügen"
           heading="Besteller"
           [options]="['Emanuel Reichsöllner']"
-          [control]="$any(inventoryForm).get('order')"
+          [control]="$any(inventoryForm).get('orderer')"
         />
       </div>
     </app-accordion>

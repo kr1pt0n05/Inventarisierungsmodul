@@ -4,9 +4,9 @@ import {User} from './user';
 export interface InventoryItem {
   // costCenter: number,
   id: number,
-  user: User,
+  user: string,
   description: string,
-  company: Company,
+  company: string,
   price: number,
   createdAt: string,
   serialNumber: string,
