@@ -92,23 +92,23 @@ export class DetailsComponent {
   ]);
 
   extensionColumns = new Map<string, string>([
-    ['productDescription', 'Erweiterungstyp'],
+    ['description', 'Erweiterungstyp'],
     ['company', 'Bestellt bei'],
     ['price', 'Preis in €'],
     ['costCenter', 'Kostenstelle'],
     ['serialNumber', 'Seriennummer'],
     ['orderer', 'Hinzugefügt von'],
-    ['date', 'Hinzugefügt am']
+    ['createdAt', 'Hinzugefügt am']
   ]);
 
   commentsColumns = new Map<string, string>([
-    ['comment', 'Kommentar'],
+    ['description', 'Kommentar'],
     ['author', 'Hinzugefügt von'],
     ['createdAt', 'Hinzugefügt am']
   ]);
 
   changesColumns = new Map<string, string>([
-    ['date', 'Geändert am'],
+    ['changedAt', 'Geändert am'],
     ['change', 'Änderung'],
     ['oldValue', 'Alter Wert'],
     ['newValue', 'Neuer Wert'],
@@ -173,8 +173,7 @@ function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
     const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable;
     const changedColumnDisplayName = changesColumnNames.get(change.changedColumn) ?? change.changedColumn;
     return {
-      date: change.date,
-      inventoryNumber: change.inventoryNumber,
+      changedAt: change.changedAt,
       changedBy: change.changedBy,
       change: `${changedTableDisplayName} - ${changedColumnDisplayName}`,
       oldValue: change.oldValue,
@@ -185,8 +184,7 @@ function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
 }
 
 interface ChangeInternal {
-  date: string;
-  inventoryNumber: number;
+  changedAt: string;
   changedBy: string;
   change: string;
   oldValue: string;

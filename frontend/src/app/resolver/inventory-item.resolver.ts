@@ -19,7 +19,12 @@ export class InventoryItemResolver implements Resolve<InventoryItem> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<InventoryItem> {
     let inventoryItem = null;
 
-    if (this.debug) {
+    try {
+      inventoryItem = this.inventoriesService.getInventoryById(parseInt(route.paramMap.get('id')!));
+
+    } catch (error) {
+      console.error('Fehler beim Abrufen des Inventaritems:', error);
+
       inventoryItem = of({
         costCenter: "123",
         id: parseInt(route.paramMap.get('id')!),
@@ -35,9 +40,7 @@ export class InventoryItemResolver implements Resolve<InventoryItem> {
           { id: 2, name: 'Monitor' },
           { id: 3, name: 'Zubehör' }
         ],
-      } as InventoryItem);
-    } else {
-      inventoryItem = this.inventoriesService.getInventoryById(parseInt(route.paramMap.get('id')!));
+      } as InventoryItem)
     }
 
     return inventoryItem;

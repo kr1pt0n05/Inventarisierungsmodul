@@ -1,10 +1,10 @@
 export interface Extension {
+  id: number,
   costCenter: number,
-  inventoryNumber: number,
-  productDescription: string,
+  description: string,
   company: string,
   price: number,
-  date: string,
+  createdAt: string,
   serialNumber: string,
   orderer: string,
 }

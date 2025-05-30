@@ -4,26 +4,17 @@ import {
   Resolve,
   RouterStateSnapshot
 } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Comment } from '../models/comment';
+import { InventoriesService } from '../services/inventories.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommentsResolver implements Resolve<Comment[]> {
+  constructor(private readonly inventoriesService: InventoriesService) { }
+
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Comment[]> {
-    const comments: Comment[] = [
-      {
-        comment: 'Dies ist eine Beispielnotiz für das Inventaritem.',
-        createdAt: '2023-10-01',
-        author: 'Max Mustermann'
-      },
-      {
-        comment: 'Eine weitere Notiz, die dem Inventaritem hinzugefügt wurde.',
-        createdAt: '2023-10-02',
-        author: 'Erika Musterfrau'
-      }
-    ];
-    return of(comments);
+    return this.inventoriesService.getCommentsForId(parseInt(route.paramMap.get('id')!));
   }
 }

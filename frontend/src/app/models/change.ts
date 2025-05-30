@@ -1,6 +1,6 @@
 export interface Change {
-  date: string;
-  inventoryNumber: number;
+  id: number;
+  changedAt: string;
   changedBy: string;
   changedTable: string;
   changedColumn: string;
