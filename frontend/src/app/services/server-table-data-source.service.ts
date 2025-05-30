@@ -69,14 +69,13 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._service.getInventories(pageNumber, pageSize).subscribe((inventories: Inventories) => {
       this.data = inventories.content.map((item: InventoryItem) => ({
         id: item.id,
-        user: item.user.name,
         description: item.description,
-        company: item.company.name,
+        company: item.company,
         price: item.price,
         createdAt: new Date(`2025-01-01T${item.createdAt}`),
         serialNumber: item.serialNumber,
         location: item.location,
-        orderer: item.user.name,
+        orderer: item.orderer,
       }));
       if (this._paginator) this._paginator.length = inventories.totalElements;
     })
