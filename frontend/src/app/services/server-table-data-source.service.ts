@@ -1,13 +1,13 @@
-import {inject, Injectable} from '@angular/core';
-import {DataSource} from '@angular/cdk/table';
-import {CollectionViewer} from '@angular/cdk/collections';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {InventoriesService} from './inventories.service';
-import {Inventories} from '../models/inventories';
-import {InventoryItem} from '../models/inventory-item';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import { CollectionViewer } from '@angular/cdk/collections';
+import { DataSource } from '@angular/cdk/table';
+import { inject, Injectable } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Inventories } from '../models/inventories';
+import { InventoryItem } from '../models/inventory-item';
+import { InventoriesService } from './inventories.service';
 
-interface Page{
+interface Page {
   pageIndex: number,
   pageSize: number,
 }
@@ -23,7 +23,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
 
 
   // API
-  private _service: InventoriesService  = inject(InventoriesService);
+  private _service: InventoriesService = inject(InventoriesService);
 
   // Paginator
   private _paginator: MatPaginator | undefined;
@@ -60,7 +60,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set paginator(paginator: MatPaginator) {
     this._paginator = paginator;
     this._paginator.page.subscribe((page: PageEvent) => {
-        this.fetchData(page.pageIndex, page.pageSize);
+      this.fetchData(page.pageIndex, page.pageSize);
     })
   }
 
@@ -78,7 +78,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
         location: item.location,
         orderer: item.user.name,
       }));
-      if(this._paginator) this._paginator.length = inventories.totalElements;
+      if (this._paginator) this._paginator.length = inventories.totalElements;
     })
   }
 
