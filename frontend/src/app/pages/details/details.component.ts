@@ -4,28 +4,27 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
-import { InventoryExtension } from '../../models/inventory-extension';
+import { Change } from '../../models/change';
+import { Extension } from '../../models/extension';
 import { InventoryItem } from '../../models/inventory-item';
-import { InventoryItemChange } from '../../models/inventory-item-change';
-import { InventoryItemNotes } from '../../models/inventory-item-notes';
 import { Tag } from '../../models/tag';
 
 /**
  * Component for displaying detailed information about an inventory item.
  *
  * This component organizes and displays the main attributes of an inventory item as well as its related
- * extensions, notes, tags, and change history. The information is grouped into expandable panels using
+ * extensions, comments, tags, and change history. The information is grouped into expandable panels using
  * Angular Material Expansion Panels. Each panel uses a dynamic list or chip set to present its data.
  *
  * ## Inputs
  * - `inventoryItemInput`: The main inventory item to display (type: InventoryItem).
  * - `extensions`: Array of extension objects related to the inventory item (type: InventoryExtension[]).
- * - `notes`: Array of notes related to the inventory item (type: InventoryItemNotes[]).
+ * - `comments`: Array of comments related to the inventory item (type: InventoryItemcomments[]).
  * - `changes`: Array of change history entries (type: InventoryItemChange[]) for the inventory item.
  *
  * ## Features
  * - Displays item attributes in a two-column layout.
- * - Shows related extensions, notes, and change history in expandable panels with dynamic column headers.
+ * - Shows related extensions, comments, and change history in expandable panels with dynamic column headers.
  * - Displays an items tags as chips.
  * - Automatically opens all expansion panels after rendering.
  * - Handles empty states for each panel.
@@ -34,7 +33,7 @@ import { Tag } from '../../models/tag';
  * <app-details
  *   [inventoryItemInput]="item"
  *   [extensions]="itemExtensions"
- *   [notes]="itemNotes"
+ *   [comments]="itemcomments"
  *   [changes]="itemChanges">
  * </app-details>
  */
@@ -54,7 +53,7 @@ import { Tag } from '../../models/tag';
 export class DetailsComponent {
   panelIdNameMap = new Map<string, string>([
     ['extensions', 'Erweiterungen'],
-    ['notes', 'Notizen'],
+    ['comments', 'Notizen'],
     ['tags', 'Tags'],
     ['changes', 'Historie']
   ]);
@@ -62,8 +61,8 @@ export class DetailsComponent {
   @ViewChildren('Panels') panels!: QueryList<MatExpansionPanel>;
 
   inventoryItem = input.required<InventoryItem>();
-  extensions = input<InventoryExtension[]>([]);
-  notes = input<InventoryItemNotes[]>([]);
+  extensions = input<Extension[]>([]);
+  comments = input<Comment[]>([]);
   tags: Tag[] = [];
   // The transform merges table and column names for change history entries to display them in a single column
   changes = input([], { transform: mergeChangeLocation });
@@ -72,7 +71,7 @@ export class DetailsComponent {
 
   panelContent = new Map<string, any>([
     ['extensions', this.extensions],
-    ['notes', this.notes],
+    ['comments', this.comments],
     ['changes', this.changes]
   ]);
 
@@ -101,10 +100,10 @@ export class DetailsComponent {
     ['date', 'Hinzugefügt am']
   ]);
 
-  notesColumns = new Map<string, string>([
-    ['note', 'Notiz'],
+  commentsColumns = new Map<string, string>([
+    ['comment', 'Kommentar'],
     ['author', 'Hinzugefügt von'],
-    ['date', 'Hinzugefügt am']
+    ['createdAt', 'Hinzugefügt am']
   ]);
 
   changesColumns = new Map<string, string>([
@@ -117,7 +116,7 @@ export class DetailsComponent {
 
   panelColumnMaps = new Map<string, Map<string, string>>([
     ['extensions', this.extensionColumns],
-    ['notes', this.notesColumns],
+    ['comments', this.commentsColumns],
     ['changes', this.changesColumns]
   ]);
 
@@ -165,11 +164,11 @@ const changesColumnNames = new Map<string, string>([
 
 /**
  * Helper function to merge table and column names for change history entries.
- * @param {InventoryItemChange[]} rawChanges - The raw change history entries.
+ * @param {Change[]} rawChanges - The raw change history entries.
  * @returns {any[]} The transformed change history entries.
  */
-function mergeChangeLocation(rawChanges: InventoryItemChange[]): InventoryItemChangeInternal[] {
-  let changes = rawChanges.map((change: InventoryItemChange) => {
+function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
+  let changes = rawChanges.map((change: Change) => {
     const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable;
     const changedColumnDisplayName = changesColumnNames.get(change.changedColumn) ?? change.changedColumn;
     return {
@@ -184,7 +183,7 @@ function mergeChangeLocation(rawChanges: InventoryItemChange[]): InventoryItemCh
   return changes;
 }
 
-interface InventoryItemChangeInternal {
+interface ChangeInternal {
   date: string;
   inventoryNumber: number;
   changedBy: string;

@@ -1,4 +1,4 @@
-export interface InventoryItemChange {
+export interface Change {
   date: string;
   inventoryNumber: number;
   changedBy: string;

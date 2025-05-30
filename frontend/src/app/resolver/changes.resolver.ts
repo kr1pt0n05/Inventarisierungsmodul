@@ -5,13 +5,13 @@ import {
   RouterStateSnapshot
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { InventoryItemChange } from '../models/inventory-item-change';
+import { Change } from '../models/change';
 
 @Injectable({
   providedIn: 'root'
 })
-export class InventoryItemChangesResolver implements Resolve<InventoryItemChange[]> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<InventoryItemChange[]> {
+export class InventoryItemChangesResolver implements Resolve<Change[]> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Change[]> {
     const changes = [
       {
         date: '2023-10-01',
@@ -35,4 +35,3 @@ export class InventoryItemChangesResolver implements Resolve<InventoryItemChange
     return of(changes);
   }
 }
-

@@ -1,4 +1,4 @@
-export interface InventoryExtension {
+export interface Extension {
   costCenter: number,
   inventoryNumber: number,
   productDescription: string,

@@ -5,9 +5,9 @@ import { InventoryComponent } from './pages/inventory/inventory.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { InventoryItemChangesResolver } from './resolver/changes.resolver';
+import { CommentsResolver } from './resolver/comments.resolver';
 import { ExtensionsResolver } from './resolver/extensions.resolver';
 import { InventoryItemResolver } from './resolver/inventory-item.resolver';
-import { InventoryItemNotesResolver } from './resolver/notes.resolver';
 import { DefaultGuardService } from './services/default-guard.service';
 
 export const routes: Routes = [
@@ -40,7 +40,7 @@ export const routes: Routes = [
     resolve: {
       inventoryItem: InventoryItemResolver,
       extensions: ExtensionsResolver,
-      notes: InventoryItemNotesResolver,
+      comments: CommentsResolver,
       changes: InventoryItemChangesResolver
     }
   },

@@ -5,15 +5,15 @@ import {
   RouterStateSnapshot
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { InventoryExtension } from '../models/inventory-extension';
+import { Extension } from '../models/extension';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ExtensionsResolver implements Resolve<InventoryExtension[]> {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<InventoryExtension[]> {
+export class ExtensionsResolver implements Resolve<Extension[]> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Extension[]> {
     // Mock data for demonstration purposes
-    const extensions: InventoryExtension[] = [
+    const extensions: Extension[] = [
       {
         costCenter: 123,
         inventoryNumber: parseInt(route.paramMap.get('id')!),
