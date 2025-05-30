@@ -1,4 +1,7 @@
-import {AfterViewInit, Component, input, ViewChild} from '@angular/core';
+import { NgForOf } from '@angular/common';
+import { AfterViewInit, Component, input, ViewChild } from '@angular/core';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import {
   MatCell,
   MatCellDef,
@@ -8,9 +11,6 @@ import {
   MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
   MatTable, MatTableDataSource,
 } from '@angular/material/table';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import { NgForOf } from '@angular/common';
 
 /**
  * A generic Angular component for displaying a dynamic list
@@ -49,7 +49,7 @@ import { NgForOf } from '@angular/common';
   templateUrl: './dynamic-list.component.html',
   styleUrl: './dynamic-list.component.css'
 })
-export class DynamicListComponent implements AfterViewInit{
+export class DynamicListComponent implements AfterViewInit {
 
   // The list data as an array of objects.
   tableContent = input.required<object[]>();

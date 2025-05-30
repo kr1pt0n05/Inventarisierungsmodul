@@ -116,9 +116,9 @@ export class DetailsComponent {
   ]);
 
   panelColumnMaps = new Map<string, Map<string, string>>([
-    ['Erweiterungen', this.extensionColumns],
-    ['Notizen', this.notesColumns],
-    ['Historie', this.changesColumns]
+    ['extensions', this.extensionColumns],
+    ['notes', this.notesColumns],
+    ['changes', this.changesColumns]
   ]);
 
   constructor() {
@@ -143,7 +143,6 @@ export class DetailsComponent {
         ['orderer', this.inventoryItem().orderer]
       ]);
       this.tags = this.inventoryItem().tags;
-      console.log(this.tags);
     } else {
       this.inventoryItemInternal = new Map<string, string>();
       for (let id of this.inventoryItemColumns.keys()) {
@@ -169,8 +168,12 @@ export class DetailsComponent {
 
 // Defines the table and column display names for the change history entries
 const changesTableNames = new Map<string, string>([
+  ['inventory_items', 'Hauptartikel'],
+  ['extensions', 'Erweiterung']
 ]);
 const changesColumnNames = new Map<string, string>([
+  ['location', 'Standort/Nutzer:in'],
+  ['price', 'Preis in €']
 ]);
 
 /**
@@ -186,7 +189,7 @@ function mergeChangeLocation(rawChanges: InventoryItemChange[]): InventoryItemCh
       date: change.date,
       inventoryNumber: change.inventoryNumber,
       changedBy: change.changedBy,
-      change: `${changedTableDisplayName} -${changedColumnDisplayName}`,
+      change: `${changedTableDisplayName} - ${changedColumnDisplayName}`,
       oldValue: change.oldValue,
       newValue: change.newValue
     };
