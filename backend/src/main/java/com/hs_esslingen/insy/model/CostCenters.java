@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Data
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "cost_centers")
 public class CostCenters {
@@ -34,7 +36,7 @@ public class CostCenters {
     @Builder.Default
     private Boolean isArchived = false;
 
-    @OneToMany(mappedBy = "costCenters")
+    @OneToMany(mappedBy = "costCenter")
     @Builder.Default
     @JsonManagedReference
     private List<Inventories> inventories = new ArrayList<>();
@@ -58,11 +60,11 @@ public class CostCenters {
     // Getter und Setter
     public void addInventory(Inventories inventory) {
         this.inventories.add(inventory);
-        inventory.setCostCenters(this);
+        inventory.setCostCenter(this);
     }
 
     public void removeInventory(Inventories inventory) {
         this.inventories.remove(inventory);
-        inventory.setCostCenters(null);
+        inventory.setCostCenter(null);
     }
 }

@@ -1,45 +1,41 @@
 package com.hs_esslingen.insy.model;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import lombok.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
 
-@Entity
 @Data
 @Builder
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
+@Entity
 @Table(name = "inventories")
 public class Inventories {
 
     @Id
+    @EqualsAndHashCode.Include
     @Column(nullable = false)
     private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "cost_centers_id", nullable = true)
-    @JsonIgnoreProperties("inventories")
-    private CostCenters costCenters;
+    private CostCenters costCenter;
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = false)
-    @JsonIgnoreProperties({ "inventories", "histories", "comments" })
     private Users user;
 
     @ManyToOne
     @JoinColumn(name = "companies_id", nullable = false)
-    @JsonIgnoreProperties("inventories")
     private Companies company;
 
     @Column(nullable = false)
@@ -59,7 +55,7 @@ public class Inventories {
     private String location;
 
     @Column(name = "created_at", nullable = false)
-    private final OffsetDateTime createdAt = OffsetDateTime.now(ZoneId.of("Europe/Berlin"));
+    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
     @Column(name = "deleted_at")
     @Builder.Default
@@ -67,18 +63,15 @@ public class Inventories {
 
     @OneToMany(mappedBy = "inventories", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @JsonIgnore
     private List<Comments> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    @JsonIgnore
     private List<Extensions> extensions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Builder.Default
-    @JsonIgnore
-    private Set<InventoryTagRelations> tagRelations = new HashSet<>();
+    @ManyToMany
+    @JoinTable(name = "inventory_tag", joinColumns = @JoinColumn(name = "inventory_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tags> tags = new HashSet<>();
 
     // Konstruktor
     @Builder
@@ -86,7 +79,7 @@ public class Inventories {
             String serialNumber, BigDecimal price, String location) {
         this.id = id;
         this.isDeinventoried = false;
-        this.costCenters = costCenters;
+        this.costCenter = costCenters;
         this.user = user;
         this.company = company;
         this.description = description;
@@ -95,7 +88,7 @@ public class Inventories {
         this.location = location;
         this.extensions = new ArrayList<>();
         this.comments = new ArrayList<>();
-        this.tagRelations = new HashSet<>();
+        this.tags = new HashSet<>();
     }
 
     // Getter und Setter
@@ -113,28 +106,30 @@ public class Inventories {
         }
     }
 
+    // Adds an extension to the inventory and updates the price accordingly
     public void addExtension(Extensions extension) {
         if (!this.extensions.contains(extension)) {
             this.extensions.add(extension);
+
             extension.setInventory(this);
+
+            if (this.price == null) {
+                this.price = BigDecimal.ZERO;
+            }
+            if (extension.getPrice() != null) {
+                this.price = this.price.add(extension.getPrice());
+            }
         }
     }
 
+    // Removes an extension from the inventory and updates the price accordingly
     public void removeExtension(Extensions extension) {
         if (this.extensions.remove(extension)) {
-            extension.setInventory(this);
-        }
-    }
+            extension.setInventory(null);
 
-    public void addTagRelation(InventoryTagRelations tagRelation) {
-        if (this.tagRelations.add(tagRelation)) {
-            tagRelation.setInventory(this);
-        }
-    }
-
-    public void removeTagRelation(InventoryTagRelations tagRelation) {
-        if (this.tagRelations.remove(tagRelation)) {
-            tagRelation.setInventory(null);
+            if (this.price != null && extension.getPrice() != null) {
+                this.price = this.price.subtract(extension.getPrice());
+            }
         }
     }
 
@@ -142,4 +137,5 @@ public class Inventories {
         this.deletedAt = OffsetTime.now();
         this.isDeinventoried = true;
     }
+
 }

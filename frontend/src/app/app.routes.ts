@@ -13,12 +13,13 @@ import { DefaultGuardService } from './services/default-guard.service';
 export const routes: Routes = [
   {
     title: 'Login',
-    path: 'login',
+    path: '',
     component: LoginComponent,
+
   },
   {
     title: 'Home',
-    path: '',
+    path: 'homepage',
     component: HomepageComponent,
     canActivate: [DefaultGuardService],
   },
@@ -26,6 +27,7 @@ export const routes: Routes = [
     title: 'Inventarliste',
     path: 'inventory',
     component: InventoryComponent,
+    canActivate: [DefaultGuardService],
   },
   {
     title: 'Inventar',

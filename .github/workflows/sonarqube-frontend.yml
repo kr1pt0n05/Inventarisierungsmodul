@@ -1,7 +1,7 @@
 name: Sonar Scanner Frontend
 on:
   push:
-    branches: ["main", "frontend"]
+    branches: [ "main", "frontend" ]
     paths:
       - "frontend/**"
   pull_request:
