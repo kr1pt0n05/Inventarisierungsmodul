@@ -131,17 +131,17 @@ export class DetailsComponent {
   ngOnChanges() {
     if (this.inventoryItem() && JSON.stringify(this.inventoryItem()) !== '{}') {
       this.inventoryItemInternal = new Map<string, string>([
-        ['description', this.inventoryItem().description],
-        ['costCenter', this.inventoryItem().costCenter.toString()],
+        ['description', this.inventoryItem().description ?? ''],
+        ['costCenter', this.inventoryItem().costCenter.toString() ?? ''],
         ['id', this.inventoryItem().id.toString()],
-        ['company', this.inventoryItem().company],
-        ['price', this.inventoryItem().price.toString()],
-        ['date', this.inventoryItem().createdAt],
-        ['serialNumber', this.inventoryItem().serialNumber],
-        ['location', this.inventoryItem().location],
-        ['orderer', this.inventoryItem().orderer]
+        ['company', this.inventoryItem().company ?? ''],
+        ['price', this.inventoryItem().price.toString() ?? ''],
+        ['date', this.inventoryItem().createdAt ?? ''],
+        ['serialNumber', this.inventoryItem().serialNumber ?? ''],
+        ['location', this.inventoryItem().location ?? ''],
+        ['orderer', this.inventoryItem().orderer ?? '']
       ]);
-      this.tags = this.inventoryItem().tags;
+      this.tags = this.inventoryItem().tags ?? [];
     } else {
       this.inventoryItemInternal = new Map<string, string>();
       for (let id of this.inventoryItemColumns.keys()) {
