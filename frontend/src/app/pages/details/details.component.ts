@@ -5,6 +5,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
+import { Comment } from '../../models/comment';
 import { Extension } from '../../models/extension';
 import { InventoryItem } from '../../models/inventory-item';
 import { Tag } from '../../models/tag';
