@@ -11,7 +11,7 @@ import { InventoryItem } from '../models/inventory-item';
   providedIn: 'root'
 })
 export class InventoriesService {
-  private url = 'http://localhost:8080/inventories'
+  private readonly url = 'http://localhost:8080/inventories'
 
   constructor(private readonly http: HttpClient) {
     this.http = http;
@@ -22,7 +22,7 @@ export class InventoriesService {
       'page': pageNumber,
       'size': pageSize,
     }
-    return this.http.get<Inventories>(this.url, {params: params});
+    return this.http.get<Inventories>(this.url, { params: params });
   }
 
   getInventoryById(id: number): Observable<InventoryItem> {
