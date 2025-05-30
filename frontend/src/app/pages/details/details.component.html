@@ -17,36 +17,45 @@
     <!-- Details Section -->
     <div class="flex gap-16">
         <div class="flex flex-col">
-            <div *ngFor="let field of getInventoryItemIds()" class="p-2">{{inventoryItemColumns.get(field)}}</div>
+            @for (field of inventoryItemColumns.keys(); track field) {
+            <div class="p-2">{{inventoryItemColumns.get(field)}}</div>
+            }
         </div>
         <div class="flex flex-col">
-            <div *ngFor="let field of getInventoryItemIds()" class="p-2">{{inventoryItemInternal.get(field)}}
-                <span *ngIf="field === 'price'">€</span>
+            @for (field of inventoryItemColumns.keys(); track field) {
+            <div class="p-2">{{inventoryItemInternal.get(field)}}
+                @if (field === 'price') {
+                <span>€</span>
+                }
             </div>
+            }
         </div>
     </div>
 
     <!-- Additional Data -->
-    <mat-expansion-panel *ngFor="let id of getPanelIds()" #Panels>
+    @for (id of panelIdNameMap.keys(); track id) {
+    <mat-expansion-panel #Panels>
         <mat-expansion-panel-header>
             <mat-panel-title class="text-xl">{{panelIdNameMap.get(id)}}</mat-panel-title>
         </mat-expansion-panel-header>
 
         <!-- Panel content -->
-        <app-dynamic-list *ngIf="panelContent.get(id) && panelContent.get(id)()!.length; else tagPanel"
-            [tableContent]="panelContent.get(id)()" [columns]="panelColumnMaps.get(id)!">
+        @if (panelContent.has(id) && panelContent.get(id)()!.length > 0) {
+        <app-dynamic-list [tableContent]="panelContent.get(id)()" [columns]="panelColumnMaps.get(id)!">
         </app-dynamic-list>
 
-        <ng-template #tagPanel>
-            <mat-chip-set *ngIf="id === 'tags' && tags.length > 0; else noData">
-                <mat-chip *ngFor="let tag of getTagNames()" role="listitem">{{tag}}</mat-chip>
-            </mat-chip-set>
-        </ng-template>
+        } @else if (id === 'tags' && tags.length > 0) {
+        <mat-chip-set>
+            @for (tag of tags; track tag) {
+            <mat-chip role="listitem">{{tag.name}}</mat-chip>
+            }
+        </mat-chip-set>
 
-        <ng-template #noData>
-            <p>Keine {{panelIdNameMap.get(id)}} vorhanden.</p>
-        </ng-template>
+        } @else {
+        <p>Keine {{panelIdNameMap.get(id)}} vorhanden.</p>
+        }
 
     </mat-expansion-panel>
+    }
 
 </div>

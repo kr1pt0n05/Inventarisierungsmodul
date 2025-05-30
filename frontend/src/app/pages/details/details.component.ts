@@ -151,19 +151,6 @@ export class DetailsComponent {
     }
   }
 
-  // Helper methods are needed bvecause the result of .keys() changes when called from a template
-  getTagNames(): string[] {
-    return this.tags.map(tag => tag.name);
-  }
-
-  getInventoryItemIds(): string[] {
-    return Array.from(this.inventoryItemColumns.keys());
-  }
-
-  getPanelIds(): string[] {
-    return Array.from(this.panelIdNameMap.keys());
-  }
-
 }
 
 // Defines the table and column display names for the change history entries
