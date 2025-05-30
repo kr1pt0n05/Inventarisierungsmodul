@@ -12,6 +12,18 @@ import { InventoryItemNotes } from '../models/inventory-item-notes';
 })
 export class InventoryItemNotesResolver implements Resolve<InventoryItemNotes[]> {
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<InventoryItemNotes[]> {
-    return of([] as InventoryItemNotes[]);
+    const notes: InventoryItemNotes[] = [
+      {
+        note: 'Dies ist eine Beispielnotiz für das Inventaritem.',
+        date: '2023-10-01',
+        author: 'Max Mustermann'
+      },
+      {
+        note: 'Eine weitere Notiz, die dem Inventaritem hinzugefügt wurde.',
+        date: '2023-10-02',
+        author: 'Erika Musterfrau'
+      }
+    ];
+    return of(notes);
   }
 }
