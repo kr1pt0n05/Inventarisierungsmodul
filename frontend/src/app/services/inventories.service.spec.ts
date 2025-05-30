@@ -1,10 +1,8 @@
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { provideHttpClient } from '@angular/common/http';
-import { InventoriesService } from './inventories.service';
-import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { InventoriesService } from './inventories.service';
 
 describe('InventoriesService', () => {
   let service: InventoriesService;

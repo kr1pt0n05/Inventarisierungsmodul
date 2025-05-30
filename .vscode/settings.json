@@ -4,7 +4,7 @@
         "projectKey": "Inventarisierungsmodul-backend-89wehenfefhe89"
     },
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.configuration.updateBuildConfiguration": "automatic",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll": "always",
