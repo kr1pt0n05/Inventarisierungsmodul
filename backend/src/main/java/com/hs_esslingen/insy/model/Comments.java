@@ -32,8 +32,7 @@ public class Comments {
     private Inventories inventories;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
     private Users author;
 
     @Column(nullable = false)
