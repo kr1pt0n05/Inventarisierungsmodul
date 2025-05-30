@@ -27,12 +27,6 @@ export const routes: Routes = [
     path: 'inventory',
     component: InventoryComponent,
   },
-  { // For testing purposes, should be replaced by dynamic routing based on selected item
-    title: 'tmp Details',
-    path: 'details',
-    canActivate: [DefaultGuardService],
-    component: DetailsComponent
-  },
   {
     title: 'Inventar',
     path: 'inventory/:id',
