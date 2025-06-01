@@ -318,6 +318,101 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
 
+  /inventories/costcenters:
+    get:
+      tags:
+      - Inventarisierungsliste
+      summary: Ruft alle Kostenstellen ab
+      responses:
+        "200":
+          description: Erfolgreiches Abrufen der Kostenstellen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Costcenter'
+        "500":
+          description: Interner Serverfehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  /inventories/companies:
+    get:
+      tags:
+        - Inventarisierungsliste
+      summary: Ruft alle Firmen ab
+      responses:
+        "200":
+          description: Erfolgreiches Abrufen der Firmen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        "500":
+          description: Interner Serverfehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  /inventories/orderers:
+    get:
+      tags:
+        - Inventarisierungsliste
+      summary: Ruft alle Besteller ab
+      responses:
+        "200":
+          description: Erfolgreiches Abrufen der Besteller
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orderer'
+        "500":
+          description: Interner Serverfehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  /inventories/locations:
+    get:
+      tags:
+        - Inventarisierungsliste
+      summary: Ruft alle Orte ab, wo sich Gegendstände befinden
+      responses:
+        "200":
+          description: Erfolgreiches Abrufen der Orte
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        "500":
+          description: Interner Serverfehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  /inventories/serialnumbers:
+    get:
+      tags:
+        - Inventarisierungsliste
+      summary: Ruft alle Seriennummern von den Gegenständen ab
+      responses:
+        "200":
+          description: Erfolgreiches Abrufen der Seriennummern
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Serial number'
+        "500":
+          description: Interner Serverfehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
   /inventories/{id}/components:
     get:
       tags:
@@ -546,7 +641,7 @@ paths:
       summary: Liste der Kommentare zu einem Gegenstand
       description: Ruft die Liste aller Kommentare zu einem Gegenstand ab.
       parameters:
-      - name: id
+      - name: inventory-id
         in: path
         description: ID des Gegenstands
         required: true
@@ -583,7 +678,7 @@ paths:
       description: Ein neuer Kommentar wird erstellt und dem spezifizierten Gegenstand hinzugefügt.
       operationId: createComment
       parameters:
-      - name: id
+      - name: inventory-id
         in: path
         description: ID des Gegenstands
         required: true
@@ -626,7 +721,7 @@ paths:
       description: Löscht das spezifizierte Kommentar des entsprechenden Gegenstandes.
       operationId: removeComment
       parameters:
-      - name: id
+      - name: inventory-id
         in: path
         description: ID des Gegenstands
         required: true
@@ -1588,17 +1683,17 @@ components:
         comments_id:
           type: integer
           example: 23
-        author:
-          type: string
-          example: Peter
-        comments_description:
+        description:
           type: string
           example: Dieser Gegenstand wurde kommentiert
         comments_created_at:
           type: number
           format: datetime
-          example: 24.12.2000
-          
+          example: 24.12.2000 21:29:52
+        author:
+          type: string
+          example: Peter
+
     TagDTO:
       type: object
       properties:
@@ -1763,3 +1858,38 @@ components:
         empty:
           type: boolean
           example: false
+    Costcenter:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            example: "Costcenter1, Costcenter2"
+    Company:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            example: "Company1, Company2"
+    Orderer:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            example: "Orderer1, Orderer2"
+    Location:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            example: "Location1, Location2"
+    Serial number:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            example: "Serial number1, Serial number2"
