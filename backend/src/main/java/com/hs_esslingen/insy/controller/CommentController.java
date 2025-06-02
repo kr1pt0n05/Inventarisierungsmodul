@@ -2,9 +2,8 @@ package com.hs_esslingen.insy.controller;
 
 import java.util.List;
 
-import com.hs_esslingen.insy.dto.Comment;
-import com.hs_esslingen.insy.model.Comments;
-import com.hs_esslingen.insy.service.CommentsService;
+import com.hs_esslingen.insy.dto.CommentDTO;
+import com.hs_esslingen.insy.service.CommentService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +12,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/inventories/{id}/comments")
-public class CommentsController {
+public class CommentController {
     
-    private final CommentsService commentsService;
+    private final CommentService commentsService;
     
-    CommentsController(CommentsService commentsService) {
+    CommentController(CommentService commentsService) {
         this.commentsService = commentsService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Comment>> getCommentsByInventoryId(@PathVariable("id") Integer id) {
+    public ResponseEntity<List<CommentDTO>> getCommentsByInventoryId(@PathVariable("id") Integer id) {
         try {
-            List<Comment> comments = commentsService.getCommentsByInventoryId(id);
+            List<CommentDTO> comments = commentsService.getCommentsByInventoryId(id);
             if (comments.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             } else {
@@ -36,9 +35,9 @@ public class CommentsController {
     }
 
     @PostMapping
-    public ResponseEntity<Comment> createComment(@PathVariable("id") Integer inventoryId, @RequestBody Comment comment) {
+    public ResponseEntity<CommentDTO> createComment(@PathVariable("id") Integer inventoryId, @RequestBody CommentDTO comment) {
         try {
-            Comment createdComment = commentsService.createComment(inventoryId, comment);
+            CommentDTO createdComment = commentsService.createComment(inventoryId, comment);
             return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
 
         } catch (IllegalArgumentException e) {

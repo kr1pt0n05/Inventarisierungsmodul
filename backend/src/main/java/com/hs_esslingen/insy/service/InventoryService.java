@@ -1,20 +1,20 @@
 package com.hs_esslingen.insy.service;
 
-import com.hs_esslingen.insy.repository.CompaniesRepository;
-import com.hs_esslingen.insy.repository.CostCentersRepository;
-import com.hs_esslingen.insy.repository.InventoriesRepository;
-import com.hs_esslingen.insy.repository.TagsRepository;
-import com.hs_esslingen.insy.repository.UsersRepository;
+import com.hs_esslingen.insy.repository.CompanyRepository;
+import com.hs_esslingen.insy.repository.CostCenterRepository;
+import com.hs_esslingen.insy.repository.InventoryRepository;
+import com.hs_esslingen.insy.repository.TagRepository;
+import com.hs_esslingen.insy.repository.UserRepository;
 import com.hs_esslingen.insy.utils.OrderByUtils;
 import com.hs_esslingen.insy.configuration.InventorySpecification;
-import com.hs_esslingen.insy.dto.InventoriesCreateRequestDTO;
+import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.mapper.InventoriesMapper;
-import com.hs_esslingen.insy.model.CostCenters;
-import com.hs_esslingen.insy.model.Inventories;
-import com.hs_esslingen.insy.model.Tags;
-import com.hs_esslingen.insy.model.Companies;
-import com.hs_esslingen.insy.model.Users;
+import com.hs_esslingen.insy.mapper.InventoryMapper;
+import com.hs_esslingen.insy.model.CostCenter;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.model.Tag;
+import com.hs_esslingen.insy.model.Company;
+import com.hs_esslingen.insy.model.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,28 +35,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class InventoriesService {
+public class InventoryService {
 
-    private final InventoriesRepository inventoriesRepository;
-    private final UsersRepository usersRepository;
-    private final CompaniesRepository companiesRepository;
-    private final CostCentersRepository costCentersRepository;
-    private final TagsRepository tagsRepository;
-    private final InventoriesMapper inventoriesMapper;
+    private final InventoryRepository inventoriesRepository;
+    private final UserRepository usersRepository;
+    private final CompanyRepository companiesRepository;
+    private final CostCenterRepository costCentersRepository;
+    private final TagRepository tagsRepository;
+    private final InventoryMapper inventoriesMapper;
 
-    public InventoriesService(
-            InventoriesRepository inventoriesRepository,
-            UsersRepository usersRepository,
-            CompaniesRepository companiesRepository,
-            CostCentersRepository costCentersRepository,
-            TagsRepository tagsRepository,
-            InventoriesMapper inventoriesMapper) {
-        this.inventoriesRepository = inventoriesRepository;
-        this.usersRepository = usersRepository;
-        this.companiesRepository = companiesRepository;
-        this.costCentersRepository = costCentersRepository;
-        this.tagsRepository = tagsRepository;
-        this.inventoriesMapper = inventoriesMapper;
+    public InventoryService(
+            InventoryRepository inventoryRepository,
+            UserRepository userRepository,
+            CompanyRepository companyRepository,
+            CostCenterRepository costCenterRepository,
+            TagRepository tagRepository,
+            InventoryMapper inventoryMapper) {
+        this.inventoriesRepository = inventoryRepository;
+        this.usersRepository = userRepository;
+        this.companiesRepository = companyRepository;
+        this.costCentersRepository = costCenterRepository;
+        this.tagsRepository = tagRepository;
+        this.inventoriesMapper = inventoryMapper;
     }
 
     /**
@@ -67,7 +67,7 @@ public class InventoriesService {
      *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<InventoriesResponseDTO> getInventoryById(Integer id) {
-        Optional<Inventories> inventory = inventoriesRepository.findById(id);
+        Optional<Inventory> inventory = inventoriesRepository.findById(id);
         if (inventory.isPresent()) {
             InventoriesResponseDTO responseDTO = inventoriesMapper.toDto(inventory.get());
             return ResponseEntity.ok(responseDTO);
@@ -123,8 +123,14 @@ public class InventoriesService {
         // Setzt den Endzeipunkt auf 23:59:59, um alle Einträge bis zu diesem Datum zu berücksichtigen
         LocalDateTime createdBeforeTime = createdBefore != null ? createdBefore.plusDays(1).atStartOfDay().minusNanos(1) : null;
 
-
-        Specification<Inventories> spec = Specification
+        /*  Erstellt SQL-Statement im Stil:
+        SELECT * FROM inventories
+        WHERE 
+            tag_id IN (...)
+            AND id BETWEEN ...
+            AND price BETWEEN ...
+            AND ...*/
+        Specification<Inventory> spec = Specification
                 .where(InventorySpecification.hasTagId(tags))
                 .and(InventorySpecification.idBetween(minId, maxId))
                 .and(InventorySpecification.priceBetween(minPrice, maxPrice))
@@ -144,7 +150,7 @@ public class InventoriesService {
                 throw new IllegalArgumentException("Ungültiges orderBy-Feld: " + orderBy);
             }
 
-            // STandardmäßig auf aufsteigende Sortierung setzen
+            // Standardmäßig auf aufsteigende Sortierung setzen
             Sort.Direction sortDirection = Sort.Direction.ASC;
             // Wenn die Richtung "desc" ist, dann auf absteigende Sortierung setzen
             if ("desc".equalsIgnoreCase(direction)) {
@@ -153,13 +159,11 @@ public class InventoriesService {
 
             // Überprüfen, ob das orderBy-Feld verschachtelt ist (z. B. "user.name")
             // Wenn es verschachtelt ist, dann muss die Sortierung über eine angepasste Specification gemacht werden
-            if (isNestedField(orderBy)) {
+            if (OrderByUtils.FOREIGN_SET.contains(orderBy)) {
                 // Sortierung über verschachtelte Felder wird NICHT im Pageable gesetzt,
                 // sondern muss über eine angepasste Specification gemacht werden – siehe unten.
-                if (isNestedField(orderBy)) {
-                    spec = spec.and(
-                            InventorySpecification.sortByNestedField(orderBy, Sort.Direction.fromString(direction)));
-                }
+                spec = spec.and(
+                        InventorySpecification.sortByNestedField(orderBy, Sort.Direction.fromString(direction)));
 
             // Wenn es nicht verschachtelt ist, dann kann die Sortierung direkt im Pageable gesetzt werden
             } else {
@@ -168,7 +172,7 @@ public class InventoriesService {
             }
         }
 
-        Page<Inventories> page = inventoriesRepository.findAll(spec, pageable);
+        Page<Inventory> page = inventoriesRepository.findAll(spec, pageable);
 
         return page.map(inventoriesMapper::toDto);
     }
@@ -180,8 +184,8 @@ public class InventoriesService {
      * @return ResponseEntity containing the created inventory item
      * @throws IllegalArgumentException if the inventory ID already exists
      */
-    public InventoriesResponseDTO addInventory(InventoriesCreateRequestDTO dto) {
-        Inventories inventory = new Inventories();
+    public InventoriesResponseDTO addInventory(InventoryCreateRequestDTO dto) {
+        Inventory inventory = new Inventory();
 
         // Existiert ein Inventar mit der Inventarnummer bereits?
         if (inventoriesRepository.existsById(dto.inventoriesId)) {
@@ -192,20 +196,20 @@ public class InventoriesService {
         inventory.setId(dto.inventoriesId);
 
         // CostCenter holen oder erstellen
-        CostCenters costCenter = costCentersRepository.findByName(dto.costCenter);
+        CostCenter costCenter = costCentersRepository.findByName(dto.costCenter);
         if (costCenter == null) {
-            costCenter = new CostCenters(dto.costCenter);
+            costCenter = new CostCenter(dto.costCenter);
             costCentersRepository.save(costCenter);
         }
         inventory.setCostCenter(costCenter);
 
         // Company holen oder erstellen
-        Companies company = companiesRepository.findByName(dto.company)
-                .orElseGet(() -> companiesRepository.save(new Companies(dto.company)));
+        Company company = companiesRepository.findByName(dto.company)
+                .orElseGet(() -> companiesRepository.save(new Company(dto.company)));
         inventory.setCompany(company);
 
         // User holen oder erstellen
-        Users user = resolveUser(dto.orderer);
+        User user = resolveUser(dto.orderer);
 
         // Restliche Felder setzen
         inventory.setDescription(dto.description);
@@ -220,7 +224,7 @@ public class InventoriesService {
         // 6. Tags verknüpfen
 
         if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-            Set<Tags> tags = dto.getTags().stream()
+            Set<Tag> tags = dto.getTags().stream()
                     .map(tagId -> tagsRepository.findById(tagId)
                             .orElseThrow(() -> new IllegalArgumentException("Tag not found: " + tagId)))
                     .collect(Collectors.toSet());
@@ -241,7 +245,7 @@ public class InventoriesService {
      *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<Void> deleteInventory(Integer id) {
-        Optional<Inventories> inventory = inventoriesRepository.findById(id);
+        Optional<Inventory> inventory = inventoriesRepository.findById(id);
         if (inventory.isPresent()) {
             inventoriesRepository.delete(inventory.get());
             return ResponseEntity.noContent().build();
@@ -262,12 +266,12 @@ public class InventoriesService {
      *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<InventoriesResponseDTO> updateInventory(Integer id, Map<String, Object> patchData) {
-        Optional<Inventories> inventoryOptional = inventoriesRepository.findById(id);
+        Optional<Inventory> inventoryOptional = inventoriesRepository.findById(id);
         if (inventoryOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Inventories inventory = inventoryOptional.get();
+        Inventory inventory = inventoryOptional.get();
 
         for (Map.Entry<String, Object> entry : patchData.entrySet()) {
             String fieldName = entry.getKey();
@@ -276,9 +280,9 @@ public class InventoriesService {
             switch (fieldName) {
                 case "costCenter":
                     if (fieldValue != null) {
-                        CostCenters costCenter = costCentersRepository.findByName(fieldValue.toString());
+                        CostCenter costCenter = costCentersRepository.findByName(fieldValue.toString());
                         if (costCenter == null) {
-                            costCenter = new CostCenters(fieldValue.toString());
+                            costCenter = new CostCenter(fieldValue.toString());
                             costCentersRepository.save(costCenter);
                         }
                         inventory.setCostCenter(costCenter);
@@ -291,9 +295,9 @@ public class InventoriesService {
                     break;
                 case "company":
                     if (fieldValue != null) {
-                        Companies company = companiesRepository
+                        Company company = companiesRepository
                                 .findByName(fieldValue.toString())
-                                .orElseGet(() -> companiesRepository.save(new Companies(fieldValue.toString())));
+                                .orElseGet(() -> companiesRepository.save(new Company(fieldValue.toString())));
                         inventory.setCompany(company);
                     }
                     break;
@@ -325,9 +329,9 @@ public class InventoriesService {
                             }
                         }
                         if (userId != null) {
-                            Users user = usersRepository.findById(userId).orElse(null);
+                            User user = usersRepository.findById(userId).orElse(null);
                             if (user == null) {
-                                user = new Users();
+                                user = new User();
                                 user.setId(userId);
                                 usersRepository.save(user);
                             }
@@ -340,25 +344,20 @@ public class InventoriesService {
             }
         }
 
-        Inventories updatedInventory = inventoriesRepository.save(inventory);
+        Inventory updatedInventory = inventoriesRepository.save(inventory);
         InventoriesResponseDTO responseDTO = inventoriesMapper.toDto(updatedInventory);
         return ResponseEntity.ok(responseDTO);
     }
 
     // Eventuell in UserService auslagern
-    private Users resolveUser(Object orderer) {
+    private User resolveUser(Object orderer) {
         if (orderer instanceof Integer userId) {
             return usersRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("User-ID nicht gefunden: " + userId));
         } else if (orderer instanceof String userName) {
             return usersRepository.findByName(userName)
-                    .orElseGet(() -> usersRepository.save(new Users(userName)));
+                    .orElseGet(() -> usersRepository.save(new User(userName)));
         }
         throw new IllegalArgumentException("orderer muss Integer oder String sein.");
-    }
-
-    // Utility: check if orderBy is nested (z. B. "user.name")
-    private boolean isNestedField(String orderBy) {
-        return orderBy != null && orderBy.contains(".");
     }
 }

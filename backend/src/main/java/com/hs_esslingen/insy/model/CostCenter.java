@@ -23,14 +23,14 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "cost_centers")
-public class CostCenters {
+public class CostCenter {
 
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    String description;
+    String description; // ToDo: Feld überhaupt nötig? Kostenstelle ist nur als Nummer in Inventarliste vorhanden, diese könnte man als Primary Key verwenden
 
     @Column(name = "is_archived")
     @Builder.Default
@@ -39,31 +39,31 @@ public class CostCenters {
     @OneToMany(mappedBy = "costCenter")
     @Builder.Default
     @JsonManagedReference
-    private List<Inventories> inventories = new ArrayList<>();
+    private List<Inventory> inventories = new ArrayList<>();
 
     // Konstruktor
 
     @Builder
-    public CostCenters(String description) {
+    public CostCenter(String description) {
         this.description = description;
         this.isArchived = false;
         this.inventories = new ArrayList<>();
     }
 
     @Builder
-    public CostCenters(String description, Boolean isArchived) {
+    public CostCenter(String description, Boolean isArchived) {
         this.description = description;
         this.isArchived = isArchived;
         this.inventories = new ArrayList<>();
     }
 
     // Getter und Setter
-    public void addInventory(Inventories inventory) {
+    public void addInventory(Inventory inventory) {
         this.inventories.add(inventory);
         inventory.setCostCenter(this);
     }
 
-    public void removeInventory(Inventories inventory) {
+    public void removeInventory(Inventory inventory) {
         this.inventories.remove(inventory);
         inventory.setCostCenter(null);
     }

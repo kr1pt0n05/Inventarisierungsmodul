@@ -4,13 +4,12 @@ info:
   description: Übersicht über die API-Calls des Inventarisierungsmoduls und deren Responses.
   version: 1.1.0
 servers:
-- url: insy.hs-esslingen.de
+  - url: insy.hs-esslingen.de
 paths:
-
   /inventories:
     get:
       tags:
-      - Inventarisierungsliste
+        - Inventarisierungsliste
       summary: Ruft alle Elemente in der Inventarisierunsliste ab und sortiert sie nach optional gesetzten Query-Parametern
       parameters:
         - name: tags
@@ -23,7 +22,10 @@ paths:
             type: array
             items:
               type: integer
-            example: [1, 3, 5]
+            example:
+              - 1
+              - 3
+              - 5
         - name: minId
           in: query
           description: Kleinste inventory ID
@@ -65,51 +67,59 @@ paths:
           required: false
           schema:
             type: string
-            example: "Max Mustermann"
+            example: Max Mustermann
         - name: company
           in: query
           description: Filter nach dem Namen einer Firma
           required: false
           schema:
             type: string
-            example: "Gedankenfabrik GmbH"
+            example: Gedankenfabrik GmbH
         - name: location
           in: query
           description: Filter nach dem Ort/Besitzer
           required: false
           schema:
             type: string
-            example: "Lagerraum 1"
+            example: Lagerraum 1
         - name: costCenter
           in: query
           description: Filter by cost center name
           required: false
           schema:
             type: string
-            example: "IT-Abteilung"
+            example: IT-Abteilung
         - name: serialNumber
           in: query
           description: Filter nach der Seriennummer
           required: false
           schema:
             type: string
-            example: "ABC123"
+            example: ABC123
         - name: orderBy
           in: query
           description: |
             Feld nach dem die gefetchten Inventories sortiert werden. Erlaubte Werte:
             - id
             - description
-            - company.name
+            - company
             - price
             - createdAt
             - serialNumber
             - location
-            - user.name
+            - user
           required: false
           schema:
             type: string
-            enum: [id, description, company.name, price, createdAt, serialNumber, location, user.name]
+            enum:
+              - id
+              - description
+              - company.name
+              - price
+              - createdAt
+              - serialNumber
+              - location
+              - user.name
             example: price
         - name: direction
           in: query
@@ -117,7 +127,9 @@ paths:
           required: false
           schema:
             type: string
-            enum: [asc, desc]
+            enum:
+              - asc
+              - desc
             default: asc
             example: asc
         - name: size
@@ -134,19 +146,18 @@ paths:
           schema:
             type: string
             format: date
-            example: 2024-01-01
+            example: '2024-01-01'
           description: Filtert Inventories, die **nach** diesem Datum erstellt wurden (inklusive 00:00 Uhr).
-
         - name: createdBefore
           in: query
           required: false
           schema:
             type: string
             format: date
-            example: 2024-12-31
+            example: '2024-12-31'
           description: Filtert Inventories, die **vor** diesem Datum erstellt wurden (inklusive 23:59:59).
       responses:
-        "200":
+        '200':
           description: A list of items
           content:
             application/json:
@@ -154,18 +165,17 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PagedInventoriesResponse'
-        "204":
+        '204':
           description: No content found
-        "500":
+        '500':
           description: Internal server error
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     post:
       tags:
-      - Inventarisierungsliste
+        - Inventarisierungsliste
       summary: Erstellt einen Gegenstand in der Inventarisierungsliste
       description: Neues Gerät/Software inventarisieren.
       operationId: createItem
@@ -177,62 +187,60 @@ paths:
               $ref: '#/components/schemas/InventoriesCreateDTO'
         required: true
       responses:
-        "201":
+        '201':
           description: Gerät wurde inventarisiert
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InventoriesResponseDTO'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Fehler beim Inventarisieren
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
   /inventories/{id}:
     get:
       tags:
-      - Inventarisierungsliste
+        - Inventarisierungsliste
       summary: Gibt Informationen für Detailansicht eines einzelnen Gegenstands der Liste zurück
       description: Ruft Informationen zu Gegenstand mit entsprechender ID ab.
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Erfolgreiches Abrufen des Gegenstandes
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InventoriesResponseDTO'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Fehler beim Abrufen des Gegenstand
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
     patch:
       tags:
-      - Inventarisierungsliste
+        - Inventarisierungsliste
       summary: Ändert Gegenstand in der Inventarisierungsliste
       description: Ändert Daten eines Gegenstandes mit gegebener ID.
       operationId: editItem
@@ -246,11 +254,8 @@ paths:
             format: int64
       requestBody:
         required: true
-        description: >
-          Array mit Feldern, die geändert werden sollen. 
-          Jedes Element enthält das Attribut (field) und den neuen Wert.
-          Kann leer sein, wenn keine Änderungen vorgenommen werden.
-
+        description: |
+          Array mit Feldern, die geändert werden sollen.  Jedes Element enthält das Attribut (field) und den neuen Wert. Kann leer sein, wenn keine Änderungen vorgenommen werden.
           Mögliche Felder sind:
             - cost_center
             - inventories_description
@@ -267,7 +272,7 @@ paths:
               items:
                 $ref: '#/components/schemas/ItemPatchField'
       responses:
-        "200":
+        '200':
           description: Gegenstand wurde erfolgreich bearbeitet
           content:
             application/json:
@@ -275,66 +280,63 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/InventoriesResponseDTO'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
     delete:
       tags:
-      - Inventarisierungsliste
+        - Inventarisierungsliste
       summary: Löscht einen Gegenstand aus der Inventarisierungsliste
       description: Deinventarisiert einen Gegenstand aus der Inventarisierungsliste. Entspricht einem Soft-Delete.
       operationId: deleteItem
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands zum löschen
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands zum löschen
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "204":
+        '204':
           description: Gegenstand wurde erfolgreich gelöscht
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler, Gegenstand wurde nicht gelöscht
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
   /inventories/{id}/components:
     get:
       tags:
-      - Inventarisierungsliste
-        - Erweiterungen
+        - Inventarisierungsliste - Erweiterungen
       summary: Ruft alle Erweiterungen eines Gegenstandes ab
       description: Ruft die Liste aller bestehenden Erweiterungen eines Gegenstands ab.
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Erfolgreiches Abrufen der Erweiterung(en)
           content:
             application/json:
@@ -342,34 +344,32 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ExtensionsResponseDTO'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Fehler beim Abrufen des Gegenstands
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
     post:
       tags:
-      - Inventarisierungsliste
-        - Erweiterungen
+        - Inventarisierungsliste - Erweiterungen
       summary: Fügt einem Gegenstand eine Erweiterung hinzu
       description: Erstellt eine Erweiterung und fügt diese dem spezifizierten Gegenstand hinzu.
       operationId: addComponent
       parameters:
-      - name: id
-        in: path
-        description: ID des Inventars, dem eine Erweiterung hinzugefügt wird
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Inventars, dem eine Erweiterung hinzugefügt wird
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         required: true
         description: ID der zu hinzufügenden Erweiterung
@@ -378,96 +378,89 @@ paths:
             schema:
               $ref: '#/components/schemas/ExtensionsCreateDTO'
       responses:
-        "200":
+        '200':
           description: Erweiterung wurde hinzugefügt
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExtensionsResponseDTO'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /inventories/{id}/components/{component-id}:
     get:
       tags:
-      - Inventarisierungsliste
-        - Erweiterungen
+        - Inventarisierungsliste - Erweiterungen
       summary: Gibt eine einzelne Erweiterung zurück
       description: Ruft den Inhalt der spezifizierten Erweiterung eines Gegenstandes ab.
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: component-id
-        in: path
-        description: ID der Erweiterung
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: component-id
+          in: path
+          description: ID der Erweiterung
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Erfolgreiches Abrufen der Erweiterung
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExtensionsResponseDTO'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Fehler beim Abrufen des Gegenstands
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     patch:
       tags:
-      - Inventarisierungsliste
-        - Erweiterungen
+        - Inventarisierungsliste - Erweiterungen
       summary: Ändert Erweiterung eines Gegenstandes
       description: Ändert die Daten einer einzelnen Erweiterung des spezifizierten Gegenstandes.
       operationId: editComponent
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: component-id
-        in: path
-        description: ID der Erweiterung zum bearbeiten
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: component-id
+          in: path
+          description: ID der Erweiterung zum bearbeiten
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         required: true
-        description: >
-          Array mit Feldern, die geändert werden sollen. 
-          Jedes Element enthält das Attribut (field) und den neuen Wert.
-          Kann leer sein, wenn keine Änderungen vorgenommen werden. Beim übergeben einer inventory_id wird die Erweiterung auf das neue Inventory gemappt und von dem alten Inventory entfernt. 
-
+        description: |
+          Array mit Feldern, die geändert werden sollen.  Jedes Element enthält das Attribut (field) und den neuen Wert. Kann leer sein, wenn keine Änderungen vorgenommen werden. Beim übergeben einer inventory_id wird die Erweiterung auf das neue Inventory gemappt und von dem alten Inventory entfernt. 
           Mögliche Felder sind:
             - inventory_id(Integer)
             - description(String)
@@ -478,118 +471,108 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ExtensionsPatchField'
-
       responses:
-        "200":
+        '200':
           description: Gegenstand wurde erfolgreich bearbeitet
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExtensionsResponseDTO'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     delete:
       tags:
-      - Inventarisierungsliste
-        - Erweiterungen
+        - Inventarisierungsliste - Erweiterungen
       summary: Löscht Erweiterung eines Gegenstandes
       description: Löscht die spezifizierte Erweiterung aus der Liste des zugehörigen Gegenstandes.
       operationId: deleteComponent
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: component-id
-        in: path
-        description: ID der Erweiterung zum löschen
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: component-id
+          in: path
+          description: ID der Erweiterung zum löschen
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "204":
+        '204':
           description: Erweiterung wurde erfolgreich gelöscht
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /inventories/{id}/comments:
     get:
       tags:
-      - Inventarisierungsliste
-        - Kommentare
+        - Inventarisierungsliste - Kommentare
       summary: Liste der Kommentare zu einem Gegenstand
       description: Ruft die Liste aller Kommentare zu einem Gegenstand ab.
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Erfolgreiches Abrufen der Kommentare
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/CommentRequest'
-              
-            
-        "400":
-          description: "Error 400: Bad Request"
+                $ref: '#/components/schemas/CommentRequest'
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Fehler beim Abrufen des Gegenstands
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     post:
       tags:
-      - Inventarisierungsliste
-        - Kommentare
+        - Inventarisierungsliste - Kommentare
       summary: Erstellt neues Kommentar
       description: Ein neuer Kommentar wird erstellt und dem spezifizierten Gegenstand hinzugefügt.
       operationId: createComment
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         required: true
         description: ID der zu hinzufügenden Erweiterung
@@ -598,115 +581,108 @@ paths:
             schema:
               $ref: '#/components/schemas/CommentRequest'
       responses:
-        "201":
+        '201':
           description: Kommentar wurde erfolgreich erstellt
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommentRequest'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /inventories/{id}/comments/{comment-id}:
     delete:
       tags:
-      - Inventarisierungsliste
-        - Kommentare
+        - Inventarisierungsliste - Kommentare
       summary: Löscht Kommentar eines Gegenstands
       description: Löscht das spezifizierte Kommentar des entsprechenden Gegenstandes.
       operationId: removeComment
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: comment-id
-        in: path
-        description: ID des Kommentars zum löschen
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: comment-id
+          in: path
+          description: ID des Kommentars zum löschen
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Kommentar wurde erfolgreich gelöscht
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /inventories/{id}/tags:
     get:
       tags:
-      - Inventarisierungsliste
-        - Tags
+        - Inventarisierungsliste - Tags
       summary: Liste der Tags eines Gegenstands
       description: Ruft die Liste aller benutzerdefinierten Tags eines Gegenstandes ab.
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Erfolgreiches Abrufen der Tags
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TagDTO'
-                
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Fehler beim Abrufen des Gegenstands
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     post:
       tags:
-      - Inventarisierungsliste
-        - Tags
+        - Inventarisierungsliste - Tags
       summary: Fügt Gegenstand Tags hinzu
       description: Fügt dem spezifizierten Gegenstand ein Tag hinzu.
       operationId: addTag
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         description: Fügt Tags anhand der ID hinzu. Es können mehrere Tags auf einmal hinzugefügt werden.
         content:
@@ -714,119 +690,110 @@ paths:
             schema:
               $ref: '#/components/schemas/AddTag'
         required: true
-          
       responses:
-        "200":
+        '200':
           description: Gegenstand wurde erfolgreich getagt
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /inventories/{id}/tags/{tag-id}:
     delete:
       tags:
-      - Inventarisierungsliste
-        - Tags
+        - Inventarisierungsliste - Tags
       summary: Entfernt Tag von einem Gegenstand
       description: Entfernt das spezifizierte Tag von dem gegebenen Gegenstand.
       operationId: removeTag
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: tag-id
-        in: path
-        description: ID des Tags zum entfernen
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: tag-id
+          in: path
+          description: ID des Tags zum entfernen
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Tag wurde erfolgreich entfernt
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /inventories/{id}/history:
     get:
       tags:
-      - Inventarisierungsliste
-        - Historie
+        - Inventarisierungsliste - Historie
       summary: Liste der Änderungen an einem Gegenstand
       description: Ruft die Liste aller Änderungen an einem Gegenstand seit der Inventarisierung ab.
       parameters:
-      - name: id
-        in: path
-        description: ID des Gegenstands
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          description: ID des Gegenstands
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Erfolgreiches Abrufen der Historie
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/History'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Fehler beim Abrufen des Gegenstands
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
-
-
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /inventories/filter:
     get:
       tags:
-      - Filter (über Query Parameter umsetzen)
+        - Filter (über Query Parameter umsetzen)
       summary: Finde Gegenstände mit Hilfe von Filtern, die in der Query übergeben werden
-      description: "Mehrere Filter können mit komma separiert werden zB. Filter1, Filter2."
+      description: Mehrere Filter können mit komma separiert werden zB. Filter1, Filter2.
       operationId: FilterItemsByTags
       parameters:
-      - name: tags
-        in: query
-        description: Filterfunktion
-        required: false
-        explode: true
-        schema:
-          type: array
-          items:
-            type: string
+        - name: tags
+          in: query
+          description: Filterfunktion
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
       responses:
-        "200":
+        '200':
           description: Erfolgreicht gefiltert
           content:
             application/json:
@@ -834,31 +801,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/InventoriesResponseDTO'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
-
-
-
   /statistics:
     get:
       tags:
-      - Statistik
+        - Statistik
       summary: Statistik.
       description: Statistik für bestellte Produkte.
       operationId: findStats
       responses:
-        "200":
+        '200':
           description: Erfolgreich angezeigt
           content:
             application/json:
@@ -866,58 +829,53 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Statistic'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
-
-
-
   /excel-sheets:
     get:
       tags:
-      - Import/Export von Dateien
+        - Import/Export von Dateien
       summary: Exportiert Inventarisierungsliste als Excel-Datei
-      description: "Gesamte Liste kann ohne Parameter exportiert werden, mit Parametern werden nur einzelne Einträge exportiert"
+      description: Gesamte Liste kann ohne Parameter exportiert werden, mit Parametern werden nur einzelne Einträge exportiert
       parameters:
-      - name: ids
-        in: query
-        description: ID der Gegenstände bzw. range von - bis
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: array
-          items:
-            type: integer
-            format: int64
+        - name: ids
+          in: query
+          description: ID der Gegenstände bzw. range von - bis
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
       responses:
-        "200":
+        '200':
           description: Excel-Liste wurde erfolgreich erstellt und zum Download bereitgestellt
           content:
             application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
               schema:
                 type: string
                 format: binary
-        "500":
+        '500':
           description: Interner Fehler beim Erstellen der Excel-Liste
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     post:
       tags:
-      - Import/Export von Dateien
+        - Import/Export von Dateien
       summary: Schickt Excelliste zum Importieren an Backend
       description: Datei muss für Umwandlung passendes Format haben
       requestBody:
@@ -932,36 +890,32 @@ paths:
                   format: binary
                   description: Excel-Datei (.xls oder .xlsx)
       responses:
-        "201":
+        '201':
           description: Daten wurden erfolgreich verarbeitet
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
-
-
-
   /users/logout:
     get:
       tags:
-      - users (noch unklar, abhängig von keycloak)
+        - users (noch unklar, abhängig von keycloak)
       summary: Abmelden des derzeitigen Benutzers.
       description: Abmelden des Benutzers.
       operationId: logoutUser
       parameters: []
       responses:
-        "200":
+        '200':
           description: Erfolgreich abgemeldet
-        "500":
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
@@ -970,58 +924,55 @@ paths:
   /users/login:
     get:
       tags:
-      - users (noch unklar, abhängig von keycloak)
+        - users (noch unklar, abhängig von keycloak)
       summary: Anmeldung des Benutzers.
       description: Anmeldung in das System.
       operationId: loginUser
       parameters:
-      - name: username
-        in: query
-        description: Der Benutzername für das Login
-        required: false
-        schema:
-          type: string
-      - name: password
-        in: query
-        description: Das Password für das Login
-        required: false
-        schema:
-          type: string
+        - name: username
+          in: query
+          description: Der Benutzername für das Login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: Das Password für das Login
+          required: false
+          schema:
+            type: string
       responses:
-        "200":
+        '200':
           description: Erfolgreich angemeldet
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-
-
   /users/{user-id}/orders:
     get:
       tags:
-      - users
-        - orders
+        - users - orders
       summary: Ruft alle offenen Bestellungen ab.
       description: Alle Bestellungen, die von diesem User gemacht wurden, die noch offen sind.
       operationId: openOrders
       parameters:
-      - name: user-id
-        in: path
-        description: User-id vom User bei dem man die offenen Bestellungen sehen will
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: User-id vom User bei dem man die offenen Bestellungen sehen will
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Anzeigen von offenen Bestellungen von dem jeweiligen User
           content:
             application/json:
@@ -1031,74 +982,70 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Order'
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler beim Anzeigen von offenen Bestellungen
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     post:
       tags:
-      - users
-        - orders
+        - users - orders
       summary: Wird von BESY aufgerufen um eine getätigte Bestellung zu übermitteln
       description: Eine neue Bestellung unter dem angegebenen user speichern/erstellen.
       operationId: createOrder
       parameters:
-      - name: user-id
-        in: path
-        description: User-id des Users bei dem die offene Bestellung angelegt werden soll
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: User-id des Users bei dem die offene Bestellung angelegt werden soll
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Bestellung wurde erfolgreich registriert
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler beim registrieren der Bestellung
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /users/{user-id}/orders/{order-id}:
     get:
       tags:
-      - users
-        - orders
+        - users - orders
       summary: Ruft einzelne Bestellung ab
       description: Die Informationen einer einzelnen Bestellung können abgerufen werden.
       parameters:
-      - name: user-id
-        in: path
-        description: ID des Users
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: order-id
-        in: path
-        description: ID der Bestellung
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: ID des Users
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: order-id
+          in: path
+          description: ID der Bestellung
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Eine Bestellung wurde übertragen
           content:
             application/json:
@@ -1108,76 +1055,73 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Article'
-        "204":
+        '204':
           description: Bestellung nicht gefunden
-        "500":
+        '500':
           description: Internal server error
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
+              schema:
+                $ref: '#/components/schemas/Error500'
     delete:
       tags:
-      - users
-        - orders
+        - users - orders
       summary: Löscht eine Bestellung
       description: Löscht eine registrierte Bestellung.
       operationId: deleteOrder
       parameters:
-      - name: user-id
-        in: path
-        description: ID des Users
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: order-id
-        in: path
-        description: ID der Bestellung
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: ID des Users
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: order-id
+          in: path
+          description: ID der Bestellung
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Bestellung wurde erfolgreich gelöscht
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /users/{user-id}/orders/{order-id}/items:
     get:
       tags:
-      - users
-        - orders - items
+        - users - orders - items
       summary: Ruft Artikel einer Bestellung ab
       description: Die Artikel einer einzelnen Bestellung können abgerufen werden.
       parameters:
-      - name: user-id
-        in: path
-        description: ID des Users
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: order-id
-        in: path
-        description: ID der Bestellung
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: ID des Users
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: order-id
+          in: path
+          description: ID der Bestellung
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Eine Liste an Artikeln wurde übertragen
           content:
             application/json:
@@ -1187,112 +1131,106 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Article'
-        "204":
+        '204':
           description: Bestellung nicht gefunden
-        "500":
+        '500':
           description: Internal server error
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     post:
       tags:
-      - users
-        - orders - items
+        - users - orders - items
       summary: Artikel anlegen
       description: Einen neuen Artikel unter einer Bestellung ablegen/erstellen. Nach anlegen eines Artikels wird überprüft, ob alle Artikel in der Bestellung inventarisiert wurden. Wenn ja wird die Bestellung als bearbeitet markiert.
       operationId: createOrderItem
       parameters:
-      - name: user-id
-        in: path
-        description: User-id des Users bei dem die offene Bestellung angelegt werden soll
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: order-id
-        in: path
-        description: ID der Bestellung
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: User-id des Users bei dem die offene Bestellung angelegt werden soll
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: order-id
+          in: path
+          description: ID der Bestellung
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Article'
-        required: true 
+        required: true
       responses:
-        "200":
+        '200':
           description: Artikel wurde erfolgreich registriert
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler beim registrieren der Artikel
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
   /users/{user-id}/orders/{order-id}/items/{item-id}:
     get:
       tags:
-      - users
-        - orders - items
+        - users - orders - items
       summary: Ruft einzelnen Artikel ab
       description: Die Informationen eines einzelnen Artikels können abgerufen werden.
       parameters:
-      - name: user-id
-        in: path
-        description: ID des Users
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: order-id
-        in: path
-        description: ID der Bestellung
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: item-id
-        in: path
-        description: ID des Artikels
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: ID des Users
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: order-id
+          in: path
+          description: ID der Bestellung
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: item-id
+          in: path
+          description: ID des Artikels
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Ein Artikel wurde übertragen
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: '#/components/schemas/Article'
-        "204":
+        '204':
           description: Artikel nicht gefunden
-        "500":
+        '500':
           description: Internal server error
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     patch:
       tags:
-      - users
-        - orders - items
+        - users - orders - items
       summary: Ändert Artikel
-      description: > 
+      description: |
         Ändern der Daten eines Artikels mit gegebener ID.
-        
+
           Mögliche Felder sind:
           - cost_center
           - inventories_id
@@ -1304,89 +1242,85 @@ paths:
           - orderer
       operationId: editOrderItem
       parameters:
-      - name: user-id
-        in: path
-        description: ID des Users 
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: order-id
-        in: path
-        description: ID der Bestellung
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: item-id
-        in: path
-        description: ID des Artikels
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: ID des Users
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: order-id
+          in: path
+          description: ID der Bestellung
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: item-id
+          in: path
+          description: ID des Artikels
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Artikel erfolgreich bearbeitet
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
+              schema:
+                $ref: '#/components/schemas/Error500'
     delete:
       tags:
-      - users
-        - orders - items
+        - users - orders - items
       summary: Löscht einen Artikel
       description: Löscht einen Artikel einer registrierten Bestellung.
       operationId: deleteOrderItem
       parameters:
-      - name: user-id
-        in: path
-        description: ID des Users
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: order-id
-        in: path
-        description: ID der Bestellung
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: item-id
-        in: path
-        description: ID des Artikels
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: user-id
+          in: path
+          description: ID des Users
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: order-id
+          in: path
+          description: ID der Bestellung
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: item-id
+          in: path
+          description: ID des Artikels
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
-        "200":
+        '200':
           description: Artikel wurde erfolgreich gelöscht
-        "400":
-          description: "Error 400: Bad Request"
+        '400':
+          description: 'Error 400: Bad Request'
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error400'
-        "500":
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '500':
           description: Interner Serverfehler
           content:
             application/json:
-             schema:
-              $ref: '#/components/schemas/Error500'
-
-
+              schema:
+                $ref: '#/components/schemas/Error500'
 components:
   schemas:
     InventoriesCreateDTO:
@@ -1421,7 +1355,10 @@ components:
           type: array
           items:
             type: integer
-          example: [1, 3, 5]
+          example:
+            - 1
+            - 3
+            - 5
       required:
         - cost_center
         - inventories_id
@@ -1470,12 +1407,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TagDTO'
-
-
     Error500:
       required:
-      - code
-      - message
+        - code
+        - message
       type: object
       properties:
         code:
@@ -1483,19 +1418,18 @@ components:
           example: 500
         message:
           type: string
-          example: Internal Server Error 
+          example: Internal Server Error
     Error400:
       required:
         - code
         - message
       type: object
       properties:
-        code: 
+        code:
           type: integer
           example: 400
         message:
           type: string
-          
     ItemPatchField:
       type: object
       properties:
@@ -1508,7 +1442,6 @@ components:
           example:
             - 1
             - 3
-
     ExtensionsCreateDTO:
       type: object
       properties:
@@ -1524,7 +1457,7 @@ components:
         price:
           type: number
           format: float
-          example: 89.90
+          example: 89.9
         companyName:
           type: string
           example: Speicherwerke AG
@@ -1534,8 +1467,6 @@ components:
         - serialNumber
         - price
         - companyName
-
-        
     ExtensionsResponseDTO:
       type: object
       properties:
@@ -1551,7 +1482,7 @@ components:
         price:
           type: number
           format: float
-          example: 89.90
+          example: 89.9
         serial_number:
           type: string
           example: EXT-89234-Z
@@ -1566,7 +1497,6 @@ components:
         - price
         - serial_number
         - created_at
-
     ExtensionsPatchField:
       type: object
       properties:
@@ -1577,11 +1507,10 @@ components:
         company_name:
           type: string
           description: Neuer Wert für Attribut
-          example: "Testfirma 2"
+          example: Testfirma 2
         price:
           type: number
           example: 357.23
-          
     CommentRequest:
       type: object
       properties:
@@ -1598,7 +1527,6 @@ components:
           type: number
           format: datetime
           example: 24.12.2000
-          
     TagDTO:
       type: object
       properties:
@@ -1607,7 +1535,7 @@ components:
           example: 1
         name:
           type: string
-          example: "Laptop"
+          example: Laptop
     AddTag:
       type: object
       properties:
@@ -1623,7 +1551,7 @@ components:
       properties:
         histories_attribute_changed:
           type: string
-          example:  location
+          example: location
         histories_from:
           example: F01.352
         histories_to:

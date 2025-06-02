@@ -4,35 +4,35 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.hs_esslingen.insy.model.Inventories;
-import com.hs_esslingen.insy.repository.InventoriesRepository;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.repository.InventoryRepository;
 import org.springframework.stereotype.Service;
 
-import com.hs_esslingen.insy.dto.Comment;
-import com.hs_esslingen.insy.model.Comments;
-import com.hs_esslingen.insy.repository.CommentsRepository;
+import com.hs_esslingen.insy.dto.CommentDTO;
+import com.hs_esslingen.insy.model.Comment;
+import com.hs_esslingen.insy.repository.CommentRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CommentsService {
+public class CommentService {
 
-    private final CommentsRepository commentsRepository;
-    private final InventoriesRepository inventoriesRepository;
+    private final CommentRepository commentsRepository;
+    private final InventoryRepository inventoriesRepository;
 
-    CommentsService(CommentsRepository commentsRepository,
-                          InventoriesRepository inventoriesRepository) {
+    CommentService(CommentRepository commentsRepository,
+                          InventoryRepository inventoriesRepository) {
         this.commentsRepository = commentsRepository;
         this.inventoriesRepository = inventoriesRepository;
     }
 
-    public List<Comment> getCommentsByInventoryId(Integer inventoryId) {
+    public List<CommentDTO> getCommentsByInventoryId(Integer inventoryId) {
 
         // Get comments from repository
-        List<Comments> comments = commentsRepository.findCommentsByInventoryId(inventoryId);
+        List<Comment> comments = commentsRepository.findCommentsByInventoryId(inventoryId);
 
         // Convert to DTOs
         return comments.stream()
-                .map(comment -> Comment.builder()
+                .map(comment -> CommentDTO.builder()
                         .id(comment.getId())
                         .description(comment.getDescription())
                         .author(comment.getAuthor() != null ? comment.getAuthor().getName() : "Unknown")
@@ -41,21 +41,21 @@ public class CommentsService {
                 .collect(Collectors.toList());
     }
 
-    public Comment createComment(Integer inventoryId, Comment commentDTO) {
-        Optional<Inventories> inventory = inventoriesRepository.findById(inventoryId);
+    public CommentDTO createComment(Integer inventoryId, CommentDTO commentDTO) {
+        Optional<Inventory> inventory = inventoriesRepository.findById(inventoryId);
         if (inventory.isEmpty()) {
             throw new IllegalArgumentException("Inventory not found");
         }
-        Comments comment = Comments.builder()
+        Comment comment = Comment.builder()
                 .inventories(inventory.get())
                 .description(commentDTO.getDescription())
                 .author(inventory.get().getUser())
                 .build();
 
         // Save and convert back to DTO
-        Comments savedComment = commentsRepository.save(comment);
+        Comment savedComment = commentsRepository.save(comment);
 
-        return Comment.builder()
+        return CommentDTO.builder()
                 .id(savedComment.getId())
                 .description(savedComment.getDescription())
                 .createdAt(savedComment.getCreatedAt())
@@ -66,7 +66,7 @@ public class CommentsService {
     @Transactional
     public void deleteComment(Integer inventoryId, Integer commentId) {
         // Find the comment and verify it belongs to the inventory in one query
-        Optional<Comments> commentOpt = commentsRepository.findByCommentIdAndInventoryId(commentId, inventoryId);
+        Optional<Comment> commentOpt = commentsRepository.findByCommentIdAndInventoryId(commentId, inventoryId);
 
         if (commentOpt.isEmpty()) {
             throw new IllegalArgumentException("Comment not found or does not belong to the specified inventory");

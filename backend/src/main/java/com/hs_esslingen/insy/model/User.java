@@ -16,7 +16,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,17 +28,17 @@ public class Users {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonManagedReference
     @Builder.Default
-    private List<Inventories> inventories = new ArrayList<>();
+    private List<Inventory> inventories = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     @JsonManagedReference
     @Builder.Default
-    private List<Histories> histories = new ArrayList<>();
+    private List<History> histories = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     @JsonManagedReference
     @Builder.Default
-    private List<Comments> comments = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
     /*
      * Auskommentiert zu Testzwecken
@@ -48,39 +48,39 @@ public class Users {
      */
 
     @Builder
-    public Users(String name) {
+    public User(String name) {
         this.name = name;
         this.inventories = new ArrayList<>();
         this.histories = new ArrayList<>();
         this.comments = new ArrayList<>();
     }
 
-    public void addInventory(Inventories inventory) {
+    public void addInventory(Inventory inventory) {
         this.inventories.add(inventory);
         inventory.setUser(this);
     }
 
-    public void removeInventory(Inventories inventory) {
+    public void removeInventory(Inventory inventory) {
         this.inventories.remove(inventory);
         inventory.setUser(null);
     }
 
-    public void addHistory(Histories history) {
+    public void addHistory(History history) {
         this.histories.add(history);
         history.setAuthor(this);
     }
 
-    public void removeHistory(Histories history) {
+    public void removeHistory(History history) {
         this.histories.remove(history);
         history.setAuthor(null);
     }
 
-    public void addComment(Comments comment) {
+    public void addComment(Comment comment) {
         this.comments.add(comment);
         comment.setAuthor(this);
     }
 
-    public void removeComment(Comments comment) {
+    public void removeComment(Comment comment) {
         this.comments.remove(comment);
         comment.setAuthor(this);
     }

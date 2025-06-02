@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "orders")
-public class Orders {
+public class Order {
 
     @Id
     private Integer id;
@@ -47,7 +47,7 @@ public class Orders {
 
     // Konstruktor
     @Builder
-    public Orders(Integer id, String description, BigDecimal price, String company, OffsetTime ordered,
+    public Order(Integer id, String description, BigDecimal price, String company, OffsetTime ordered,
             Integer besyId) {
         this.id = id;
         this.description = description;

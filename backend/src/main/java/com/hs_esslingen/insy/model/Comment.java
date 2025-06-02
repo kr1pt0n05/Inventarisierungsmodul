@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "comments")
-public class Comments {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
@@ -29,12 +29,12 @@ public class Comments {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_id", nullable = true)
     @JsonBackReference
-    private Inventories inventories;
+    private Inventory inventories;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Users author;
+    private User author;
 
     @Column(nullable = false)
     private String description;
@@ -44,7 +44,7 @@ public class Comments {
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
     @Builder
-    public Comments(Inventories inventories, Users users, String description) {
+    public Comment(Inventory inventories, User users, String description) {
         this.inventories = inventories;
         this.author = users;
         this.description = description;
