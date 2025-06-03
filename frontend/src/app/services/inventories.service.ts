@@ -1,7 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {Inventories} from '../models/inventories';
+
+import { Observable } from 'rxjs';
+import { Comment } from '../models/comment';
+import { Extension } from '../models/extension';
+import { Inventories } from '../models/inventories';
+import { InventoryItem } from '../models/inventory-item';
 import {Filter} from './server-table-data-source.service';
 
 
@@ -11,8 +15,7 @@ import {Filter} from './server-table-data-source.service';
 export class InventoriesService {
   private readonly url = 'http://localhost:8080/inventories'
 
-  constructor(private readonly http: HttpClient) {
-  }
+  constructor(private readonly http: HttpClient) { }
 
   getInventories(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter): Observable<Inventories> {
     const params: any = {
@@ -31,6 +34,22 @@ export class InventoriesService {
     });
 
     return this.http.get<Inventories>(this.url, {params: params});
+  }
+  
+  getInventoryById(id: number): Observable<InventoryItem> {
+    return this.http.get<InventoryItem>(`${this.url}/${id}`);
+  }
+
+  getCommentsForId(id: number): Observable<Comment[]> {
+    return this.http.get<any>(`${this.url}/${id}/comments`);
+  }
+
+  getExtensionsForId(id: number): Observable<Extension[]> {
+    return this.http.get<any>(`${this.url}/${id}/extensions`);
+  }
+
+  getChangesForId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.url}/${id}/changes`);
   }
 
 }

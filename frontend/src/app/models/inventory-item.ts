@@ -1,15 +1,16 @@
-import {Company} from './company';
-import {User} from './user';
+import { Tag } from './tag';
 
 export interface InventoryItem {
-  // costCenter: number,
   id: number,
-  user: string,
   description: string,
-  company: string,
-  price: number,
-  createdAt: string,
   serialNumber: string,
+  price: number,
   location: string,
+  costCenter: string,
+  company: string,
   orderer: string,
+  isDeinventoried: boolean,
+  createdAt: string,
+  tags: Tag[],
+  [key: string]: any
 }

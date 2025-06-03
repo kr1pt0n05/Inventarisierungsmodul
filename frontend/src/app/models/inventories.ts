@@ -1,4 +1,4 @@
-import {InventoryItem} from './inventory-item';
+import { InventoryItem } from './inventory-item';
 
 export interface Inventories {
   content: InventoryItem[];

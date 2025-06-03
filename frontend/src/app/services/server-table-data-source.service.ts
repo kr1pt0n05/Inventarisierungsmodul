@@ -1,13 +1,14 @@
-import {EventEmitter, inject, Injectable, signal} from '@angular/core';
-import {DataSource} from '@angular/cdk/table';
-import {CollectionViewer} from '@angular/cdk/collections';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {InventoriesService} from './inventories.service';
-import {Inventories} from '../models/inventories';
-import {InventoryItem} from '../models/inventory-item';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {MatSort, Sort} from '@angular/material/sort';
-import {FormGroup} from '@angular/forms';
+import { CollectionViewer } from '@angular/cdk/collections';
+import { DataSource } from '@angular/cdk/table';
+import { EventEmitter, inject, Injectable, signal } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Inventories } from '../models/inventories';
+import { InventoryItem } from '../models/inventory-item';
+import { InventoriesService } from './inventories.service';
+import { FormGroup } from '@angular/forms';
+
 
 interface Page{
   pageIndex: number,
@@ -125,7 +126,6 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._service.getInventories(pageNumber, pageSize, sortActive, sortDirection, filter).subscribe((inventories: Inventories) => {
       this.data = inventories.content.map((item: InventoryItem) => ({
         id: item.id,
-        user: item.orderer,
         description: item.description,
         company: item.company,
         price: item.price,
@@ -134,7 +134,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
         location: item.location,
         orderer: item.orderer,
       }));
-      if(this._paginator) this._paginator.length = inventories.totalElements;
+      if (this._paginator) this._paginator.length = inventories.totalElements;
     })
   }
 

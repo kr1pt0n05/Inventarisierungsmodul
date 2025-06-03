@@ -1,0 +1,7 @@
+tr:nth-child(2n) {
+  background-color: #f0f0f0;
+}
+
+tr:hover {
+  background-color: #bfbfbf;
+}
