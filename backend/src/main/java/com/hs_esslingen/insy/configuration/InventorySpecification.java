@@ -10,8 +10,8 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
-import com.hs_esslingen.insy.model.Inventories;
-import com.hs_esslingen.insy.model.Tags;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.model.Tag;
 
 // Klasse zur Implementierung von Filterfunktionen für die Inventargegnstände
 // Filter werden als Query-Parameter in der URL übergeben
@@ -23,20 +23,20 @@ public class InventorySpecification {
     }
 
     // Filter Inventargegenstände nach ihrer Tag-ID
-    public static Specification<Inventories> hasTagId(List<Integer> tagIds) {
+    public static Specification<Inventory> hasTagId(List<Integer> tagIds) {
     return (root, query, cb) -> {
         if (tagIds == null || tagIds.isEmpty()) {
             return cb.conjunction();
         }
         // Direkt auf das ManyToMany Set "tags" joinen
-        Join<Inventories, Tags> tagJoin = root.join("tags", JoinType.LEFT);
+        Join<Inventory, Tag> tagJoin = root.join("tags", JoinType.LEFT);
         return tagJoin.get("id").in(tagIds);
     };
 }
 
 
 
-    public static Specification<Inventories> idBetween(Integer minId, Integer maxId) {
+    public static Specification<Inventory> idBetween(Integer minId, Integer maxId) {
         return (root, query, cb) -> {
             // Wenn keine ID gesetzt ist keinen Filter anwenden
             if(minId == null && maxId == null) {
@@ -53,7 +53,7 @@ public class InventorySpecification {
         };
     }
 
-    public static Specification<Inventories> priceBetween(Integer minPrice, Integer maxPrice) {
+    public static Specification<Inventory> priceBetween(Integer minPrice, Integer maxPrice) {
         return (root, query, cb) -> {
             // Wenn keine Query-Parameter gesetzt sind keinen Filter anwenden
             if(minPrice == null && maxPrice == null) {
@@ -70,12 +70,12 @@ public class InventorySpecification {
         };
     }
 
-    public static Specification<Inventories> isDeinventoried(Boolean status) {
+    public static Specification<Inventory> isDeinventoried(Boolean status) {
         return (root, query, criteriaBuilder) ->
             status == null ? null : criteriaBuilder.equal(root.get("isDeinventoried"), status);
     }
 
-    public static Specification<Inventories> hasOrderer(String orderer) {
+    public static Specification<Inventory> hasOrderer(String orderer) {
         return (root, query, cb) -> {
             // Wenn kein Orderer gesetzt ist keinen Filter anwenden
             if (orderer == null || orderer.isEmpty()) {
@@ -85,7 +85,7 @@ public class InventorySpecification {
         };
     }
 
-    public static Specification<Inventories> hasCompany(String company) {
+    public static Specification<Inventory> hasCompany(String company) {
         return (root, query, cb) -> {
             // Wenn kein Unternehmen gesetzt ist keinen Filter anwenden
             if (company == null || company.isEmpty()) {
@@ -95,7 +95,7 @@ public class InventorySpecification {
         };
     }
 
-    public static Specification<Inventories> hasLocation(String location) {
+    public static Specification<Inventory> hasLocation(String location) {
         return (root, query, cb) -> {
             // Wenn kein Standort gesetzt ist keinen Filter anwenden
             if (location == null || location.isEmpty()) {
@@ -105,7 +105,7 @@ public class InventorySpecification {
         };
     }
 
-    public static Specification<Inventories> hasCostCenter(String costCenter) {
+    public static Specification<Inventory> hasCostCenter(String costCenter) {
         return (root, query, cb) -> {
             // Wenn kein Kostenstelle gesetzt ist keinen Filter anwenden
             if (costCenter == null || costCenter.isEmpty()) {
@@ -115,7 +115,7 @@ public class InventorySpecification {
         };
     }
 
-    public static Specification<Inventories> hasSerialNumber(String serialNumber) {
+    public static Specification<Inventory> hasSerialNumber(String serialNumber) {
         return (root, query, cb) -> {
             // Wenn keine Seriennummer gesetzt ist keinen Filter anwenden
             if (serialNumber == null || serialNumber.isEmpty()) {
@@ -127,25 +127,25 @@ public class InventorySpecification {
 
     // Sortierung nach einem verschachtelten Feld
     // Beispiel: "user.name" sortiert nach dem Namen des Benutzers
-    public static Specification<Inventories> sortByNestedField(String nestedField, Sort.Direction direction) {
+    public static Specification<Inventory> sortByNestedField(String orderBy, Sort.Direction direction) {
     return (root, query, cb) -> {
 
         // Wenn kein verschachteltes Feld angegeben ist, keine Sortierung anwenden
         // Eigentlich schon überprüft in InventoriesSerivice,
         // aber hier nochmal für Sicherheit
-        if (nestedField == null || !nestedField.contains(".")) {
+        if (orderBy == null) {
             return cb.conjunction(); // keine Sortierung
         }
 
-        // Das verschachtelte Feld in zwei Teile aufteilen
-        // z. B. "user.name"
-        String[] parts = nestedField.split("\\.");
-        if (parts.length != 2) return cb.conjunction();
-
         // Tabellenname
-        String joinProperty = parts[0]; // z. B. "user"
+        String joinProperty = orderBy; // z. B. "user"
+
+
+
         // Property, nach dem sortiert werden soll
-        String sortField = parts[1];   // z. B. "name"
+        // name ist für alle verschachtelten Felder das gleiche Feld auf das zugefriffen wird,
+        // deswegen ist es hardcodiert. Muss angepasst werden, wenn andere Felder sortiert werden sollen
+        String sortField = "name";
 
         // Join auf die Tabelle des verschachtelten Feldes
         // und Sortierung nach dem angegebenen Feld
@@ -159,7 +159,7 @@ public class InventorySpecification {
 }
 
     // Filter nach dem Erstellungsdatum
-    public static Specification<Inventories> createdBetween(LocalDateTime createdAfter, LocalDateTime createdBefore) {
+    public static Specification<Inventory> createdBetween(LocalDateTime createdAfter, LocalDateTime createdBefore) {
     return (root, query, cb) -> {
         if (createdAfter == null && createdBefore == null) {
             return cb.conjunction();

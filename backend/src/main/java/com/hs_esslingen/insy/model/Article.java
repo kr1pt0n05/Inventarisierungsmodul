@@ -26,7 +26,7 @@ public class Article {
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
     @JsonBackReference
-    private Orders orderId;
+    private Order orderId;
 
     @Column(name = "description")
     private String description;

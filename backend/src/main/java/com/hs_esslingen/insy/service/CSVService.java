@@ -22,16 +22,16 @@ import java.util.stream.Collectors;
 public class CSVService {
     private final Character DELIMITER = ';';
 
-    private final InventoriesRepository inventoriesRepository;
-    private final UsersRepository usersRepository;
-    private final CompaniesRepository companiesRepository;
-    private final CommentsRepository commentsRepository;
+    private final InventoryRepository inventoryRepository;
+    private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
+    private final CommentRepository commentRepository;
 
-    public CSVService(InventoriesRepository inventoriesRepository, UsersRepository usersRepository, CompaniesRepository companiesRepository, CommentsRepository commentsRepository) {
-        this.inventoriesRepository = inventoriesRepository;
-        this.usersRepository = usersRepository;
-        this.companiesRepository = companiesRepository;
-        this.commentsRepository = commentsRepository;
+    public CSVService(InventoryRepository inventoriesRepository, UserRepository usersRepository, CompanyRepository companiesRepository, CommentRepository commentsRepository) {
+        this.inventoryRepository = inventoriesRepository;
+        this.userRepository = usersRepository;
+        this.companyRepository = companiesRepository;
+        this.commentRepository = commentsRepository;
     }
 
 
@@ -46,14 +46,14 @@ public class CSVService {
         // To-Do: Push to database
         OffsetTime now = OffsetTime.now();
 
-        Map<String, Users> usersMap = new HashMap<>();
-        Map<String, Companies> companiesMap = new HashMap<>();
+        Map<String, User> usersMap = new HashMap<>();
+        Map<String, Company> companiesMap = new HashMap<>();
 
-        List<Inventories> inventoriesList = new ArrayList<>();
-        List<Comments> commentsList = new ArrayList<>();
+        List<Inventory> inventoriesList = new ArrayList<>();
+        List<Comment> commentsList = new ArrayList<>();
 
-        Set<String> existingUsers = usersRepository.findAll().stream().map(Users::getName).collect(Collectors.toSet());
-        Set<String> existingCompanies = companiesRepository.findAll().stream().map(Companies::getName).collect(Collectors.toSet());
+        Set<String> existingUsers = userRepository.findAll().stream().map(User::getName).collect(Collectors.toSet());
+        Set<String> existingCompanies = companyRepository.findAll().stream().map(Company::getName).collect(Collectors.toSet());
 
         Set<String> csvObjectsUsernames = new HashSet<>();
         Set<String> csvObjectsCompanies = new HashSet<>();
@@ -65,10 +65,10 @@ public class CSVService {
         });
 
         csvObjectsUsernames.forEach(obj -> {
-            usersMap.put(obj, new Users(obj));
+            usersMap.put(obj, new User(obj));
         });
         csvObjectsCompanies.forEach(obj -> {
-            companiesMap.put(obj, new Companies(obj));
+            companiesMap.put(obj, new Company(obj));
         });
 
 
@@ -78,10 +78,10 @@ public class CSVService {
             try {
                 // 1. Create new inventory item & push to database
 
-                Users user = usersMap.get(obj.getOrderer());
-                Companies company = companiesMap.get(obj.getCompany());
+                User user = usersMap.get(obj.getOrderer());
+                Company company = companiesMap.get(obj.getCompany());
 
-                Inventories inventoryItem = new Inventories();
+                Inventory inventoryItem = new Inventory();
                 inventoryItem.setId(Integer.parseInt(obj.getInventoryNumber()));
                 inventoryItem.setDescription(obj.getDescription());
                 inventoryItem.setSerialNumber(obj.getSerialNumber());
@@ -95,7 +95,7 @@ public class CSVService {
 
                 // Create comments
                 if(!obj.getComment().isEmpty()){
-                    Comments comment = new Comments();
+                    Comment comment = new Comment();
                     comment.setDescription(obj.getComment());
                     comment.setAuthor(user);
                     comment.setInventories(inventoryItem);
@@ -107,10 +107,10 @@ public class CSVService {
             }
 
         });
-        usersRepository.saveAll(usersMap.values());
-        companiesRepository.saveAll(companiesMap.values());
-        inventoriesRepository.saveAll(inventoriesList);
-        commentsRepository.saveAll(commentsList);
+        userRepository.saveAll(usersMap.values());
+        companyRepository.saveAll(companiesMap.values());
+        inventoryRepository.saveAll(inventoriesList);
+        commentRepository.saveAll(commentsList);
     }
 
 
