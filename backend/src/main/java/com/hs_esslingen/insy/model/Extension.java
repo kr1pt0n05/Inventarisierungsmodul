@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "extensions")
-public class Extensions {
+public class Extension {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,12 +35,12 @@ public class Extensions {
     @ManyToOne
     @JoinColumn(name = "inventory_id", referencedColumnName = "id", nullable = false)
     @JsonBackReference
-    private Inventories inventory;
+    private Inventory inventory;
 
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     @JsonBackReference
-    private Companies company;
+    private Company company;
 
     private String description;
 
@@ -55,7 +55,7 @@ public class Extensions {
 
 
     @Builder
-    public Extensions(Inventories inventory, Companies company, String description, String serialNumber,
+    public Extension(Inventory inventory, Company company, String description, String serialNumber,
             BigDecimal price) {
         this.inventory = inventory;
         this.company = company;

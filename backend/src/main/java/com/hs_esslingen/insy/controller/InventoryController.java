@@ -1,15 +1,13 @@
 package com.hs_esslingen.insy.controller;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.hs_esslingen.insy.dto.InventoriesCreateRequestDTO;
+import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.service.InventoriesService;
+import com.hs_esslingen.insy.service.InventoryService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -28,12 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/inventories")
-public class InventoriesController {
+public class InventoryController {
 
     
-    private final InventoriesService inventoriesService;
+    private final InventoryService inventoriesService;
 
-    InventoriesController(InventoriesService inventoriesService) {
+    InventoryController(InventoryService inventoriesService) {
         this.inventoriesService = inventoriesService;
     }
 
@@ -53,7 +51,7 @@ public class InventoriesController {
             @RequestParam(required = false) String serialNumber,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdAfter,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdBefore,
-            @RequestParam(required = false) String orderBy,
+            @RequestParam(required = false, defaultValue = "id") String orderBy,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @PageableDefault(size = 50) Pageable pageable) {
 
@@ -71,7 +69,7 @@ public class InventoriesController {
 
     // Ein Element der Inventarisierungsliste hinzufügen
     @PostMapping
-    public ResponseEntity<InventoriesResponseDTO> addInventory(@RequestBody InventoriesCreateRequestDTO requestDTO) {
+    public ResponseEntity<InventoriesResponseDTO> addInventory(@RequestBody InventoryCreateRequestDTO requestDTO) {
         InventoriesResponseDTO responseDTO = inventoriesService.addInventory(requestDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }

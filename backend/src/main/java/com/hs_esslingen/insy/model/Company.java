@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "companies")
-public class Companies {
+public class Company {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
@@ -37,37 +37,37 @@ public class Companies {
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     @Builder.Default
     @JsonManagedReference
-    private List<Inventories> inventories = new ArrayList<>();
+    private List<Inventory> inventories = new ArrayList<>();
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     @Builder.Default
     @JsonManagedReference
-    private List<Extensions> extensions = new ArrayList<>();
+    private List<Extension> extensions = new ArrayList<>();
 
     @Builder
-    public Companies(String name) {
+    public Company(String name) {
         this.name = name;
         this.inventories = new ArrayList<>();
         this.extensions = new ArrayList<>();
     }
 
     // Getter und Setter
-    public void addInventory(Inventories inventory) {
+    public void addInventory(Inventory inventory) {
         this.inventories.add(inventory);
         inventory.setCompany(this);
     }
 
-    public void removeInventory(Inventories inventory) {
+    public void removeInventory(Inventory inventory) {
         this.inventories.remove(inventory);
         inventory.setCompany(null);
     }
 
-    public void addExtension(Extensions extension) {
+    public void addExtension(Extension extension) {
         this.extensions.add(extension);
         extension.setCompany(this);
     }
 
-    public void removeExtension(Extensions extension) {
+    public void removeExtension(Extension extension) {
         this.extensions.remove(extension);
         extension.setCompany(null);
     }

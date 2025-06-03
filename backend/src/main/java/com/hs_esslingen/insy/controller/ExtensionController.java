@@ -3,9 +3,9 @@ package com.hs_esslingen.insy.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hs_esslingen.insy.dto.ExtensionsCreateDTO;
-import com.hs_esslingen.insy.dto.ExtensionsResponseDTO;
-import com.hs_esslingen.insy.service.ExtensionsService;
+import com.hs_esslingen.insy.dto.ExtensionCreateDTO;
+import com.hs_esslingen.insy.dto.ExtensionResponseDTO;
+import com.hs_esslingen.insy.service.ExtensionService;
 
 import java.util.List;
 
@@ -22,34 +22,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/inventories/{id}/components")
-public class ExtensionsController {
+public class ExtensionController {
     
-    private final ExtensionsService extensionsService;
+    private final ExtensionService extensionsService;
     
-    ExtensionsController(ExtensionsService extensionsService) {
+    ExtensionController(ExtensionService extensionsService) {
         this.extensionsService = extensionsService;
     }
     
     @GetMapping
-    public ResponseEntity<List<ExtensionsResponseDTO>> getAllExtensions(@PathVariable Integer id) {
-        List<ExtensionsResponseDTO> extensions = extensionsService.getAllExtensions(id);
+    public ResponseEntity<List<ExtensionResponseDTO>> getAllExtensions(@PathVariable Integer id) {
+        List<ExtensionResponseDTO> extensions = extensionsService.getAllExtensions(id);
         return ResponseEntity.ok(extensions);
     }
 
     @PostMapping
-    public ResponseEntity<ExtensionsResponseDTO> createExtension(@PathVariable Integer id, @RequestBody ExtensionsCreateDTO extensionData) {
+    public ResponseEntity<ExtensionResponseDTO> createExtension(@PathVariable Integer id, @RequestBody ExtensionCreateDTO extensionData) {
         
-        ExtensionsResponseDTO response = extensionsService.addExtension(id, extensionData);
+        ExtensionResponseDTO response = extensionsService.addExtension(id, extensionData);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @GetMapping("/{componentId}")
-    public ResponseEntity<ExtensionsResponseDTO> getExtensionById(@PathVariable Integer id, @PathVariable Integer componentId) {
-        ExtensionsResponseDTO extension = extensionsService.getExtensionById(id, componentId);
+    public ResponseEntity<ExtensionResponseDTO> getExtensionById(@PathVariable Integer id, @PathVariable Integer componentId) {
+        ExtensionResponseDTO extension = extensionsService.getExtensionById(id, componentId);
         return ResponseEntity.ok(extension);
     }
     @PatchMapping("/{componentId}")
-    public ResponseEntity<ExtensionsResponseDTO> updateExtension(@PathVariable Integer id, @PathVariable Integer componentId, @RequestBody ExtensionsCreateDTO extensionData) {
-        ExtensionsResponseDTO updatedExtension = extensionsService.updateExtension(id, componentId, extensionData);
+    public ResponseEntity<ExtensionResponseDTO> updateExtension(@PathVariable Integer id, @PathVariable Integer componentId, @RequestBody ExtensionCreateDTO extensionData) {
+        ExtensionResponseDTO updatedExtension = extensionsService.updateExtension(id, componentId, extensionData);
         return ResponseEntity.ok(updatedExtension);
     }
     @DeleteMapping("/{componentId}")

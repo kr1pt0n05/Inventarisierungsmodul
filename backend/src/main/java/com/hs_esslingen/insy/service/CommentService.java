@@ -4,36 +4,41 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.hs_esslingen.insy.model.Inventories;
-import com.hs_esslingen.insy.repository.InventoriesRepository;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.repository.InventoryRepository;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
-import com.hs_esslingen.insy.dto.Comment;
-import com.hs_esslingen.insy.model.Comments;
-import com.hs_esslingen.insy.repository.CommentsRepository;
+import com.hs_esslingen.insy.dto.CommentDTO;
+import com.hs_esslingen.insy.exception.BadRequest;
+import com.hs_esslingen.insy.exception.NotFound;
+import com.hs_esslingen.insy.model.Comment;
+import com.hs_esslingen.insy.repository.CommentRepository;
 import org.springframework.transaction.annotation.Transactional;
+
 @RequiredArgsConstructor
 @Service
-public class CommentsService {
+public class CommentService {
 
-    private final CommentsRepository commentsRepository;
-    private final InventoriesRepository inventoriesRepository;
+    private final CommentRepository commentRepository;
+    private final InventoryRepository inventoryRepository;
 
 
-    public List<Comment> getCommentsByInventoryId(Integer inventoryId) {
-        Optional<Inventories> inventory = inventoriesRepository.findById(inventoryId);
+    public List<CommentDTO> getCommentsByInventoryId(Integer inventoryId) {
+        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
 
         if (inventory.isEmpty()) {
-            throw new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found");
+            throw new NotFound("Inventory with the id: " + inventoryId + " not found");
         }
 
         // Get comments from repository
-        List<Comments> comments = commentsRepository.findCommentsByInventoryId(inventoryId);
+        List<Comment> comments = commentRepository.findCommentsByInventoryId(inventoryId);
 
         // Convert to DTOs
         return comments.stream()
-                .map(comment -> Comment.builder()
+                .map(comment -> CommentDTO.builder()
                         .id(comment.getId())
                         .description(comment.getDescription())
                         .author(comment.getAuthor() != null ? comment.getAuthor().getName() : "Unknown")
@@ -42,21 +47,21 @@ public class CommentsService {
                 .collect(Collectors.toList());
     }
 
-    public Comment createComment(Integer inventoryId, Comment commentDTO) {
-        Optional<Inventories> inventory = inventoriesRepository.findById(inventoryId);
+    public CommentDTO createComment(Integer inventoryId, CommentDTO commentDTO) {
+        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
         if (inventory.isEmpty()) {
             throw new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found");
         }
-        Comments comment = Comments.builder()
+        Comment comment = Comment.builder()
                 .inventories(inventory.get())
                 .description(commentDTO.getDescription())
                 .author(inventory.get().getUser())
                 .build();
 
         // Save and convert back to DTO
-        Comments savedComment = commentsRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
 
-        return Comment.builder()
+        return CommentDTO.builder()
                 .id(savedComment.getId())
                 .description(savedComment.getDescription())
                 .createdAt(savedComment.getCreatedAt())
@@ -67,18 +72,18 @@ public class CommentsService {
     @Transactional
     public void deleteComment(Integer inventoryId, Integer commentId) {
         // Verify that the inventory with the given id exists
-        Optional<Inventories> inventory = inventoriesRepository.findById(inventoryId);
+        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
 
         if (inventory.isEmpty()) {
-            throw new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found");
+            throw new NotFound("Inventory with the id: " + inventoryId + " not found");
         }
         // Verify that the comment belongs to the given inventoryId
-        Optional<Comments> commentOpt = commentsRepository.findByCommentIdAndInventoryId(commentId, inventoryId);
+        Optional<Comment> commentOpt = commentRepository.findByCommentIdAndInventoryId(commentId, inventoryId);
         if (commentOpt.isEmpty()) {
-            throw new IllegalArgumentException("Comment not found or does not belong to the specified inventory with the id: " + inventoryId);
+            throw new BadRequest("Comment not found or does not belong to the specified inventory with the id: " + inventoryId);
         } else {
             // Delete the specific comment
-            commentsRepository.deleteByCommentId(commentId);
+            commentRepository.deleteByCommentId(commentId);
         }
     }
 }

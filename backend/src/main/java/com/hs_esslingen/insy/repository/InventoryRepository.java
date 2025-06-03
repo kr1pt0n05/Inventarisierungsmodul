@@ -4,11 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.hs_esslingen.insy.model.Inventories;
+import com.hs_esslingen.insy.model.Inventory;
 
 @Repository
-public interface InventoriesRepository
-        extends JpaRepository<Inventories, Integer>, JpaSpecificationExecutor<Inventories> {
+public interface InventoryRepository
+        extends JpaRepository<Inventory, Integer>, JpaSpecificationExecutor<Inventory> {
     // Define custom query methods here if needed
 
 }

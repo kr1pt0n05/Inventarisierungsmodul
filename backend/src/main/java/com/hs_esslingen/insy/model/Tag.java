@@ -22,7 +22,7 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "tags")
-public class Tags {
+public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,15 +34,15 @@ public class Tags {
     private String name;
 
     @ManyToMany(mappedBy = "tags")
-    private Set<Inventories> inventories = new HashSet<>();
+    private Set<Inventory> inventories = new HashSet<>();
 
     @Builder
-    public Tags() {
+    public Tag() {
         this.inventories = new HashSet<>();
     }
 
     @Builder
-    public Tags(String name) {
+    public Tag(String name) {
         this.name = name;
 
         inventories = new HashSet<>();

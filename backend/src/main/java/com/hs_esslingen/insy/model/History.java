@@ -23,7 +23,7 @@ import jakarta.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "histories")
-public class Histories {
+public class History {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class Histories {
     @ManyToOne
     @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
     @JsonBackReference
-    private Users author;
+    private User author;
 
     @Column(name = "attribute_changed", nullable = false)
     private String attributeChanged;
@@ -49,7 +49,7 @@ public class Histories {
 
     // Konstruktor
     @Builder
-    public Histories(Users users, String attributeChanged, String from, String to) {
+    public History(User users, String attributeChanged, String from, String to) {
         this.author = users;
         this.attributeChanged = attributeChanged;
         this.valueFrom = from;
