@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
-import { InventoriesService } from './inventories.service';
+import { ServerTableDataSourceService } from './server-table-data-source.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-describe('InventoriesService', () => {
-  let service: InventoriesService;
+describe('ServerTableDataSourceService', () => {
+  let service: ServerTableDataSourceService<any>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -14,7 +14,7 @@ describe('InventoriesService', () => {
         provideHttpClientTesting()
       ]
     });
-    service = TestBed.inject(InventoriesService);
+    service = TestBed.inject(ServerTableDataSourceService);
   });
 
   it('should be created', () => {

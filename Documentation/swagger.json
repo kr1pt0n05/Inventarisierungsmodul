@@ -16,7 +16,196 @@
         "tags": [
           "Inventarisierungsliste"
         ],
-        "summary": "Ruft alle Elemente in der Inventarisierunsliste ab",
+        "summary": "Ruft alle Elemente in der Inventarisierunsliste ab und sortiert sie nach optional gesetzten Query-Parametern",
+        "parameters": [
+          {
+            "name": "tags",
+            "in": "query",
+            "description": "Filter nach einem oder mehreren Tags (comma-separated)",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "example": [
+                1,
+                3,
+                5
+              ]
+            }
+          },
+          {
+            "name": "minId",
+            "in": "query",
+            "description": "Kleinste inventory ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 10
+            }
+          },
+          {
+            "name": "maxId",
+            "in": "query",
+            "description": "Größte inventory ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 100
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "Kleinster Preis",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 50
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "Größter Preis",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 1500
+            }
+          },
+          {
+            "name": "isDeinventoried",
+            "in": "query",
+            "description": "Filter nach Status \"deinventarisiert\"",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "orderer",
+            "in": "query",
+            "description": "Filter nach dem Namen des Bestellers",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Max Mustermann"
+            }
+          },
+          {
+            "name": "company",
+            "in": "query",
+            "description": "Filter nach dem Namen einer Firma",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Gedankenfabrik GmbH"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "description": "Filter nach dem Ort/Besitzer",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "Lagerraum 1"
+            }
+          },
+          {
+            "name": "costCenter",
+            "in": "query",
+            "description": "Filter by cost center name",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "IT-Abteilung"
+            }
+          },
+          {
+            "name": "serialNumber",
+            "in": "query",
+            "description": "Filter nach der Seriennummer",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "ABC123"
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Feld nach dem die gefetchten Inventories sortiert werden. Erlaubte Werte:\n- id\n- description\n- company.name\n- price\n- createdAt\n- serialNumber\n- location\n- user.name\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "id",
+                "description",
+                "company.name",
+                "price",
+                "createdAt",
+                "serialNumber",
+                "location",
+                "user.name"
+              ],
+              "example": "price"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "description": "Sortierrichtung der Inventories, ascending oder descending",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc",
+              "example": "asc"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Anzahl an Items pro Seite",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "example": 20
+            }
+          },
+          {
+            "name": "createdAfter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2024-01-01T00:00:00.000Z"
+            },
+            "description": "Filtert Inventories, die **nach** diesem Datum erstellt wurden (inklusive 00:00 Uhr)."
+          },
+          {
+            "name": "createdBefore",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2024-12-31T00:00:00.000Z"
+            },
+            "description": "Filtert Inventories, die **vor** diesem Datum erstellt wurden (inklusive 23:59:59)."
+          }
+        ],
         "responses": {
           "200": {
             "description": "A list of items",
@@ -25,7 +214,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Item"
+                    "$ref": "#/components/schemas/PagedInventoriesResponse"
                   }
                 }
               }
@@ -54,15 +243,15 @@
         "description": "Neues Gerät/Software inventarisieren.",
         "operationId": "createItem",
         "requestBody": {
-          "description": "Neues Gerät inventarisieren. Ausgewählte Tags werden beim Erstellen in einem JSON-Array übergeben. Falls keine Tags ausgewählt wurden wird ein leeres JSON-Array übergeben. inventories_id muss eindeutig sein, sonst wird ein Fehler 400 zurückgegeben. Bei der Erstellung wird ein Inventar-Objekt zurückgegeben, das die ID des neu erstellten Objekts enthält. .\n Infos zu Feldern:\n  - inventories_id: Nur noch nicht verwendete integer id's sind möglich\n  - company: Die company kann mit ihrer id übergeben werden, wenn sie bereits erstellt wurde. Wenn der sie noch nicht erstellt wurde, kann sie als String übergeben werden. Dann wird ein neuer Eintrag in dem companies-table erstellt und dem Inventargegenstand zugewiesen.  \n  - company\n",  
-          "required": true,
+          "description": "Neues Gerät inventarisieren. Ausgewählte Tags werden beim Erstellen in einem JSON-Array übergeben. Falls keine Tags ausgewählt wurden wird ein leeres JSON-Array übergeben.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ItemCreate"
+                "$ref": "#/components/schemas/InventoriesCreateDTO"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
@@ -70,7 +259,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Item"
+                  "$ref": "#/components/schemas/InventoriesResponseDTO"
                 }
               }
             }
@@ -119,7 +308,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Erfolgreiches Abrufen des Gegenstandes (Response-Body muss noch abhängig von der Detailansicht eingefügt werden)"
+            "description": "Erfolgreiches Abrufen des Gegenstandes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoriesResponseDTO"
+                }
+              }
+            }
           },
           "400": {
             "description": "Error 400: Bad Request",
@@ -133,51 +329,6 @@
           },
           "500": {
             "description": "Interner Fehler beim Abrufen des Gegenstand",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error500"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Inventarisierungsliste"
-        ],
-        "summary": "Löscht einen Gegenstand aus der Inventarisierungsliste",
-        "description": "Deinventarisiert einen Gegenstand aus der Inventarisierungsliste. Entspricht einem Soft-Delete.",
-        "operationId": "deleteItem",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID des Gegenstands zum löschen",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Gegenstand wurde erfolgreich gelöscht"
-          },
-          "400": {
-            "description": "Error 400: Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error400"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Interner Serverfehler, Gegenstand wurde nicht gelöscht",
             "content": {
               "application/json": {
                 "schema": {
@@ -208,7 +359,8 @@
           }
         ],
         "requestBody": {
-          "description": "Array mit Feldern, die geändert werden sollen.  Jedes Element enthält das Attribut (field) und den neuen Wert. Kann leer sein, wenn keine Änderungen vorgenommen werden.\nMögliche Felder sind:\n  - cost_center\n  - inventories_description\n  - company\n  - inventories_price\n  - inventories_serial_number\n  - inventories_location\n  - orderer\n  - tags\n",
+          "required": true,
+          "description": "Array mit Feldern, die geändert werden sollen.  Jedes Element enthält das Attribut (field) und den neuen Wert. Kann leer sein, wenn keine Änderungen vorgenommen werden.\nMögliche Felder sind:\n  - cost_center\n  - inventories_description\n  - company\n  - inventories_price\n  - inventories_serial_number\n  - inventories_location\n  - orderer\n  - tags (muss ein array sein!)\n",
           "content": {
             "application/json": {
               "schema": {
@@ -218,18 +370,17 @@
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
-          "204": {
+          "200": {
             "description": "Gegenstand wurde erfolgreich bearbeitet",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Item"
+                    "$ref": "#/components/schemas/InventoriesResponseDTO"
                   }
                 }
               }
@@ -247,6 +398,51 @@
           },
           "500": {
             "description": "Interner Serverfehler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Inventarisierungsliste"
+        ],
+        "summary": "Löscht einen Gegenstand aus der Inventarisierungsliste",
+        "description": "Deinventarisiert einen Gegenstand aus der Inventarisierungsliste. Entspricht einem Soft-Delete.",
+        "operationId": "deleteItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID des Gegenstands zum löschen",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Gegenstand wurde erfolgreich gelöscht"
+          },
+          "400": {
+            "description": "Error 400: Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Serverfehler, Gegenstand wurde nicht gelöscht",
             "content": {
               "application/json": {
                 "schema": {
@@ -283,7 +479,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Extension"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExtensionsResponseDTO"
+                  }
                 }
               }
             }
@@ -330,19 +529,26 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "description": "ID der zu hinzufügenden Erweiterung",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/id_components_body"
+                "$ref": "#/components/schemas/ExtensionsCreateDTO"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "Erweiterung wurde hinzugefügt"
+            "description": "Erweiterung wurde hinzugefügt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionsResponseDTO"
+                }
+              }
+            }
           },
           "400": {
             "description": "Error 400: Bad Request",
@@ -398,7 +604,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Erfolgreiches Abrufen der Erweiterung"
+            "description": "Erfolgreiches Abrufen der Erweiterung",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionsResponseDTO"
+                }
+              }
+            }
           },
           "400": {
             "description": "Error 400: Bad Request",
@@ -412,61 +625,6 @@
           },
           "500": {
             "description": "Interner Fehler beim Abrufen des Gegenstands",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error500"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Inventarisierungsliste - Erweiterungen"
-        ],
-        "summary": "Löscht Erweiterung eines Gegenstandes",
-        "description": "Löscht die spezifizierte Erweiterung aus der Liste des zugehörigen Gegenstandes.",
-        "operationId": "deleteComponent",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID des Gegenstands",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "component-id",
-            "in": "path",
-            "description": "ID der Erweiterung zum löschen",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Erweiterung wurde erfolgreich gelöscht"
-          },
-          "400": {
-            "description": "Error 400: Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error400"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Interner Serverfehler",
             "content": {
               "application/json": {
                 "schema": {
@@ -507,22 +665,81 @@
           }
         ],
         "requestBody": {
-          "description": "Array mit Feldern, die geändert werden sollen.  Jedes Element enthält das Attribut (field) und den neuen Wert. Kann leer sein, wenn keine Änderungen vorgenommen werden.\nMögliche Felder sind:\n  - extensions_inventory_id\n  - extensions_description\n  - extensions_serial_number\n  - extensions_price\n  - extensions_created_at\n",
+          "required": true,
+          "description": "Array mit Feldern, die geändert werden sollen.  Jedes Element enthält das Attribut (field) und den neuen Wert. Kann leer sein, wenn keine Änderungen vorgenommen werden. Beim übergeben einer inventory_id wird die Erweiterung auf das neue Inventory gemappt und von dem alten Inventory entfernt. \nMögliche Felder sind:\n  - inventory_id(Integer)\n  - description(String)\n  - serial_number(String)\n  - price(Number)\n  - company_name(String)\n",
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ExtensionsPatchField"
+                "$ref": "#/components/schemas/ExtensionsPatchField"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gegenstand wurde erfolgreich bearbeitet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtensionsResponseDTO"
                 }
               }
             }
           },
-          "required": true
-        },
+          "400": {
+            "description": "Error 400: Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Serverfehler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Inventarisierungsliste - Erweiterungen"
+        ],
+        "summary": "Löscht Erweiterung eines Gegenstandes",
+        "description": "Löscht die spezifizierte Erweiterung aus der Liste des zugehörigen Gegenstandes.",
+        "operationId": "deleteComponent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID des Gegenstands",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "component-id",
+            "in": "path",
+            "description": "ID der Erweiterung zum löschen",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
         "responses": {
-          "200": {
-            "description": "Gegenstand wurde erfolgreich bearbeitet"
+          "204": {
+            "description": "Erweiterung wurde erfolgreich gelöscht"
           },
           "400": {
             "description": "Error 400: Bad Request",
@@ -619,6 +836,7 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "description": "ID der zu hinzufügenden Erweiterung",
           "content": {
             "application/json": {
@@ -626,8 +844,7 @@
                 "$ref": "#/components/schemas/CommentRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -745,7 +962,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Tag"
+                  "$ref": "#/components/schemas/TagDTO"
                 }
               }
             }
@@ -970,15 +1187,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Item"
-                  }
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Item"
+                    "$ref": "#/components/schemas/InventoriesResponseDTO"
                   }
                 }
               }
@@ -1107,14 +1316,21 @@
         "summary": "Schickt Excelliste zum Importieren an Backend",
         "description": "Datei muss für Umwandlung passendes Format haben",
         "requestBody": {
+          "required": true,
           "content": {
             "application/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/excelsheets_body"
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Excel-Datei (.xls oder .xlsx)"
+                  }
+                }
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -1250,7 +1466,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
+                  "properties": {
+                    "orders": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Order"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1358,7 +1581,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_1"
+                  "properties": {
+                    "order[id]": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1469,7 +1699,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_1"
+                  "properties": {
+                    "order[id]": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1620,71 +1857,6 @@
           }
         }
       },
-      "delete": {
-        "tags": [
-          "users - orders - items"
-        ],
-        "summary": "Löscht einen Artikel",
-        "description": "Löscht einen Artikel einer registrierten Bestellung.",
-        "operationId": "deleteOrderItem",
-        "parameters": [
-          {
-            "name": "user-id",
-            "in": "path",
-            "description": "ID des Users",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "order-id",
-            "in": "path",
-            "description": "ID der Bestellung",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "item-id",
-            "in": "path",
-            "description": "ID des Artikels",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Artikel wurde erfolgreich gelöscht"
-          },
-          "400": {
-            "description": "Error 400: Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error400"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Interner Serverfehler",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error500"
-                }
-              }
-            }
-          }
-        }
-      },
       "patch": {
         "tags": [
           "users - orders - items"
@@ -1749,115 +1921,77 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "users - orders - items"
+        ],
+        "summary": "Löscht einen Artikel",
+        "description": "Löscht einen Artikel einer registrierten Bestellung.",
+        "operationId": "deleteOrderItem",
+        "parameters": [
+          {
+            "name": "user-id",
+            "in": "path",
+            "description": "ID des Users",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "order-id",
+            "in": "path",
+            "description": "ID der Bestellung",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "item-id",
+            "in": "path",
+            "description": "ID des Artikels",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Artikel wurde erfolgreich gelöscht"
+          },
+          "400": {
+            "description": "Error 400: Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Interner Serverfehler",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
   "components": {
     "schemas": {
-      "Item": {
-        "required": [
-          "company",
-          "cost_center",
-          "inventories_created_at",
-          "inventories_description",
-          "inventories_id",
-          "inventories_location",
-          "inventories_price",
-          "inventories_serial_number",
-          "orderer"
-        ],
-        "type": "object",
-        "properties": {
-          "cost_center": {
-            "type": "string",
-            "example": "723458320Z"
-          },
-          "inventories_id": {
-            "type": "integer",
-            "example": 1
-          },
-          "inventories_description": {
-            "type": "string",
-            "example": "Asus Gaming Laptop"
-          },
-          "company": {
-            "type": "string",
-            "example": "Gedankenfabrik AG"
-          },
-          "inventories_price": {
-            "type": "number",
-            "format": "float"
-          },
-          "inventories_created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "inventories_serial_number": {
-            "type": "string",
-            "example": "834Z32T32H"
-          },
-          "inventories_location": {
-            "type": "string",
-            "example": "F99.234"
-          },
-          "orderer": {
-            "type": "integer",
-            "example": 5
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "integer"
-            }
-          }
-        }
-      },
-      "Error500": {
-        "required": [
-          "code",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "example": 500
-          },
-          "message": {
-            "type": "string",
-            "example": "Internal Server Error"
-          }
-        }
-      },
-      "Error400": {
-        "required": [
-          "code",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "example": 400
-          },
-          "message": {
-            "type": "string",
-            "example": "Bad Request"
-          }
-        }
-      },
-      "ItemCreate": {
-        "required": [
-          "company",
-          "cost_center",
-          "inventories-id",
-          "inventories_description",
-          "inventories_location",
-          "inventories_price",
-          "inventories_serial_number",
-          "orderer",
-          "tags"
-        ],
+      "InventoriesCreateDTO": {
         "type": "object",
         "properties": {
           "cost_center": {
@@ -1899,24 +2033,118 @@
               "type": "integer"
             },
             "example": [
-              1, 2
+              1,
+              3,
+              5
             ]
+          }
+        },
+        "required": [
+          "cost_center",
+          "inventories_id",
+          "inventories_description",
+          "company",
+          "inventories_price",
+          "inventories_serial_number",
+          "inventories_location",
+          "orderer"
+        ]
+      },
+      "InventoriesResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1001
+          },
+          "description": {
+            "type": "string",
+            "example": "HP Laptop mit Dockingstation"
+          },
+          "serialNumber": {
+            "type": "string",
+            "example": "SN123456789"
+          },
+          "price": {
+            "type": "number",
+            "format": "float",
+            "example": 1299.99
+          },
+          "location": {
+            "type": "string",
+            "example": "Raum 2.14, Regal A"
+          },
+          "costCenter": {
+            "type": "string",
+            "example": "IT-Abteilung"
+          },
+          "company": {
+            "type": "string",
+            "example": "Tech Solutions GmbH"
+          },
+          "orderer": {
+            "type": "string",
+            "example": "Max Mustermann"
+          },
+          "isDeinventoried": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "24.05.2025 13:32:17"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagDTO"
+            }
+          }
+        }
+      },
+      "Error500": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 500
+          },
+          "message": {
+            "type": "string",
+            "example": "Internal Server Error"
+          }
+        }
+      },
+      "Error400": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 400
+          },
+          "message": {
+            "type": "string"
           }
         }
       },
       "ItemPatchField": {
-        "required": [
-          "field",
-          "value"
-        ],
         "type": "object",
         "properties": {
-          "field": {
+          "inventories_description": {
             "type": "string",
             "description": "Name des Felds, das geändert werden soll (z.B. \"cost_center\", \"inventories_price\", \"tags\")",
-            "example": "tags"
+            "example": "Teständerung"
           },
-          "value": {
+          "tags": {
             "description": "Neuer Wert für das Feld",
             "example": [
               1,
@@ -1925,48 +2153,94 @@
           }
         }
       },
-      "Extension": {
+      "ExtensionsCreateDTO": {
         "type": "object",
         "properties": {
-          "extensions_inventory_id": {
+          "inventoryId": {
             "type": "integer",
-            "example": 23498
+            "example": 1
           },
-          "extensions_description": {
+          "description": {
             "type": "string",
-            "example": "G.Skill Aegis DDR4"
+            "example": "Externe Festplatte 1TB"
           },
-          "extensions_serial_number": {
+          "serialNumber": {
             "type": "string",
-            "example": "344F6534G"
+            "example": "EXT-89234-Z"
           },
-          "extensions_price": {
+          "price": {
             "type": "number",
             "format": "float",
-            "example": 25.95
+            "example": 89.9
           },
-          "extensions_created_at": {
+          "companyName": {
             "type": "string",
-            "format": "datetime",
-            "example": "11.09.2001"
+            "example": "Speicherwerke AG"
+          }
+        },
+        "required": [
+          "inventoryId",
+          "description",
+          "serialNumber",
+          "price",
+          "companyName"
+        ]
+      },
+      "ExtensionsResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 101
+          },
+          "description": {
+            "type": "string",
+            "example": "Externe Festplatte 1TB"
           },
           "company": {
             "type": "string",
-            "example": "Gedankenfabrik AG"
+            "example": "Speicherwerke AG"
+          },
+          "price": {
+            "type": "number",
+            "format": "float",
+            "example": 89.9
+          },
+          "serial_number": {
+            "type": "string",
+            "example": "EXT-89234-Z"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "24.05.2025 14:25:00"
           }
-        }
+        },
+        "required": [
+          "id",
+          "description",
+          "company",
+          "price",
+          "serial_number",
+          "created_at"
+        ]
       },
       "ExtensionsPatchField": {
         "type": "object",
         "properties": {
-          "field": {
-            "type": "string",
-            "description": "Name des Felds, das geändert werden soll (z.B extensions_description, extensions_price)",
-            "example": "extensions_serial_number"
+          "inventory_id": {
+            "type": "integer",
+            "description": "Name des Felds, das geändert werden soll",
+            "example": 200
           },
-          "value": {
+          "company_name": {
+            "type": "string",
             "description": "Neuer Wert für Attribut",
-            "example": "234HKF402"
+            "example": "Testfirma 2"
+          },
+          "price": {
+            "type": "number",
+            "example": 357.23
           }
         }
       },
@@ -1987,14 +2261,19 @@
           },
           "comments_created_at": {
             "type": "number",
-            "format": "datetime"
+            "format": "datetime",
+            "example": "24.12.2000"
           }
         }
       },
-      "Tag": {
+      "TagDTO": {
         "type": "object",
         "properties": {
-          "tags_name": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
             "type": "string",
             "example": "Laptop"
           }
@@ -2006,7 +2285,11 @@
           "tags_id": {
             "type": "array",
             "items": {
-              "type": "integer"
+              "type": "integer",
+              "example": [
+                4,
+                7
+              ]
             }
           }
         }
@@ -2026,7 +2309,8 @@
           },
           "histories_date": {
             "type": "number",
-            "format": "datetime"
+            "format": "datetime",
+            "example": "23.11.2465"
           },
           "author": {
             "format": "string",
@@ -2049,7 +2333,22 @@
           "names": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Statistic_names"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Peter"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "example": 23
+                },
+                "order_price": {
+                  "type": "number",
+                  "format": "float",
+                  "example": 1234.56
+                }
+              }
             }
           }
         }
@@ -2076,7 +2375,8 @@
           },
           "orders_ordered": {
             "type": "number",
-            "format": "datetime"
+            "format": "datetime",
+            "example": "23.03.2345"
           }
         }
       },
@@ -2102,60 +2402,97 @@
           }
         }
       },
-      "id_components_body": {
+      "Pageable": {
         "type": "object",
         "properties": {
-          "id": {
+          "pageNumber": {
             "type": "integer",
-            "example": 76544
+            "example": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "example": 50
+          },
+          "offset": {
+            "type": "integer",
+            "example": 0
+          },
+          "paged": {
+            "type": "boolean",
+            "example": true
+          },
+          "unpaged": {
+            "type": "boolean",
+            "example": false
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
           }
         }
       },
-      "excelsheets_body": {
+      "Sort": {
         "type": "object",
         "properties": {
-          "file": {
-            "type": "string",
-            "description": "Excel-Datei (.xls oder .xlsx)",
-            "format": "binary"
+          "sorted": {
+            "type": "boolean",
+            "example": true
+          },
+          "unsorted": {
+            "type": "boolean",
+            "example": false
+          },
+          "empty": {
+            "type": "boolean",
+            "example": false
           }
         }
       },
-      "inline_response_200": {
+      "PagedInventoriesResponse": {
+        "type": "object",
         "properties": {
-          "orders": {
+          "content": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Order"
+              "$ref": "#/components/schemas/InventoriesResponseDTO"
             }
-          }
-        }
-      },
-      "inline_response_200_1": {
-        "properties": {
-          "order[id]": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Article"
-            }
-          }
-        }
-      },
-      "Statistic_names": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Peter"
           },
-          "quantity": {
+          "pageable": {
+            "$ref": "#/components/schemas/Pageable"
+          },
+          "totalPages": {
             "type": "integer",
-            "example": 23
+            "example": 1
           },
-          "order_price": {
-            "type": "number",
-            "format": "float",
-            "example": 1234.56
+          "totalElements": {
+            "type": "integer",
+            "example": 9
+          },
+          "last": {
+            "type": "boolean",
+            "example": true
+          },
+          "size": {
+            "type": "integer",
+            "example": 50
+          },
+          "number": {
+            "type": "integer",
+            "example": 0
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "example": 9
+          },
+          "first": {
+            "type": "boolean",
+            "example": true
+          },
+          "empty": {
+            "type": "boolean",
+            "example": false
           }
         }
       }
