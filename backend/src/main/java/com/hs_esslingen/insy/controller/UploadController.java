@@ -21,6 +21,13 @@ public class UploadController {
         this.csvService = csvService;
     }
 
+    @PostMapping("/excel")
+    public ResponseEntity<String> uploadExcel(@RequestParam("file") MultipartFile file) throws IOException {
+        csvService.importExcel(file);
+        return ResponseEntity.ok().build();
+    }
+
+
     @PostMapping("/csv")
     public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) throws IOException {
         csvService.importCSVImproved(file);

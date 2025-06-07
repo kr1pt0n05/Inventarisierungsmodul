@@ -1,5 +1,7 @@
 package com.hs_esslingen.insy.repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +18,10 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
     Optional<Users> findByName(String name);
     
     Users getUsersByName(String name);
+
+    @Query("SELECT u.name FROM Users u")
+    List<String> findAllUsernames();
+
+
 
 }

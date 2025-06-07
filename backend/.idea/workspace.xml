@@ -5,17 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b0635f81-cb1b-4b97-9498-b1bb9f73d29a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/dto/InventoryExcel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/components/inventory-list/inventory-list.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/components/inventory-list/inventory-list.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/components/inventory-list/inventory-list.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/components/inventory-list/inventory-list.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/models/inventory-item.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/models/inventory-item.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/services/inventories.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/services/inventories.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/configuration/DatabaseSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/configuration/DatabaseSeeder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/CompaniesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/CompaniesRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/CostCentersRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/CostCentersRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/UsersRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/UsersRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CSVService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CSVService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/components/dynamic-list/dynamic-list.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/components/dynamic-list/dynamic-list.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/app/pages/details/details.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/pages/details/details.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/app/services/server-table-data-source.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/services/server-table-data-source.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -40,6 +54,7 @@
     &quot;Spring Boot.InsyApplication.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Sandr/Documents/GitHub/Inventarisierungsmodul/backend&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -67,10 +82,24 @@
       <workItem from="1748377188631" duration="51000" />
       <workItem from="1748424345828" duration="9868000" />
       <workItem from="1748511808523" duration="6445000" />
+      <workItem from="1748946480665" duration="118000" />
+      <workItem from="1748966533968" duration="14466000" />
+      <workItem from="1749033083744" duration="14492000" />
+      <workItem from="1749284039580" duration="3687000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint type="java-exception">
+          <properties class="java.lang.IllegalStateException" package="java.lang" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

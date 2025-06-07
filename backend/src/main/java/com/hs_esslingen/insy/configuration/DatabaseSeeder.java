@@ -1,3 +1,4 @@
+/*
 
 package com.hs_esslingen.insy.configuration;
 
@@ -23,12 +24,14 @@ import com.hs_esslingen.insy.model.Users;
 import com.hs_esslingen.insy.model.CostCenters;
 import com.hs_esslingen.insy.repository.CommentsRepository;
 
+*/
 /**
  * This class is used to seed the database with initial data.
  * It implements CommandLineRunner to execute code after the application context
  * is loaded.
  * Remove for production use.
- */
+ *//*
+
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
@@ -143,3 +146,4 @@ public class DatabaseSeeder implements CommandLineRunner {
         return inventory;
     }
 }
+*/
