@@ -6,7 +6,7 @@ import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
-import {Filter} from './server-table-data-source.service';
+import { Filter } from './server-table-data-source.service';
 
 
 @Injectable({
@@ -33,9 +33,9 @@ export class InventoriesService {
       }
     });
 
-    return this.http.get<Inventories>(this.url, {params: params});
+    return this.http.get<Inventories>(this.url, { params: params });
   }
-  
+
   getInventoryById(id: number): Observable<InventoryItem> {
     return this.http.get<InventoryItem>(`${this.url}/${id}`);
   }
@@ -50,6 +50,14 @@ export class InventoriesService {
 
   getChangesForId(id: number): Observable<any> {
     return this.http.get<any>(`${this.url}/${id}/changes`);
+  }
+
+  addCommentToId(id: number, commentDescription: string): Observable<Comment> {
+    const comment: Comment = {
+      description: commentDescription,
+      author: 'CURRENT_USER', // Replace with actual user logic
+    }
+    return this.http.post<Comment>(`${this.url}/${id}/comments`, comment);
   }
 
 }
