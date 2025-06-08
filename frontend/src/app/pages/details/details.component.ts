@@ -1,4 +1,3 @@
-import { NgForOf, NgIf } from '@angular/common';
 import { afterNextRender, Component, input, QueryList, ViewChildren } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
@@ -43,8 +42,6 @@ import { Tag } from '../../models/tag';
   imports: [
     MatDividerModule,
     MatExpansionModule,
-    NgForOf,
-    NgIf,
     MatChipsModule,
     DynamicListComponent
   ],
