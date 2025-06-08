@@ -1,0 +1,18 @@
+<app-card title="Kommentare">
+    <div card-content class="pt-4">
+
+        <div class="flex flex-col items-end pb-4">
+            <mat-form-field class="w-full">
+                <mat-label>Kommentar hinzufügen</mat-label>
+                <textarea matInput [formControl]="newCommentFormControl"></textarea>
+            </mat-form-field>
+
+            <button mat-stroked-button color="primary" class="max-w-fit" (click)="addComment()"
+                [disabled]="newCommentFormControl.value === ''">Kommentieren</button>
+        </div>
+
+        @if (comments.length > 0) {
+        <app-dynamic-list [tableContent]="comments" [columns]="commentsColumns" />
+        }
+    </div>
+</app-card>
