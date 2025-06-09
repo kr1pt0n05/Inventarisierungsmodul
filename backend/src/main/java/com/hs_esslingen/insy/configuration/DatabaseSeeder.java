@@ -1,3 +1,4 @@
+/*
 
 package com.hs_esslingen.insy.configuration;
 
@@ -26,7 +27,8 @@ import lombok.RequiredArgsConstructor;
  * It implements CommandLineRunner to execute code after the application context
  * is loaded.
  * Remove for production use.
- */
+ *//*
+
 
 @Component
 @RequiredArgsConstructor
@@ -139,3 +141,4 @@ public class DatabaseSeeder implements CommandLineRunner {
                 return inventory;
         }
 }
+*/

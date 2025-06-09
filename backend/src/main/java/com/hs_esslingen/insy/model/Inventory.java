@@ -43,17 +43,17 @@ public class Inventory {
     private CostCenter costCenter;
 
     @ManyToOne
-    @JoinColumn(name = "users_id", nullable = false)
+    @JoinColumn(name = "users_id", nullable = true)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "companies_id", nullable = false)
+    @JoinColumn(name = "companies_id", nullable = true)
     private Company company;
 
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "serial_number", nullable = false)
+    @Column(name = "serial_number", nullable = true)
     private String serialNumber;
 
     @Column(name = "is_deinventoried", nullable = false)
@@ -61,7 +61,7 @@ public class Inventory {
     private Boolean isDeinventoried = false; // ToDo: umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt
                                              // schließt aber null nicht aus
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private BigDecimal price;
 
     @Column(nullable = true)
