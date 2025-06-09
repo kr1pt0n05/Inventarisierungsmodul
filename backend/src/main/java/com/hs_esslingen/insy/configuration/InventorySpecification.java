@@ -1,8 +1,5 @@
 package com.hs_esslingen.insy.configuration;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +9,9 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.Tag;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 
 // Klasse zur Implementierung von Filterfunktionen für die Inventargegnstände
 // Filter werden als Query-Parameter in der URL übergeben
@@ -24,25 +24,22 @@ public class InventorySpecification {
 
     // Filter Inventargegenstände nach ihrer Tag-ID
     public static Specification<Inventory> hasTagId(List<Integer> tagIds) {
-    return (root, query, cb) -> {
-        if (tagIds == null || tagIds.isEmpty()) {
-            return cb.conjunction();
-        }
-        // Direkt auf das ManyToMany Set "tags" joinen
-        Join<Inventory, Tag> tagJoin = root.join("tags", JoinType.LEFT);
-        return tagJoin.get("id").in(tagIds);
-    };
-}
-
-
+        return (root, query, cb) -> {
+            if (tagIds == null || tagIds.isEmpty()) {
+                return cb.conjunction();
+            }
+            // Direkt auf das ManyToMany Set "tags" joinen
+            Join<Inventory, Tag> tagJoin = root.join("tags", JoinType.LEFT);
+            return tagJoin.get("id").in(tagIds);
+        };
+    }
 
     public static Specification<Inventory> idBetween(Integer minId, Integer maxId) {
         return (root, query, cb) -> {
             // Wenn keine ID gesetzt ist keinen Filter anwenden
-            if(minId == null && maxId == null) {
+            if (minId == null && maxId == null) {
                 return cb.conjunction();
-            }
-            else if (minId != null && maxId != null) {
+            } else if (minId != null && maxId != null) {
                 return cb.between(root.get("id"), minId, maxId);
             } else if (minId != null) {
                 return cb.greaterThanOrEqualTo(root.get("id"), minId);
@@ -56,10 +53,9 @@ public class InventorySpecification {
     public static Specification<Inventory> priceBetween(Integer minPrice, Integer maxPrice) {
         return (root, query, cb) -> {
             // Wenn keine Query-Parameter gesetzt sind keinen Filter anwenden
-            if(minPrice == null && maxPrice == null) {
+            if (minPrice == null && maxPrice == null) {
                 return cb.conjunction();
-            }
-            else if (minPrice != null && maxPrice != null) {
+            } else if (minPrice != null && maxPrice != null) {
                 return cb.between(root.get("price"), BigDecimal.valueOf(minPrice), BigDecimal.valueOf(maxPrice));
             } else if (minPrice != null) {
                 return cb.greaterThanOrEqualTo(root.get("price"), BigDecimal.valueOf(minPrice));
@@ -71,8 +67,8 @@ public class InventorySpecification {
     }
 
     public static Specification<Inventory> isDeinventoried(Boolean status) {
-        return (root, query, criteriaBuilder) ->
-            status == null ? null : criteriaBuilder.equal(root.get("isDeinventoried"), status);
+        return (root, query, criteriaBuilder) -> status == null ? null
+                : criteriaBuilder.equal(root.get("isDeinventoried"), status);
     }
 
     public static Specification<Inventory> hasOrderer(String orderer) {
@@ -128,50 +124,49 @@ public class InventorySpecification {
     // Sortierung nach einem verschachtelten Feld
     // Beispiel: "user.name" sortiert nach dem Namen des Benutzers
     public static Specification<Inventory> sortByNestedField(String orderBy, Sort.Direction direction) {
-    return (root, query, cb) -> {
+        return (root, query, cb) -> {
 
-        // Wenn kein verschachteltes Feld angegeben ist, keine Sortierung anwenden
-        // Eigentlich schon überprüft in InventoriesSerivice,
-        // aber hier nochmal für Sicherheit
-        if (orderBy == null) {
-            return cb.conjunction(); // keine Sortierung
-        }
+            // Wenn kein verschachteltes Feld angegeben ist, keine Sortierung anwenden
+            // Eigentlich schon überprüft in InventoriesSerivice,
+            // aber hier nochmal für Sicherheit
+            if (orderBy == null) {
+                return cb.conjunction(); // keine Sortierung
+            }
 
-        // Tabellenname
-        String joinProperty = orderBy; // z. B. "user"
+            // Tabellenname
+            String joinProperty = orderBy; // z. B. "user"
 
+            // Property, nach dem sortiert werden soll
+            // name ist für alle verschachtelten Felder das gleiche Feld auf das zugefriffen
+            // wird,
+            // deswegen ist es hardcodiert. Muss angepasst werden, wenn andere Felder
+            // sortiert werden sollen
+            String sortField = "name";
 
+            // Join auf die Tabelle des verschachtelten Feldes
+            // und Sortierung nach dem angegebenen Feld
+            Join<Object, Object> join = root.join(joinProperty, JoinType.LEFT);
+            query.orderBy(direction == Sort.Direction.ASC
+                    ? cb.asc(join.get(sortField))
+                    : cb.desc(join.get(sortField)));
 
-        // Property, nach dem sortiert werden soll
-        // name ist für alle verschachtelten Felder das gleiche Feld auf das zugefriffen wird,
-        // deswegen ist es hardcodiert. Muss angepasst werden, wenn andere Felder sortiert werden sollen
-        String sortField = "name";
-
-        // Join auf die Tabelle des verschachtelten Feldes
-        // und Sortierung nach dem angegebenen Feld
-        Join<Object, Object> join = root.join(joinProperty, JoinType.LEFT);
-        query.orderBy(direction == Sort.Direction.ASC
-            ? cb.asc(join.get(sortField))
-            : cb.desc(join.get(sortField)));
-
-        return cb.conjunction(); // nur OrderBy hinzufügen, keine Filterbedingung
-    };
-}
+            return cb.conjunction(); // nur OrderBy hinzufügen, keine Filterbedingung
+        };
+    }
 
     // Filter nach dem Erstellungsdatum
     public static Specification<Inventory> createdBetween(LocalDateTime createdAfter, LocalDateTime createdBefore) {
-    return (root, query, cb) -> {
-        if (createdAfter == null && createdBefore == null) {
-            return cb.conjunction();
-        } else if (createdAfter != null && createdBefore != null) {
-            return cb.between(root.get("createdAt"), createdAfter, createdBefore);
-        } else if (createdAfter != null) {
-            return cb.greaterThanOrEqualTo(root.get("createdAt"), createdAfter);
-        } else {
-            return cb.lessThanOrEqualTo(root.get("createdAt"), createdBefore);
-        }
-    };
-}
+        return (root, query, cb) -> {
+            if (createdAfter == null && createdBefore == null) {
+                return cb.conjunction();
+            } else if (createdAfter != null && createdBefore != null) {
+                return cb.between(root.get("createdAt"), createdAfter, createdBefore);
+            } else if (createdAfter != null) {
+                return cb.greaterThanOrEqualTo(root.get("createdAt"), createdAfter);
+            } else {
+                return cb.lessThanOrEqualTo(root.get("createdAt"), createdBefore);
+            }
+        };
+    }
 
 }
-

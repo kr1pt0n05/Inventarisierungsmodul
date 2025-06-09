@@ -28,7 +28,7 @@ public class InventoriesResponseDTO {
     private String location;
 
     private String costCenter;
-    
+
     private String company;
 
     private String orderer;
