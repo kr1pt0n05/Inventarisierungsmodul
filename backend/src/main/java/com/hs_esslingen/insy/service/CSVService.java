@@ -23,6 +23,14 @@ import java.time.OffsetTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.hs_esslingen.insy.model.Company;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.model.User;
+import com.hs_esslingen.insy.repository.CommentRepository;
+import com.hs_esslingen.insy.repository.CompanyRepository;
+import com.hs_esslingen.insy.repository.InventoryRepository;
+import com.hs_esslingen.insy.repository.UserRepository;
+
 @Service @AllArgsConstructor
 public class CSVService {
     private final Character DELIMITER = ';';
@@ -283,8 +291,6 @@ public class CSVService {
         }
     }
 
-
-
     @Transactional
     public void importCSVImproved(MultipartFile file) throws IOException {
         List<InventoryItem> objects = readCSVFile(file);
@@ -302,8 +308,9 @@ public class CSVService {
         List<Inventories> inventoriesList = new ArrayList<>();
         List<Comments> commentsList = new ArrayList<>();
 
-        Set<String> existingUsers = usersRepository.findAll().stream().map(Users::getName).collect(Collectors.toSet());
-        Set<String> existingCompanies = companiesRepository.findAll().stream().map(Companies::getName).collect(Collectors.toSet());
+        Set<String> existingUsers = usersRepository.findAll().stream().map(User::getName).collect(Collectors.toSet());
+        Set<String> existingCompanies = companiesRepository.findAll().stream().map(Company::getName)
+                .collect(Collectors.toSet());
 
         Set<String> csvObjectsUsernames = new HashSet<>();
         Set<String> csvObjectsCompanies = new HashSet<>();
