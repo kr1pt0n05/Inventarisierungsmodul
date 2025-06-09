@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.hs_esslingen.insy.model.CostCenters;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -14,7 +15,6 @@ public interface CostCentersRepository extends JpaRepository<CostCenters, Intege
     @Query("SELECT c FROM CostCenters c WHERE c.description = ?1")
     CostCenters findByName(String name);
 
-    @Query("SELECT c.description FROM CostCenters c")
-    List<String> findAllCostCenterDescriptions();
+    List<CostCenters> findByDescriptionIn(Collection<String> descriptions);
 
 }

@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
 import java.util.*;
@@ -91,13 +92,25 @@ public class CSVService {
             }
         }
 
+        // Clean data set
+        excelObjects = excelObjects.stream()
+                .filter(obj -> obj.getCostCenter() != null)
+                .filter(obj -> !obj.getCostCenter().contains("*"))
+                .filter(obj -> obj.getInventoryNumber() != null)
+                .toList();
+
+        // Only persist Excel Inventory Items to database, that do not already exist
+        Set<Integer> existingInventoryNumbers = inventoriesRepository.findInventoriesIdIn(excelObjects.stream().map(InventoryExcel::getInventoryNumber).toList());
+        excelObjects = excelObjects.stream()
+                .filter(obj -> !existingInventoryNumbers.contains(obj.getInventoryNumber()))
+                .toList();
+
         // Parse each costCenter of Inventory Excel collection
         Set<String> excelCostCenters = excelObjects.stream()
                 .map(InventoryExcel::getCostCenter)
                 .filter(Objects::nonNull)
                 .filter(costCenter -> !costCenter.contains("*"))
                 .collect(Collectors.toSet());
-        excelCostCenters.forEach(System.out::println);
 
 
         // Parse each User of Inventory Excel collection
@@ -105,7 +118,6 @@ public class CSVService {
                 .map(InventoryExcel::getOrderer)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-        excelUsers.forEach(System.out::println);
 
 
         // Parse each company of Inventory Excel collection
@@ -113,46 +125,87 @@ public class CSVService {
                 .map(InventoryExcel::getCompany)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-        excelCompanies.forEach(System.out::println);
 
 
         // Parse each comment of Inventory Excel collection
-        List<String> excelComments = excelObjects.stream()
-                .filter(obj -> obj.getComments() != null)
-                .flatMap(obj -> obj.getComments().stream())
-                .filter(Objects::nonNull)
-                .toList();
+        Map<Integer, List<String>> excelComments = excelObjects.stream()
+                .filter(obj -> obj.getComments() != null)  // Make sure comments are not null
+                .collect(Collectors.groupingBy(
+                        InventoryExcel::getInventoryNumber,  // Group by inventory number
+                        Collectors.flatMapping(
+                                obj -> obj.getComments().stream().filter(Objects::nonNull),  // Flatten the list of comments
+                                Collectors.toList()  // Collect the comments into a list
+                        )
+                ));
 
 
-        // Get all existing costCenter's descriptions, filter them out of excelCostCenters
-        // then persist remaining excelCostCenters - that do not already exist on the DB - to the DB
-        List<String> existingCostCenters = costCentersRepository.findAllCostCenterDescriptions();
-        excelCostCenters.removeAll(existingCostCenters);
-        List<CostCenters> costCenters = excelCostCenters.stream().map(CostCenters::new).toList();
-        costCentersRepository.saveAll(costCenters);
-
-        // Get all existing users of the DB and filter them out of the excelUsers
-        // then persist the remaining excelUsers - that do not already exist on the DB - to the DB
-        List<String> existingUsers = usersRepository.findAllUsernames();
-        excelUsers.removeAll(existingUsers);
-        usersRepository.saveAll(excelUsers.stream().map(Users::new).toList());
+        // 1. Get all <entity> of Excel Inventory Objects, remove duplicates & null ones
+        // 2. Get all <entity>, that are in the excel sheet, off of the database if they exist there
+        // 3. Subtract database <entity> from excel <entity> and persist excel <entity>
+        // 4. Get newly persisted <entity> from the database
+        // 5. Merge excel and newly persisted <entity> in one collection, so Inventory Item can use it for lookup
 
 
-        // Get all existing companies names, filter them out of excelCompanies
-        // then persist remaining excelCompanies - that do not already exist on the DB - to the DB
-        List<String> existingCompanyNames = companiesRepository.findAllCompanyNames();
-        excelCompanies.removeAll(existingCompanyNames);
-        companiesRepository.saveAll(excelCompanies.stream().map(Companies::new).toList());
+        // Get all costCenters of the excel Sheet that already exist in the database
+        List<CostCenters> existingCostCenters = costCentersRepository.findByDescriptionIn(excelCostCenters);
+        // Remove the already existing costCenters from the excel's costCenters
+        excelCostCenters.removeAll(existingCostCenters.stream().map(CostCenters::getDescription).toList());
+        // Persist the now remaining excel sheets costCenters (all costCenters that are new and do not already exist in the DB)
+        // to the database;
+         List<CostCenters> costCenters = costCentersRepository.saveAll(excelCostCenters.stream().map(CostCenters::new).toList());
+        // finally merge the excel sheet costCenters (that were just persisted) and the database costCenters (that already existed)
+        // and put them in a map for fast & easy access
+        Map<String, CostCenters> costCentersMap = new HashMap<>();
+        existingCostCenters.forEach(cc -> costCentersMap.put(cc.getDescription(), cc));
+        costCenters.forEach(cc -> costCentersMap.put(cc.getDescription(), cc));
 
 
+        List<Users> existingUsers = usersRepository.findByNameIn(excelUsers);
+        excelUsers.removeAll(existingUsers.stream().map(Users::getName).toList());
+        List<Users> users = usersRepository.saveAll(excelUsers.stream().map(Users::new).toList());
+        Map<String, Users> usersMap = new HashMap<>();
+        existingUsers.forEach(u -> usersMap.put(u.getName(), u));
+        users.forEach(u -> usersMap.put(u.getName(), u));
 
 
+        List<Companies> existingCompanies = companiesRepository.findByNameIn(excelCompanies);
+        excelCompanies.removeAll(existingCompanies.stream().map(Companies::getName).toList());
+        List<Companies> companies = companiesRepository.saveAll(excelCompanies.stream().map(Companies::new).toList());
+        Map<String, Companies> companiesMap = new HashMap<>();
+        existingCompanies.forEach(c -> companiesMap.put(c.getName(), c));
+        companies.forEach(c -> companiesMap.put(c.getName(), c));
 
 
+        // Put Inventory Items to a map, for easier access when creating comments
+        Map<Integer, Inventories> inventory = new HashMap<>();
+        excelObjects.forEach(obj -> {
+            Inventories inv = new Inventories();
+            inv.setId(obj.getInventoryNumber());
+            inv.setCostCenter(costCentersMap.getOrDefault(obj.getCostCenter(), null));
+            inv.setUser(usersMap.getOrDefault(obj.getOrderer(), null));
+            inv.setCompany(companiesMap.getOrDefault(obj.getCompany(), null));
+            inv.setDescription(obj.getDescription());
+            inv.setSerialNumber(obj.getSerialNumber());
+            inv.setIsDeinventoried(obj.isDeinventoried());
+            inv.setPrice(BigDecimal.valueOf(obj.getPrice()));
+            inv.setLocation(obj.getLocation());
+            inventory.put(obj.getInventoryNumber(), inv);
+        });
+        inventoriesRepository.saveAll(inventory.values());
 
 
+        List<Comments> comments = new ArrayList<>();
+        excelComments.forEach((invNumber, commentsList) -> {
+            Inventories inv = inventory.get(invNumber);
+            commentsList.forEach(comment -> {
+                Comments c = new Comments();
+                c.setInventories(inv);
+                c.setDescription(comment);
+                comments.add(c);
 
-
+            });
+        });
+        commentsRepository.saveAll(comments);
 
     }
 

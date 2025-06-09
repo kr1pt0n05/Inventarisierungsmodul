@@ -31,24 +31,24 @@ public class Inventories {
     private CostCenters costCenter;
 
     @ManyToOne
-    @JoinColumn(name = "users_id", nullable = false)
+    @JoinColumn(name = "users_id", nullable = true)
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "companies_id", nullable = false)
+    @JoinColumn(name = "companies_id", nullable = true)
     private Companies company;
 
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "serial_number", nullable = false)
+    @Column(name = "serial_number", nullable = true)
     private String serialNumber;
 
     @Column(name = "is_deinventoried", nullable = false)
     @Builder.Default
     private Boolean isDeinventoried = false;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private BigDecimal price;
 
     @Column(nullable = true)

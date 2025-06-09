@@ -5,19 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b0635f81-cb1b-4b97-9498-b1bb9f73d29a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/dto/InventoryExcel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/configuration/DatabaseSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/configuration/DatabaseSeeder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/model/Inventories.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/model/Inventories.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/CompaniesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/CompaniesRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/CostCentersRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/CostCentersRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/InventoriesRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/InventoriesRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/UsersRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/UsersRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CSVService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CSVService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/components/dynamic-list/dynamic-list.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/components/dynamic-list/dynamic-list.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/pages/details/details.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/pages/details/details.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/services/server-table-data-source.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/services/server-table-data-source.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +28,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 8
@@ -86,6 +84,7 @@
       <workItem from="1748966533968" duration="14466000" />
       <workItem from="1749033083744" duration="14492000" />
       <workItem from="1749284039580" duration="3687000" />
+      <workItem from="1749455854245" duration="14667000" />
     </task>
     <servers />
   </component>
