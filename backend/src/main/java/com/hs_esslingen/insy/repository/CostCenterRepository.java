@@ -15,6 +15,6 @@ public interface CostCenterRepository extends JpaRepository<CostCenter, Integer>
     @Query("SELECT c FROM CostCenter c WHERE c.description = ?1")
     CostCenter findByName(String name);
 
-    List<CostCenters> findByDescriptionIn(Collection<String> descriptions);
+    List<CostCenter> findByDescriptionIn(Collection<String> descriptions);
 
 }

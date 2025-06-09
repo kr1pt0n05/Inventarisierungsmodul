@@ -20,9 +20,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
     User getUsersByName(String name);
 
-    @Query("SELECT u.name FROM Users u")
+    @Query("SELECT u.name FROM User u")
     List<String> findAllUsernames();
 
-    List<Users> findByNameIn(Collection<String> names);
+    List<User> findByNameIn(Collection<String> names);
 
 }
