@@ -31,11 +31,11 @@ public class Inventory {
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = true)
-    private User user;
+    private Users user;
 
     @ManyToOne
     @JoinColumn(name = "companies_id", nullable = true)
-    private Company company;
+    private Companies company;
 
     @Column(nullable = false)
     private String description;

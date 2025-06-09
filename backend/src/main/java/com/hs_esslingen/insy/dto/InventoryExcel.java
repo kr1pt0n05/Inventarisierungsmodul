@@ -1,5 +1,6 @@
 package com.hs_esslingen.insy.dto;
 
+import com.hs_esslingen.insy.model.Comments;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
