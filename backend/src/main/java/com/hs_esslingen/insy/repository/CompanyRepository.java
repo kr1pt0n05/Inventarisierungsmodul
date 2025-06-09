@@ -19,7 +19,7 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
     Company getCompaniesByName(String name);
 
-    @Query("SELECT c.name FROM Companies c")
+    @Query("SELECT c.name FROM Company c")
     List<String> findAllCompanyNames();
 
     List<Company> findByNameIn(Collection<String> names);
