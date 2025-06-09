@@ -1,4 +1,5 @@
 package com.hs_esslingen.insy.security;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,20 +17,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf((csrf) -> csrf.disable()) // disable for testing purposes. Otherwise, POST requests will get blocked
+                .csrf((csrf) -> csrf.disable()) // disable for testing purposes. Otherwise, POST requests will get
+                                                // blocked
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(HttpMethod.GET, "/**").permitAll() // Disabling all protection for testing purposes
-                        .requestMatchers(HttpMethod.PUT, "/**").permitAll() // Disabling all protection for testing purposes
-                        .requestMatchers(HttpMethod.PATCH, "/**").permitAll() // Disabling all protection for testing purposes
-                        .requestMatchers(HttpMethod.POST, "/**").permitAll() // Disabling all protection for testing purposes
-                        .requestMatchers(HttpMethod.DELETE, "/**").permitAll() // Disabling all protection for testing purposes
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll() // Disabling all protection for testing
+                                                                            // purposes
+                        .requestMatchers(HttpMethod.PUT, "/**").permitAll() // Disabling all protection for testing
+                                                                            // purposes
+                        .requestMatchers(HttpMethod.PATCH, "/**").permitAll() // Disabling all protection for testing
+                                                                              // purposes
+                        .requestMatchers(HttpMethod.POST, "/**").permitAll() // Disabling all protection for testing
+                                                                             // purposes
+                        .requestMatchers(HttpMethod.DELETE, "/**").permitAll() // Disabling all protection for testing
+                                                                               // purposes
                         .requestMatchers(HttpMethod.POST, "/upload/csv").permitAll()
                         .requestMatchers(HttpMethod.GET, "/").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer((oauth2) -> oauth2
-                        .jwt(Customizer.withDefaults())
-                );
+                        .jwt(Customizer.withDefaults()));
         return http.build();
     }
 
