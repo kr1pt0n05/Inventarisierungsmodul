@@ -20,20 +20,9 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.hs_esslingen.insy.dto.InventoryItem;
-import com.hs_esslingen.insy.model.Comment;
 import com.hs_esslingen.insy.model.Company;
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.User;
@@ -41,10 +30,6 @@ import com.hs_esslingen.insy.repository.CommentRepository;
 import com.hs_esslingen.insy.repository.CompanyRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 import com.hs_esslingen.insy.repository.UserRepository;
-import com.hs_esslingen.insy.utils.StringParser;
-import com.opencsv.bean.CsvToBeanBuilder;
-
-import jakarta.transaction.Transactional;
 
 @Service @AllArgsConstructor
 public class CSVService {
@@ -305,13 +290,6 @@ public class CSVService {
         }
     }
 
-    public CSVService(InventoryRepository inventoriesRepository, UserRepository usersRepository,
-            CompanyRepository companiesRepository, CommentRepository commentsRepository) {
-        this.inventoryRepository = inventoriesRepository;
-        this.userRepository = usersRepository;
-        this.companyRepository = companiesRepository;
-        this.commentRepository = commentsRepository;
-    }
 
     @Transactional
     public void importCSVImproved(MultipartFile file) throws IOException {
@@ -328,8 +306,8 @@ public class CSVService {
         List<Inventory> inventoriesList = new ArrayList<>();
         List<Comment> commentsList = new ArrayList<>();
 
-        Set<String> existingUsers = userRepository.findAll().stream().map(User::getName).collect(Collectors.toSet());
-        Set<String> existingCompanies = companyRepository.findAll().stream().map(Company::getName)
+        Set<String> existingUsers = usersRepository.findAll().stream().map(User::getName).collect(Collectors.toSet());
+        Set<String> existingCompanies = companiesRepository.findAll().stream().map(Company::getName)
                 .collect(Collectors.toSet());
 
         Set<String> csvObjectsUsernames = new HashSet<>();
