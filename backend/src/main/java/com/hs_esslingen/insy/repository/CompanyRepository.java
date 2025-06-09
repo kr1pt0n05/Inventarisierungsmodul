@@ -1,5 +1,7 @@
 package com.hs_esslingen.insy.repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +18,9 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
     Optional<Company> findByName(String name);
 
     Company getCompaniesByName(String name);
+
+    @Query("SELECT c.name FROM Companies c")
+    List<String> findAllCompanyNames();
+
+    List<Company> findByNameIn(Collection<String> names);
 }
