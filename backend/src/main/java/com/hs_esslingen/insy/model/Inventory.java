@@ -7,22 +7,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
+import jakarta.persistence.*;
 
 @Data
 @Builder
@@ -30,7 +17,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Entity
-@Table(name = "inventories") // Entity-Name in Einzahl
+@Table(name = "inventories") //Entity-Name in Einzahl
 public class Inventory {
 
     @Id
@@ -44,11 +31,11 @@ public class Inventory {
 
     @ManyToOne
     @JoinColumn(name = "users_id", nullable = true)
-    private User user;
+    private Users user;
 
     @ManyToOne
     @JoinColumn(name = "companies_id", nullable = true)
-    private Company company;
+    private Companies company;
 
     @Column(nullable = false)
     private String description;
@@ -58,8 +45,7 @@ public class Inventory {
 
     @Column(name = "is_deinventoried", nullable = false)
     @Builder.Default
-    private Boolean isDeinventoried = false; // ToDo: umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt
-                                             // schließt aber null nicht aus
+    private Boolean isDeinventoried = false; // umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt schließt aber null nicht aus
 
     @Column(nullable = true)
     private BigDecimal price;

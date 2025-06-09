@@ -3,7 +3,6 @@ package com.hs_esslingen.insy.service;
 import com.hs_esslingen.insy.dto.InventoryExcel;
 import com.hs_esslingen.insy.dto.InventoryItem;
 import com.hs_esslingen.insy.model.*;
-import com.hs_esslingen.insy.model.Comment;
 import com.hs_esslingen.insy.repository.*;
 import com.hs_esslingen.insy.utils.StringParser;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -13,6 +12,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,11 +35,12 @@ import com.hs_esslingen.insy.repository.UserRepository;
 public class CSVService {
     private final Character DELIMITER = ';';
 
-    private final InventoryRepository inventoriesRepository;
-    private final UserRepository usersRepository;
-    private final CompanyRepository companiesRepository;
-    private final CommentRepository commentsRepository;
-    private final CostCenterRepository costCentersRepository;
+    private final InventoriesRepository inventoriesRepository;
+    private final UsersRepository usersRepository;
+    private final CompaniesRepository companiesRepository;
+    private final CommentsRepository commentsRepository;
+    private final CostCentersRepository costCentersRepository;
+
 
     public void importExcel(MultipartFile file) throws IOException {
         // Check file is not empty
@@ -154,39 +155,39 @@ public class CSVService {
 
 
         // Get all costCenters of the excel Sheet that already exist in the database
-        List<CostCenter> existingCostCenters = costCentersRepository.findByDescriptionIn(excelCostCenters);
+        List<CostCenters> existingCostCenters = costCentersRepository.findByDescriptionIn(excelCostCenters);
         // Remove the already existing costCenters from the excel's costCenters
-        excelCostCenters.removeAll(existingCostCenters.stream().map(CostCenter::getDescription).toList());
+        excelCostCenters.removeAll(existingCostCenters.stream().map(CostCenters::getDescription).toList());
         // Persist the now remaining excel sheets costCenters (all costCenters that are new and do not already exist in the DB)
         // to the database;
-         List<CostCenter> costCenters = costCentersRepository.saveAll(excelCostCenters.stream().map(CostCenter::new).toList());
+         List<CostCenters> costCenters = costCentersRepository.saveAll(excelCostCenters.stream().map(CostCenters::new).toList());
         // finally merge the excel sheet costCenters (that were just persisted) and the database costCenters (that already existed)
         // and put them in a map for fast & easy access
-        Map<String, CostCenter> costCentersMap = new HashMap<>();
+        Map<String, CostCenters> costCentersMap = new HashMap<>();
         existingCostCenters.forEach(cc -> costCentersMap.put(cc.getDescription(), cc));
         costCenters.forEach(cc -> costCentersMap.put(cc.getDescription(), cc));
 
 
-        List<User> existingUsers = usersRepository.findByNameIn(excelUsers);
-        excelUsers.removeAll(existingUsers.stream().map(User::getName).toList());
-        List<User> users = usersRepository.saveAll(excelUsers.stream().map(User::new).toList());
-        Map<String, User> usersMap = new HashMap<>();
+        List<Users> existingUsers = usersRepository.findByNameIn(excelUsers);
+        excelUsers.removeAll(existingUsers.stream().map(Users::getName).toList());
+        List<Users> users = usersRepository.saveAll(excelUsers.stream().map(Users::new).toList());
+        Map<String, Users> usersMap = new HashMap<>();
         existingUsers.forEach(u -> usersMap.put(u.getName(), u));
         users.forEach(u -> usersMap.put(u.getName(), u));
 
 
-        List<Company> existingCompanies = companiesRepository.findByNameIn(excelCompanies);
-        excelCompanies.removeAll(existingCompanies.stream().map(Company::getName).toList());
-        List<Company> companies = companiesRepository.saveAll(excelCompanies.stream().map(Company::new).toList());
-        Map<String, Company> companiesMap = new HashMap<>();
+        List<Companies> existingCompanies = companiesRepository.findByNameIn(excelCompanies);
+        excelCompanies.removeAll(existingCompanies.stream().map(Companies::getName).toList());
+        List<Companies> companies = companiesRepository.saveAll(excelCompanies.stream().map(Companies::new).toList());
+        Map<String, Companies> companiesMap = new HashMap<>();
         existingCompanies.forEach(c -> companiesMap.put(c.getName(), c));
         companies.forEach(c -> companiesMap.put(c.getName(), c));
 
 
         // Put Inventory Items to a map, for easier access when creating comments
-        Map<Integer, Inventory> inventory = new HashMap<>();
+        Map<Integer, Inventories> inventory = new HashMap<>();
         excelObjects.forEach(obj -> {
-            Inventory inv = new Inventory();
+            Inventories inv = new Inventories();
             inv.setId(obj.getInventoryNumber());
             inv.setCostCenter(costCentersMap.getOrDefault(obj.getCostCenter(), null));
             inv.setUser(usersMap.getOrDefault(obj.getOrderer(), null));
@@ -201,11 +202,11 @@ public class CSVService {
         inventoriesRepository.saveAll(inventory.values());
 
 
-        List<Comment> comments = new ArrayList<>();
+        List<Comments> comments = new ArrayList<>();
         excelComments.forEach((invNumber, commentsList) -> {
-            Inventory inv = inventory.get(invNumber);
+            Inventories inv = inventory.get(invNumber);
             commentsList.forEach(comment -> {
-                Comment c = new Comment();
+                Comments c = new Comments();
                 c.setInventories(inv);
                 c.setDescription(comment);
                 comments.add(c);
@@ -290,21 +291,22 @@ public class CSVService {
         }
     }
 
-
     @Transactional
     public void importCSVImproved(MultipartFile file) throws IOException {
         List<InventoryItem> objects = readCSVFile(file);
 
+
         // To-Do: Validation of objects
+
 
         // To-Do: Push to database
         OffsetTime now = OffsetTime.now();
 
-        Map<String, User> usersMap = new HashMap<>();
-        Map<String, Company> companiesMap = new HashMap<>();
+        Map<String, Users> usersMap = new HashMap<>();
+        Map<String, Companies> companiesMap = new HashMap<>();
 
-        List<Inventory> inventoriesList = new ArrayList<>();
-        List<Comment> commentsList = new ArrayList<>();
+        List<Inventories> inventoriesList = new ArrayList<>();
+        List<Comments> commentsList = new ArrayList<>();
 
         Set<String> existingUsers = usersRepository.findAll().stream().map(User::getName).collect(Collectors.toSet());
         Set<String> existingCompanies = companiesRepository.findAll().stream().map(Company::getName)
@@ -313,19 +315,19 @@ public class CSVService {
         Set<String> csvObjectsUsernames = new HashSet<>();
         Set<String> csvObjectsCompanies = new HashSet<>();
 
+
         objects.forEach(obj -> {
-            if (!obj.getOrderer().isEmpty() && !existingUsers.contains(obj.getOrderer()))
-                csvObjectsUsernames.add(obj.getOrderer());
-            if (!obj.getCompany().isEmpty() && !existingCompanies.contains(obj.getCompany()))
-                csvObjectsCompanies.add(obj.getCompany());
+            if(!obj.getOrderer().isEmpty() && !existingUsers.contains(obj.getOrderer())) csvObjectsUsernames.add(obj.getOrderer());
+            if(!obj.getCompany().isEmpty() && !existingCompanies.contains(obj.getCompany())) csvObjectsCompanies.add(obj.getCompany());
         });
 
         csvObjectsUsernames.forEach(obj -> {
-            usersMap.put(obj, new User(obj));
+            usersMap.put(obj, new Users(obj));
         });
         csvObjectsCompanies.forEach(obj -> {
-            companiesMap.put(obj, new Company(obj));
+            companiesMap.put(obj, new Companies(obj));
         });
+
 
         // Create InventoryItems
         objects.forEach(obj -> {
@@ -333,10 +335,10 @@ public class CSVService {
             try {
                 // 1. Create new inventory item & push to database
 
-                User user = usersMap.get(obj.getOrderer());
-                Company company = companiesMap.get(obj.getCompany());
+                Users user = usersMap.get(obj.getOrderer());
+                Companies company = companiesMap.get(obj.getCompany());
 
-                Inventory inventoryItem = new Inventory();
+                Inventories inventoryItem = new Inventories();
                 inventoryItem.setId(Integer.parseInt(obj.getInventoryNumber()));
                 inventoryItem.setDescription(obj.getDescription());
                 inventoryItem.setSerialNumber(obj.getSerialNumber());
@@ -349,15 +351,15 @@ public class CSVService {
                 inventoriesList.add(inventoryItem);
 
                 // Create comments
-                if (!obj.getComment().isEmpty()) {
-                    Comment comment = new Comment();
+                if(!obj.getComment().isEmpty()){
+                    Comments comment = new Comments();
                     comment.setDescription(obj.getComment());
                     comment.setAuthor(user);
                     comment.setInventories(inventoryItem);
                     commentsList.add(comment);
                 }
 
-            } catch (Exception e) {
+            }catch (Exception e){
                 System.out.println(e.getMessage());
             }
 
@@ -368,18 +370,17 @@ public class CSVService {
         commentsRepository.saveAll(commentsList);
     }
 
+
     /*
      * BufferReader class is the preferred way for reading files.
-     * It will simply put, buffer the contents of a Reader and speed up I/O
-     * operations.
+     * It will simply put, buffer the contents of a Reader and speed up I/O operations.
      *
      * Therefore, BufferedReader needs a Reader as parameter.
-     * We will use InputStreamReader, since we are reading from a non-persistent
-     * file in RAM.
+     * We will use InputStreamReader, since we are reading from a non-persistent file in RAM.
      * For InputStreamReader to read our file, it needs an InputStream.
      * So we need to convert our MultipartFile into an InputStream.
      *
-     */
+     * */
     public List<InventoryItem> readCSVFile(@RequestParam("file") MultipartFile file) throws IOException {
         InputStream stream = file.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(stream));

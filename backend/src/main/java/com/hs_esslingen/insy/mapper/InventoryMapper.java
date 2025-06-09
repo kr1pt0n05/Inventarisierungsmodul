@@ -1,23 +1,23 @@
 package com.hs_esslingen.insy.mapper;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
+import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
+import com.hs_esslingen.insy.model.Company;
+import com.hs_esslingen.insy.model.CostCenter;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.model.Tag;
+import com.hs_esslingen.insy.model.User;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
-import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
-import com.hs_esslingen.insy.model.Company;
-import com.hs_esslingen.insy.model.CostCenter;
-import com.hs_esslingen.insy.model.Inventory;
-import com.hs_esslingen.insy.model.Tag;
-import com.hs_esslingen.insy.model.User;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { TagMapper.class })
 public interface InventoryMapper {

@@ -4,19 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.hs_esslingen.insy.dto.TagDTO;
 import com.hs_esslingen.insy.mapper.TagMapper;
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.Tag;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 import com.hs_esslingen.insy.repository.TagRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -33,11 +31,11 @@ public class TagService {
 
     public TagDTO getTagById(Integer id) {
         Optional<Tag> tag = tagRepository.findById(id);
-
+        
         if (tag.isEmpty()) {
             throw new IllegalArgumentException("Tag with the id: " + id + " not found");
         }
-
+        
         return tagMapper.toDto(tag.get());
     }
 
@@ -47,7 +45,7 @@ public class TagService {
         if (existingTag.isPresent()) {
             throw new IllegalArgumentException("Tag with the name: " + tagDTO.getName() + " already exists");
         }
-
+        
         Tag tag = Tag.builder()
                 .name(tagDTO.getName())
                 .build();
@@ -59,11 +57,11 @@ public class TagService {
     @Transactional
     public void deleteTag(Integer id) {
         Optional<Tag> tag = tagRepository.findById(id);
-
+        
         if (tag.isEmpty()) {
             throw new IllegalArgumentException("Tag with the id: " + id + " not found");
         }
-
+        
         tagRepository.deleteById(id);
     }
 
@@ -86,7 +84,7 @@ public class TagService {
     @Transactional
     public void addTagsToInventory(Integer inventoryId, List<Integer> tagIds) {
         Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
-
+        
         if (inventory.isEmpty()) {
             throw new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found");
         }
@@ -107,15 +105,13 @@ public class TagService {
     @Transactional
     public void removeTagFromInventory(Integer inventoryId, Integer tagId) {
         Inventory inventory = inventoryRepository.findById(inventoryId)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found"));
 
         Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new IllegalArgumentException("Tag with the id: " + tagId + " not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Tag with the id: " + tagId + " not found"));
 
         if (!inventory.getTags().contains(tag)) {
-            throw new IllegalArgumentException(
-                    "Tag with the id: " + tagId + " is not assigned to inventory item " + inventoryId);
+            throw new IllegalArgumentException("Tag with the id: " + tagId + " is not assigned to inventory item " + inventoryId);
         }
 
         inventory.getTags().remove(tag);

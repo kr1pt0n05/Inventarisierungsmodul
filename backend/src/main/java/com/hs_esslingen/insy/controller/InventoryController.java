@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
+import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
+import com.hs_esslingen.insy.service.InventoryService;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,14 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
-import com.hs_esslingen.insy.service.InventoryService;
-
 @RestController
 @RequestMapping("/inventories")
 public class InventoryController {
 
+    
     private final InventoryService inventoriesService;
 
     InventoryController(InventoryService inventoriesService) {
@@ -55,8 +56,8 @@ public class InventoryController {
             @PageableDefault(size = 50) Pageable pageable) {
 
         return inventoriesService.getAllInventories(tags, minId, maxId, minPrice, maxPrice,
-                isDeinventoried, orderer, company, location, costCenter, serialNumber, createdAfter,
-                createdBefore, orderBy, direction, pageable);
+            isDeinventoried, orderer, company, location, costCenter, serialNumber, createdAfter,
+            createdBefore, orderBy, direction, pageable);
     }
 
     // Ein Element der Inventarisierungsliste abrufen

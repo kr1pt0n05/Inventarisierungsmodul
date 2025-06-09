@@ -53,6 +53,7 @@ public class Extension {
     @Column(name = "created_at", nullable = false)
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
+
     @Builder
     public Extension(Inventory inventory, Company company, String description, String serialNumber,
             BigDecimal price) {

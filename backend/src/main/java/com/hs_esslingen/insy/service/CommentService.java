@@ -4,18 +4,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.repository.InventoryRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.hs_esslingen.insy.dto.CommentDTO;
 import com.hs_esslingen.insy.exception.BadRequest;
 import com.hs_esslingen.insy.exception.NotFound;
 import com.hs_esslingen.insy.model.Comment;
-import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.repository.CommentRepository;
-import com.hs_esslingen.insy.repository.InventoryRepository;
-
-import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -23,6 +21,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final InventoryRepository inventoryRepository;
+
 
     public List<CommentDTO> getCommentsByInventoryId(Integer inventoryId) {
         Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
@@ -78,10 +77,9 @@ public class CommentService {
         // Verify that the comment belongs to the given inventoryId
         Optional<Comment> commentOpt = commentRepository.findByCommentIdAndInventoryId(commentId, inventoryId);
         if (commentOpt.isEmpty()) {
-            throw new BadRequest("Comment with id: " + commentId
-                    + " doesn't exist or doesn't belong to the inventory with id: " + inventoryId);
+            throw new BadRequest("Comment with id: " + commentId + " doesn't exist or doesn't belong to the inventory with id: " + inventoryId);
         }
-        // Delete the specific comment
-        commentRepository.deleteByCommentId(commentId);
+            // Delete the specific comment
+            commentRepository.deleteByCommentId(commentId);
     }
 }
