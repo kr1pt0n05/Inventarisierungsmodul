@@ -35,7 +35,7 @@ export class InventoriesService {
 
     return this.http.get<Inventories>(this.url, {params: params});
   }
-  
+
   getInventoryById(id: number): Observable<InventoryItem> {
     return this.http.get<InventoryItem>(`${this.url}/${id}`);
   }
@@ -50,6 +50,30 @@ export class InventoriesService {
 
   getChangesForId(id: number): Observable<any> {
     return this.http.get<any>(`${this.url}/${id}/changes`);
+  }
+
+  getAllCostCenters(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/costCenters`);
+  }
+
+  getAllCompanies(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/companies`);
+  }
+
+  getAllSerialNumbers(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/serialNumbers`);
+  }
+
+  getAllLocations(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/locations`);
+  }
+
+  getAllOrderers(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/orderers`);
+  }
+
+  getAlltags(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/tags`);
   }
 
 }
