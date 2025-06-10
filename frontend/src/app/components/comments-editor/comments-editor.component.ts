@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, model, output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,9 +26,13 @@ import { DynamicListComponent } from "../dynamic-list/dynamic-list.component";
 export class CommentsEditorComponent {
   constructor(private readonly inventoriesService: InventoriesService) { }
 
-  inventoryId = input.required<number>();
-  comments: Comment[] = [];
+  unchangedComments = model<Comment[]>([]);
+  newComments = model<Comment[]>([]);
+  deletedComments = model<Comment[]>([]);
 
+  onChanges = output();
+
+  displayedComments = computed(() => [...this.unchangedComments(), ...this.newComments()]);
   commentsColumns = new Map<string, string>([
     ['description', 'Kommentar'],
     ['author', 'Hinzugefügt von'],
@@ -37,30 +41,18 @@ export class CommentsEditorComponent {
 
   newCommentFormControl = new FormControl('');
 
-  ngOnInit(): void {
-    this.inventoriesService.getCommentsForId(this.inventoryId()).subscribe((comments: Comment[]) => {
-      this.comments = comments;
-    });
-  }
-
-  getCommentDescriptions(): object[] {
-    return this.comments.map(comment => { return { comment: comment.description } });
-  }
 
   addComment(): void {
     const description = this.newCommentFormControl.value;
     if (description) {
-      this.inventoriesService.addCommentToId(this.inventoryId(), description)
-        .subscribe({
-          next: (comment: Comment) => {
-            this.comments.push(comment);
-            this.newCommentFormControl.setValue('');
-          },
-          error: (error) => {
-            // TODO: Proper error handling with in app user feedback
-            console.error('Error adding comment:', error);
-          }
-        });
+      const newComment: Comment = {
+        description,
+        author: 'User', // Replace with actual user data
+        createdAt: new Date().toLocaleString("de-De", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(',', '')
+      };
+
+      this.newComments.update((currentComments) => [...currentComments, newComment]);
+      this.onChanges.emit();
     }
   }
 

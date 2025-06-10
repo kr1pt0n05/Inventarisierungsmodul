@@ -11,8 +11,8 @@
                 [disabled]="newCommentFormControl.value === ''">Kommentieren</button>
         </div>
 
-        @if (comments.length > 0) {
-        <app-dynamic-list [tableContent]="comments" [columns]="commentsColumns" />
+        @if (displayedComments().length > 0) {
+        <app-dynamic-list [tableContent]="displayedComments()" [columns]="commentsColumns" />
         }
     </div>
 </app-card>
