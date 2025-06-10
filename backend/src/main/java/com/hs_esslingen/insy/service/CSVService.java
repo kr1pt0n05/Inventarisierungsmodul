@@ -43,6 +43,7 @@ public class CSVService {
     private final CommentRepository commentsRepository;
 
 
+    @Deprecated(forRemoval = true)
     @Transactional
     public void importCSVImproved(MultipartFile file) throws IOException {
         List<InventoryItem> objects = readCSVFile(file);

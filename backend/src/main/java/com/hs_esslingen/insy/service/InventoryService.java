@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import java.util.Set;
+
+import com.hs_esslingen.insy.utils.StringParser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -217,6 +219,8 @@ public class InventoryService {
         inventory.setPrice(dto.price);
         inventory.setLocation(dto.location);
         inventory.setUser(user);
+
+        inventory.setSearchText(StringParser.fullTextSearchString(inventory));
 
         // saven um Tags auch das inventory hinzufügen zu können
         inventoriesRepository.save(inventory);

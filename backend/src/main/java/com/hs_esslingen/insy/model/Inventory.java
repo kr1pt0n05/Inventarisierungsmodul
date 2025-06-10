@@ -53,6 +53,9 @@ public class Inventory {
     @Column(nullable = true)
     private String location;
 
+    @Column(nullable = false)
+    private String searchText;
+
     @Column(name = "created_at", nullable = false)
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
