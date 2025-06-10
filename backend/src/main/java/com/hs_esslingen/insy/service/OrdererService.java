@@ -3,6 +3,9 @@ package com.hs_esslingen.insy.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hs_esslingen.insy.dto.CompanyDTO;
+import com.hs_esslingen.insy.dto.OrdererDTO;
+import com.hs_esslingen.insy.model.Company;
 import com.hs_esslingen.insy.model.User;
 import com.hs_esslingen.insy.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +19,16 @@ public class OrdererService {
     private final UserRepository userRepository;
 
     // Get Orderers from repository
-    public List<String> getAllCompanies() {
-        return userRepository.findAll().stream()
+    public List<OrdererDTO> getAllOrderers() {
+        List<String> allCompanies = userRepository.findAll().stream()
                 .map(User::getName)
+                .sorted()
                 .collect(Collectors.toList());
+
+        OrdererDTO dto = OrdererDTO.builder()
+                .orderers(allCompanies)
+                .build();
+
+        return List.of(dto);
     }
 }

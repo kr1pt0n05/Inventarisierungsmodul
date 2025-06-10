@@ -11,9 +11,9 @@ import java.util.Set;
 public interface InventoryRepository
         extends JpaRepository<Inventory, Integer>, JpaSpecificationExecutor<Inventory> {
      // Define custom query methods here if needed
-        @Query("SELECT i.location FROM Inventory i")
+        @Query("SELECT i.location FROM Inventory i WHERE i.location IS NOT NULL ORDER BY i.location ASC")
         Set<String> findAllLocations();
 
-        @Query("SELECT i.serialNumber FROM Inventory i")
+        @Query("SELECT i.serialNumber FROM Inventory i WHERE i.serialNumber IS NOT NULL ORDER BY i.serialNumber ASC")
         Set<String> findAllSerialNumbers();
 }

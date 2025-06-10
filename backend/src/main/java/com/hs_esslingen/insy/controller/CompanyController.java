@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 
+import com.hs_esslingen.insy.dto.CompanyDTO;
 import com.hs_esslingen.insy.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,8 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @GetMapping
-    public ResponseEntity<List<String>> getAllCompanies() {
-        List<String> companies = companyService.getAllCompanies();
+    public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
+        List<CompanyDTO> companies = companyService.getAllCompanies();
         return new ResponseEntity<>(companies, HttpStatus.OK);
     }
 }
