@@ -47,7 +47,7 @@ public class Inventory {
     @Builder.Default
     private Boolean isDeinventoried = false; // umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt schließt aber null nicht aus
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private BigDecimal price;
 
     @Column(nullable = true)

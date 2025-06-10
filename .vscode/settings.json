@@ -2,5 +2,12 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "http-sonar-test-insy-hs-esslingen-com",
         "projectKey": "Inventarisierungsmodul-backend-89wehenfefhe89"
-    }
+    },
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "always",
+        "source.organizeImports": "always"
+    },
 }

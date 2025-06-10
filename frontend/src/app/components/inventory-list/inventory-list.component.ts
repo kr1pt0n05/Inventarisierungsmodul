@@ -33,7 +33,6 @@ import {ServerTableDataSourceService} from '../../services/server-table-data-sou
     MatInput,
     MatFormField,
     MatLabel,
-    DatePipe,
   ],
   templateUrl: './inventory-list.component.html',
   styleUrl: './inventory-list.component.css'
@@ -49,7 +48,7 @@ export class InventoryListComponent implements AfterViewInit{
   ngAfterViewInit() {
     this.inventoryItems.paginator = this.paginator;
     this.paginator._intl.itemsPerPageLabel = "Artikel pro Seite:";
-    //this.inventoryItems.sort = this.sort;
+    this.inventoryItems.sorter = this.sort;
   }
 
 }

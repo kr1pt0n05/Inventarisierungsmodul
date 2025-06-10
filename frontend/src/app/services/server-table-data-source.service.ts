@@ -1,32 +1,65 @@
-import {inject, Injectable} from '@angular/core';
-import {DataSource} from '@angular/cdk/table';
-import {CollectionViewer} from '@angular/cdk/collections';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {InventoriesService} from './inventories.service';
-import {Inventories} from '../models/inventories';
-import {InventoryItem} from '../models/inventory-item';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import { CollectionViewer } from '@angular/cdk/collections';
+import { DataSource } from '@angular/cdk/table';
+import { EventEmitter, inject, Injectable, signal } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Inventories } from '../models/inventories';
+import { InventoryItem } from '../models/inventory-item';
+import { InventoriesService } from './inventories.service';
+import { FormGroup } from '@angular/forms';
+
 
 interface Page{
   pageIndex: number,
   pageSize: number,
 }
 
+// Export this, since the FormGroup, that is passed into this service, should implement that Interface too.
+export interface Filter{
+  tags?: string[],
+  minId?: number,
+  maxId?: number,
+  minPrice?: number,
+  maxPrice?: number,
+  isDeinventoried?: boolean,
+  orderer?: string[],
+  company?: string[],
+  location?: string[],
+  costCenter?: string[],
+  serialNumber?: string[],
+}
+
+interface QueryParams{
+  currentPage: Page,
+  currentSort: Sort,
+  currentFilter: Filter,
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class ServerTableDataSourceService<T> extends DataSource<T> {
 
-
-  // Data obtained by an API. Containts current page and +-2 prefetched Pages.
+  // Data obtained by an API and passed to a Mat-Table.
   private readonly _data: BehaviorSubject<any[]>;
 
-
-  // API
-  private _service: InventoriesService  = inject(InventoriesService);
+  // API to call, with corresponding Query parameters, if any of Paginator, Sorter or Filter changes.
+  private _service: InventoriesService = inject(InventoriesService);
 
   // Paginator
   private _paginator: MatPaginator | undefined;
+
+  // Sorter
+  private _sorter: MatSort | undefined;
+
+  // Filter
+  private _filter: FormGroup | undefined;
+
+  // Store currently selected Page, Sort & Filter as Query parameters for API
+  private readonly _queryParams: BehaviorSubject<QueryParams>;
+
 
   // Cache to track loaded pages and their corresponding page sizes.
   // When the paginator navigates to a page, it checks this cache.
@@ -39,15 +72,22 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
 
     // Initialize data with an empty array
     this._data = new BehaviorSubject<InventoryItem[]>([]);
+    this._queryParams = new BehaviorSubject<QueryParams>({
+      currentPage: {pageIndex: 0, pageSize: 10},
+      currentSort: {active: 'id', direction: 'asc'},
+      currentFilter: {},
+    });
 
-    // Fetch Inventories & notify subscribers
-    this.fetchData(1, 10);
+    this._queryParams.subscribe((queryParams: QueryParams) => {
+      this.fetchData(
+        queryParams.currentPage.pageIndex,
+        queryParams.currentPage.pageSize,
+        queryParams.currentSort.active,
+        queryParams.currentSort.direction,
+        queryParams.currentFilter)
+    })
   }
 
-  // Data to be rendered by Mat-Table.
-  get data(): BehaviorSubject<any[]> {
-    return this._data;
-  }
 
   // Update _data, check if it is an Array beforehand and notify subscribers.
   set data(data: any[]) {
@@ -60,25 +100,48 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set paginator(paginator: MatPaginator) {
     this._paginator = paginator;
     this._paginator.page.subscribe((page: PageEvent) => {
-        this.fetchData(page.pageIndex, page.pageSize);
+      this._queryParams.next({
+        ...this._queryParams.value,
+        currentPage: {pageIndex: page.pageIndex, pageSize: page.pageSize}
+      });
+      console.log(this._queryParams.getValue());
     })
   }
 
+  set sorter(sorter: MatSort) {
+    this._sorter = sorter;
+    this._sorter.sortChange.subscribe((sort: Sort) => {
+      this._queryParams.next({...this._queryParams.value, currentSort: sort});
+      console.log(this._queryParams.getValue());
+    })
+  }
+
+  set filter(filter: FormGroup) {
+    this._filter = filter;
+    this._filter.valueChanges.subscribe((filter: Filter) => {
+      this._queryParams.next({...this._queryParams.value, currentFilter: filter});
+      console.log(this._queryParams.getValue());
+    });
+  }
+
   // Fetch Inventories from Inventory API & transform it to fit Mat-Table
-  private fetchData(pageNumber: number, pageSize: number) {
-    this._service.getInventories(pageNumber, pageSize).subscribe((inventories: Inventories) => {
-      this.data = inventories.content.map((item: InventoryItem) => ({
-        id: item.id,
-        user: item.user.name,
-        description: item.description,
-        company: item.company.name,
-        price: item.price,
-        createdAt: new Date(`2025-01-01T${item.createdAt}`),
-        serialNumber: item.serialNumber,
-        location: item.location,
-        orderer: item.user.name,
-      }));
-      if(this._paginator) this._paginator.length = inventories.totalElements;
+  private fetchData(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter) {
+    this._service.getInventories(pageNumber, pageSize, sortActive, sortDirection, filter).subscribe((inventories: Inventories) => {
+      if (inventories.content === undefined) {
+        this.data = [];
+      } else {
+        this.data = inventories.content.map((item: InventoryItem) => ({
+          id: item.id,
+          description: item.description,
+          company: item.company,
+          price: item.price,
+          createdAt: item.createdAt,
+          serialNumber: item.serialNumber,
+          location: item.location,
+          orderer: item.orderer,
+        }));
+      }
+      if (this._paginator) this._paginator.length = inventories.totalElements;
     })
   }
 
