@@ -10,7 +10,6 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
-import org.hibernate.annotations.Comments;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +32,8 @@ import com.hs_esslingen.insy.repository.CompanyRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 import com.hs_esslingen.insy.repository.UserRepository;
 
-@Service @AllArgsConstructor
+@Service
+@AllArgsConstructor
 public class CSVService {
     private final Character DELIMITER = ';';
 

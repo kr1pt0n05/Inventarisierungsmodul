@@ -24,6 +24,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/**").permitAll() // Disabling all protection for testing purposes
                         .requestMatchers(HttpMethod.DELETE, "/**").permitAll() // Disabling all protection for testing purposes
                         .requestMatchers(HttpMethod.POST, "/upload/csv").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/download/xlsx").permitAll()
                         .requestMatchers(HttpMethod.GET, "/").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         .anyRequest().authenticated()
                 )
