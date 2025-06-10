@@ -18,16 +18,15 @@ public class CostCenterService {
     private final CostCenterRepository costCenterRepository;
 
     // Get CostCenters from repository
-    public List<CostCenterDTO> getAllCostCenter() {
+    public CostCenterDTO getAllCostCenter() {
         List<String> allDescriptions = costCenterRepository.findAll().stream()
                 .map(CostCenter::getDescription)
                 .sorted()
                 .collect(Collectors.toList());
 
-        CostCenterDTO dto = CostCenterDTO.builder()
+        return CostCenterDTO.builder()
                 .costCenters(allDescriptions)
                 .build();
 
-        return List.of(dto);
     }
 }

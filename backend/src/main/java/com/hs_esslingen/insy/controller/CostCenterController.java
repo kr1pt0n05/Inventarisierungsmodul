@@ -19,8 +19,8 @@ public class CostCenterController {
     private final CostCenterService costCenterService;
 
     @GetMapping
-    public ResponseEntity<List<CostCenterDTO>> getAllCostCenter() {
-        List<CostCenterDTO> costCenters = costCenterService.getAllCostCenter();
+    public ResponseEntity<CostCenterDTO> getAllCostCenter() {
+        CostCenterDTO costCenters = costCenterService.getAllCostCenter();
         return new ResponseEntity<>(costCenters, HttpStatus.OK);
     }
 }

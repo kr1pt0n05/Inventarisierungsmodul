@@ -19,8 +19,8 @@ public class OrdererController {
     private final OrdererService ordererService;
 
     @GetMapping
-    public ResponseEntity<List<OrdererDTO>> getAllOrderers() {
-        List<OrdererDTO> orderers = ordererService.getAllOrderers();
+    public ResponseEntity<OrdererDTO> getAllOrderers() {
+        OrdererDTO orderers = ordererService.getAllOrderers();
         return new ResponseEntity<>(orderers, HttpStatus.OK);
     }
 }

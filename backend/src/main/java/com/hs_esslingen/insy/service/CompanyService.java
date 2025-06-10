@@ -18,17 +18,15 @@ public class CompanyService {
 
     private final CompanyRepository companyRepository;
 
-    // Get Companies from repository
-    public List<CompanyDTO> getAllCompanies() {
+    // Change return type from List<CompanyDTO> to CompanyDTO
+    public CompanyDTO getAllCompanies() {
         List<String> allCompanies = companyRepository.findAll().stream()
                 .map(Company::getName)
                 .sorted()
                 .collect(Collectors.toList());
 
-        CompanyDTO dto = CompanyDTO.builder()
+        return CompanyDTO.builder()
                 .companies(allCompanies)
                 .build();
-
-        return List.of(dto);
     }
 }

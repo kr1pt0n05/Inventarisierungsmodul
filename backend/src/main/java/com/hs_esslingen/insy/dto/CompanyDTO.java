@@ -2,6 +2,7 @@ package com.hs_esslingen.insy.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

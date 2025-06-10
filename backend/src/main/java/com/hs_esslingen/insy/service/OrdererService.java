@@ -19,16 +19,14 @@ public class OrdererService {
     private final UserRepository userRepository;
 
     // Get Orderers from repository
-    public List<OrdererDTO> getAllOrderers() {
+    public OrdererDTO getAllOrderers() {
         List<String> allCompanies = userRepository.findAll().stream()
                 .map(User::getName)
                 .sorted()
                 .collect(Collectors.toList());
 
-        OrdererDTO dto = OrdererDTO.builder()
+        return OrdererDTO.builder()
                 .orderers(allCompanies)
                 .build();
-
-        return List.of(dto);
     }
 }
