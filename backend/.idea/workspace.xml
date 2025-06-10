@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b0635f81-cb1b-4b97-9498-b1bb9f73d29a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/DownloadController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExcelService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CSVService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CSVService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExcelService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExcelService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,26 +38,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.InsyApplication.executor": "Run",
-    "git-widget-placeholder": "main-backend-2",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Sandr/Documents/GitHub/Inventarisierungsmodul/backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.InsyApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main-backend-2&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Sandr/Documents/GitHub/Inventarisierungsmodul/backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
