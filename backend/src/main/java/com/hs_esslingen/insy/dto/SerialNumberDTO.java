@@ -1,6 +1,6 @@
 package com.hs_esslingen.insy.dto;
 
-import java.util.List;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompanyDTO {
-    private List<String> companies;
+public class SerialNumberDTO {
+    private Set<String> serialNumbers;
 }

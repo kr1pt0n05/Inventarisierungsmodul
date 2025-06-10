@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hs_esslingen.insy.dto.CompanyDTO;
-import com.hs_esslingen.insy.dto.CostCenterDTO;
 import com.hs_esslingen.insy.model.Company;
-import com.hs_esslingen.insy.model.CostCenter;
 import com.hs_esslingen.insy.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

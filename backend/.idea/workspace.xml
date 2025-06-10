@@ -6,9 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="b0635f81-cb1b-4b97-9498-b1bb9f73d29a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/UploadController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CSVService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CSVService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExcelService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExcelService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/configuration/DatabaseSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/configuration/DatabaseSeeder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/LocationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/LocationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/SerialNumberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/controller/SerialNumberController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/LocationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/LocationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/SerialNumberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/SerialNumberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,26 +41,74 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.InsyApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main-backend-2&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Sandr/Documents/GitHub/Inventarisierungsmodul/backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "HTTP Request.http-requests-log | #14.executor": "Run",
+    "HTTP Request.http-requests-log | #16.executor": "Run",
+    "HTTP Request.http-requests-log | #18.executor": "Run",
+    "HTTP Request.http-requests-log | #2.executor": "Run",
+    "HTTP Request.http-requests-log | #20.executor": "Run",
+    "HTTP Request.http-requests-log | #22.executor": "Run",
+    "HTTP Request.http-requests-log | #24.executor": "Run",
+    "HTTP Request.http-requests-log | #26.executor": "Run",
+    "HTTP Request.http-requests-log | #30.executor": "Run",
+    "HTTP Request.http-requests-log | #32.executor": "Run",
+    "HTTP Request.http-requests-log | #50.executor": "Run",
+    "HTTP Request.http-requests-log | #51.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.InsyApplication.executor": "Run",
+    "git-widget-placeholder": "main-Valentin",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Sandr/Documents/GitHub/Inventarisierungsmodul/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RunManager" selected="HTTP Request.http-requests-log | #6">
+    <configuration name="http-requests-log | #2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#2" index="2" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="http-requests-log | #3" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#3" index="3" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="http-requests-log | #50" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#50" index="50" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="http-requests-log | #6" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#6" index="6" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="InsyApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="insy" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.hs_esslingen.insy.InsyApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.hs_esslingen.insy.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.http-requests-log | #6" />
+        <item itemvalue="HTTP Request.http-requests-log | #3" />
+        <item itemvalue="Spring Boot.InsyApplication" />
+        <item itemvalue="HTTP Request.http-requests-log | #2" />
+        <item itemvalue="HTTP Request.http-requests-log | #50" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

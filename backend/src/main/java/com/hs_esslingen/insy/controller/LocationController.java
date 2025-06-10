@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 
+import com.hs_esslingen.insy.dto.LocationDTO;
 import com.hs_esslingen.insy.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,8 @@ public class LocationController {
     private final LocationService locationService;
 
     @GetMapping
-    public ResponseEntity<Set<String>> getAllLocations() {
-        Set<String> locations = locationService.getAllLocations();
+    public ResponseEntity<LocationDTO> getAllLocations() {
+        LocationDTO locations = locationService.getAllLocations();
         return new ResponseEntity<>(locations, HttpStatus.OK);
     }
 }
