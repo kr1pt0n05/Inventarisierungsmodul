@@ -37,7 +37,7 @@ public class Inventory {
     @JoinColumn(name = "companies_id", nullable = true)
     private Company company;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String description;
 
     @Column(name = "serial_number", nullable = true)

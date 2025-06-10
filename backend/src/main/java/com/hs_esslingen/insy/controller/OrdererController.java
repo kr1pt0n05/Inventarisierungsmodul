@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 
+import com.hs_esslingen.insy.dto.OrdererDTO;
 import com.hs_esslingen.insy.service.OrdererService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,8 @@ public class OrdererController {
     private final OrdererService ordererService;
 
     @GetMapping
-    public ResponseEntity<List<String>> getAllOrderers() {
-        List<String> orderers = ordererService.getAllCompanies();
+    public ResponseEntity<List<OrdererDTO>> getAllOrderers() {
+        List<OrdererDTO> orderers = ordererService.getAllOrderers();
         return new ResponseEntity<>(orderers, HttpStatus.OK);
     }
 }

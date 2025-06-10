@@ -3,6 +3,7 @@ package com.hs_esslingen.insy.controller;
 import java.util.List;
 import java.util.Set;
 
+import com.hs_esslingen.insy.dto.CostCenterDTO;
 import com.hs_esslingen.insy.service.CostCenterService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,8 @@ public class CostCenterController {
     private final CostCenterService costCenterService;
 
     @GetMapping
-    public ResponseEntity<List<String>> getAllCostCenter() {
-        List<String> costCenters = costCenterService.getAllCostCenter();
+    public ResponseEntity<List<CostCenterDTO>> getAllCostCenter() {
+        List<CostCenterDTO> costCenters = costCenterService.getAllCostCenter();
         return new ResponseEntity<>(costCenters, HttpStatus.OK);
     }
 }
