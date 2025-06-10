@@ -1,32 +1,25 @@
 package com.hs_esslingen.insy.service;
 
-import com.hs_esslingen.insy.repository.CompanyRepository;
-import com.hs_esslingen.insy.repository.CostCenterRepository;
-import com.hs_esslingen.insy.repository.InventoryRepository;
-import com.hs_esslingen.insy.repository.TagRepository;
-import com.hs_esslingen.insy.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hs_esslingen.insy.model.*;
+import com.hs_esslingen.insy.repository.*;
 import com.hs_esslingen.insy.utils.OrderByUtils;
 import com.hs_esslingen.insy.configuration.InventorySpecification;
 import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
 import com.hs_esslingen.insy.mapper.InventoryMapper;
-import com.hs_esslingen.insy.model.CostCenter;
-import com.hs_esslingen.insy.model.Inventory;
-import com.hs_esslingen.insy.model.Tag;
-import com.hs_esslingen.insy.model.Company;
-import com.hs_esslingen.insy.model.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import java.util.Set;
-
 import com.hs_esslingen.insy.utils.StringParser;
+import org.javers.core.Javers;
+import org.javers.core.diff.Diff;
+import org.javers.core.diff.changetype.ValueChange;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +38,8 @@ public class InventoryService {
     private final CostCenterRepository costCentersRepository;
     private final TagRepository tagsRepository;
     private final InventoryMapper inventoriesMapper;
+    private final HistoryRepository historyRepository;
+    private final Javers javers;
 
     public InventoryService(
             InventoryRepository inventoryRepository,
@@ -52,13 +47,17 @@ public class InventoryService {
             CompanyRepository companyRepository,
             CostCenterRepository costCenterRepository,
             TagRepository tagRepository,
-            InventoryMapper inventoryMapper) {
+            InventoryMapper inventoryMapper, HistoryRepository historyRepository,
+            Javers javers
+            ) {
         this.inventoriesRepository = inventoryRepository;
         this.usersRepository = userRepository;
         this.companiesRepository = companyRepository;
         this.costCentersRepository = costCenterRepository;
         this.tagsRepository = tagRepository;
         this.inventoriesMapper = inventoryMapper;
+        this.historyRepository = historyRepository;
+        this.javers = javers;
     }
 
     /**
@@ -277,6 +276,9 @@ public class InventoryService {
 
         Inventory inventory = inventoryOptional.get();
 
+        // Inventory before change
+        InventoryCreateRequestDTO inventoryOld = InventoryService.mapInventoryToDto(inventory);
+
         for (Map.Entry<String, Object> entry : patchData.entrySet()) {
             String fieldName = entry.getKey();
             Object fieldValue = entry.getValue();
@@ -348,7 +350,31 @@ public class InventoryService {
             }
         }
 
+
         Inventory updatedInventory = inventoriesRepository.save(inventory);
+
+        // Inventory after change
+        InventoryCreateRequestDTO inventoryNew = InventoryService.mapInventoryToDto(updatedInventory);
+
+        // Store the changes to History entity
+        List<History> historyList = new ArrayList<>();
+        Diff diff = javers.compare(inventoryOld, inventoryNew);
+
+        diff.getChangesByType(ValueChange.class).forEach(change -> {
+            String property = change.getPropertyName();
+            Object before = change.getLeft();
+            Object after = change.getRight();
+
+            History history = new History();
+            history.setAuthor(inventory.getUser()); // Replace this with user from  JWT token
+            history.setAttributeChanged(property);
+            history.setValueFrom(before == null ? "null" : before.toString());
+            history.setValueTo(after.toString());
+            history.setInventory(inventory);
+            historyList.add(history);
+        });
+        historyRepository.saveAll(historyList);
+
         InventoriesResponseDTO responseDTO = inventoriesMapper.toDto(updatedInventory);
         return ResponseEntity.ok(responseDTO);
     }
@@ -363,5 +389,18 @@ public class InventoryService {
                     .orElseGet(() -> usersRepository.save(new User(userName)));
         }
         throw new IllegalArgumentException("orderer muss Integer oder String sein.");
+    }
+
+    private static InventoryCreateRequestDTO mapInventoryToDto(Inventory inventory) {
+        InventoryCreateRequestDTO dto = new InventoryCreateRequestDTO();
+        dto.setInventoriesId(inventory.getId());
+        dto.setDescription(inventory.getDescription() == null ? null : inventory.getDescription().toString());
+        dto.setSerialNumber(inventory.getSerialNumber() == null ? null : inventory.getSerialNumber().toString());
+        dto.setPrice(inventory.getPrice());
+        dto.setLocation(inventory.getLocation() == null ? null : inventory.getLocation().toString());
+        dto.setCostCenter(inventory.getCostCenter() == null ? null : inventory.getCostCenter().getDescription());
+        dto.setCompany(inventory.getCompany() == null ? null : inventory.getCompany().getName());
+        dto.setOrderer(inventory.getUser() == null ? null : inventory.getUser().getId());
+        return dto;
     }
 }

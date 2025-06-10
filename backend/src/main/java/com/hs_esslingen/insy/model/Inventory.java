@@ -75,6 +75,10 @@ public class Inventory {
     @JoinTable(name = "inventory_tag", joinColumns = @JoinColumn(name = "inventory_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<History> histories = new ArrayList<>();
+
     // Konstruktor
     @Builder
     public Inventory(Integer id, CostCenter costCenters, User user, Company company, String description,
