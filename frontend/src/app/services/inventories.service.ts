@@ -65,11 +65,15 @@ export class InventoriesService {
   }
 
   getAllSerialNumbers(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/serialNumbers`);
+    return this.http.get<any>(`${this.url}/serialNumbers`).pipe(
+      map(response => response.serialNumbers)
+    );
   }
 
   getAllLocations(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/locations`);
+    return this.http.get<any>(`${this.url}/locations`).pipe(
+      map(response => response.locations)
+    );
   }
 
   getAllOrderers(): Observable<string[]> {
@@ -79,7 +83,9 @@ export class InventoriesService {
   }
 
   getAlltags(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/tags`);
+    return this.http.get<any>(`${this.url}/tags`).pipe(
+      map(response => response.tags)
+    );
   }
 
 }

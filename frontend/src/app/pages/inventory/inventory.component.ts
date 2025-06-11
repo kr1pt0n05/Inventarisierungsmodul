@@ -66,10 +66,10 @@ export class InventoryComponent implements OnInit {
     this.serverTableDataSource.filter = this.inventoryForm;
     this.cache.getCostCenters().subscribe(costCenters => this.costCenters = costCenters);
     this.cache.getCompanies().subscribe(companies => this.companies = companies);
-    this.cache.getSerialNumbers().subscribe(serialNumbers => this.serialNumbers = serialNumbers.filter(costCenter => costCenter !== null));
-    this.cache.getLocations().subscribe(locations => this.locations = locations.filter(costCenter => costCenter !== null));
+    this.cache.getSerialNumbers().subscribe(serialNumbers => this.serialNumbers = serialNumbers);
+    this.cache.getLocations().subscribe(locations => this.locations = locations);
     this.cache.getOrderers().subscribe(orderers => this.orderers = orderers);
-    this.cache.getTags().subscribe(tags => this.tags = tags.filter(costCenter => costCenter !== null));
+    this.cache.getTags().subscribe(tags => this.tags = tags);
   }
 
 
