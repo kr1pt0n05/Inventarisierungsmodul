@@ -46,6 +46,7 @@ import { InventoriesService } from '../../services/inventories.service';
  *
  * Usage:
  * Place <app-inventorization> in your template. Bind the inventoryItem input and listen to the onInventorization output.
+ * If a new inventory item should be created, pass an inventoryItem with no id.
  *
  * Dependencies:
  * - Angular Material modules, ReactiveFormsModule.
