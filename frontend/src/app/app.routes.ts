@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DetailsComponent } from './pages/details/details.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
+import { InventorizationComponent } from './pages/inventorization/inventorization.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
@@ -37,8 +38,16 @@ export const routes: Routes = [
       inventoryItem: InventoryItemResolver,
       extensions: ExtensionsResolver,
       comments: CommentsResolver,
-      changes: InventoryItemChangesResolver
+      changes: InventoryItemChangesResolver,
     }
+  },
+  {
+    title: 'Inventarisierung',
+    path: 'edit/:id',
+    component: InventorizationComponent,
+    resolve: {
+      inventoryItem: InventoryItemResolver,
+    },
   },
   {
     title: '404 Not Found!',
