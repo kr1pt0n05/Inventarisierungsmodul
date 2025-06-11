@@ -122,8 +122,16 @@ export class InventorizationComponent {
    */
   saveInvetarisation() {
     if (this.inventoryItem() && this.inventoryItem()!.id) {
-      this._getItemChanges();
-      this.inventoriesService.updateInventoryById(this.inventoryItem()!.id, this._getItemChanges());
+      this._getItemChanges(); // For debugging purposes, log the changes
+      this.inventoriesService.updateInventoryById(this.inventoryItem()!.id, this._getItemChanges()).subscribe({
+        next: (updatedItem) => {
+          this.editableInventoryItem.set(updatedItem);
+          console.log('Inventory item updated successfully:', updatedItem);
+        },
+        error: (error) => {
+          console.error('Error updating inventory item:', error);
+        }
+      });
       this.handleCommentChanges();
     } else {
       this.inventoriesService.addInventoryItem(this.editableInventoryItem());
