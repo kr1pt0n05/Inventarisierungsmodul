@@ -9,6 +9,7 @@ import { CommentsResolver } from './resolver/comments.resolver';
 import { ExtensionsResolver } from './resolver/extensions.resolver';
 import { InventoryItemResolver } from './resolver/inventory-item.resolver';
 import { DefaultGuardService } from './services/default-guard.service';
+import {OrdersComponent} from './pages/orders/orders.component';
 
 export const routes: Routes = [
   {
@@ -39,6 +40,11 @@ export const routes: Routes = [
       comments: CommentsResolver,
       changes: InventoryItemChangesResolver
     }
+  },
+  {
+    title: "Bestellungen",
+    path: "orders",
+    component: OrdersComponent,
   },
   {
     title: '404 Not Found!',

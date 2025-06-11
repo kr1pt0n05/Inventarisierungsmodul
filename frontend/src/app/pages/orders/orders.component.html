@@ -1,0 +1,50 @@
+<div class="flex justify-evenly">
+
+
+  <!--   Filter Section START   --->
+  <div class="w-1/5">
+    <app-card title="Ausgewählte Artikel ({{this.checkedCount()}})">
+      <div card-content class="space-y-4">
+        <button class="bg-he-darkblue hover:bg-he-lightblue text-white font-medium py-3 px-6 rounded-full w-full">
+          Jetzt inventarisieren
+        </button>
+      </div>
+    </app-card>
+  </div>
+
+
+  <div class="w-2/3">
+    <app-card title="Zu inventarisierende Artikel (2)">
+      <div card-content>
+
+        <div card-content class="flex items-center justify-between space-x-4">
+          <!-- Checkbox aligned to the left -->
+
+          <div class="px-2 py-2">
+            <mat-checkbox class="example-margin" [checked]="allChecked" (change)="checkAll()">Alle auswählen</mat-checkbox>
+          </div>
+
+          <!-- Buttons aligned to the right -->
+          <div class="flex justify-end space-x-2">
+            <button mat-button (click)="openAllAccordion()">Alles ausklappen</button>
+            <button mat-button (click)="closeAllAccordions()">Alles einklappen</button>
+          </div>
+        </div>
+
+        @for (order of orders; track order.title) {
+          @for (article of order.articles; track article.id) {
+            <app-accordion title="{{article.title}}, Bestellnummer: {{article.id}}, {{article.price}}€, ...">
+              <div expansion-panel-header>
+                <mat-checkbox class="example-margin" (click)="checkBox($event, article)" [checked]="article.checked"></mat-checkbox>
+              </div>
+              <div expansion-panel-content>
+                <p>dadada</p>
+              </div>
+            </app-accordion>
+          }
+        }
+      </div>
+    </app-card>
+  </div>
+
+</div>
