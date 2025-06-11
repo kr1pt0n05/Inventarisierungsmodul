@@ -5,9 +5,37 @@
   <div class="w-1/5">
     <app-card title="Ausgewählte Artikel ({{this.checkedCount()}})">
       <div card-content class="space-y-4">
-        <button class="bg-he-darkblue hover:bg-he-lightblue text-white font-medium py-3 px-6 rounded-full w-full">
-          Jetzt inventarisieren
+
+        <button class="bg-he-darkblue hover:bg-he-lightblue text-white font-medium py-3 px-6 rounded-full w-full"
+                [ngClass]="{
+                'opacity-50': this.checkedCount() != 1,
+                'hover:bg-he-lightblue': checkedCount() === 1
+                }"
+               (click)="inventarize()"
+        >
+          Artikel inventarisieren
         </button>
+
+        <button class="bg-he-darkblue text-white font-medium py-3 px-6 rounded-full w-full"
+                [ngClass]="{
+                'opacity-50': this.checkedCount() < 1,
+                'hover:bg-he-lightblue': checkedCount() >= 1
+                }"
+                (click)="inventarize()"
+        >
+          Erweiterungen inventarisieren
+        </button>
+
+        <button class="bg-he-darkblue text-white font-medium py-3 px-6 rounded-full w-full"
+                [ngClass]="{
+                'opacity-50': this.checkedCount() <= 1,
+                'hover:bg-he-lightblue': checkedCount() > 1
+                }"
+                (click)="inventarize()"
+        >
+          Artikel mit Erweiterungen inventarisieren
+        </button>
+
       </div>
     </app-card>
   </div>

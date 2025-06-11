@@ -3,6 +3,8 @@ import {CardComponent} from '../../components/card/card.component';
 import {AccordionComponent} from '../../components/accordion/accordion.component';
 import {MatButton} from '@angular/material/button';
 import {MatCheckbox} from '@angular/material/checkbox';
+import { Router } from '@angular/router';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-orders',
@@ -11,11 +13,15 @@ import {MatCheckbox} from '@angular/material/checkbox';
     AccordionComponent,
     MatButton,
     MatCheckbox,
+    NgClass,
   ],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
 })
 export class OrdersComponent {
+
+  constructor(private router: Router) {
+  }
 
   // Accordion
   @ViewChildren(AccordionComponent) accordions!: QueryList<AccordionComponent>;
@@ -33,6 +39,7 @@ export class OrdersComponent {
   }
 
   // This will stop the Accordion from expanding when the checkbox is clicked
+  // and check or uncheck the clicked check box
   checkBox(event: MouseEvent, article: any) {
     event.stopPropagation();
     article.checked = !article.checked;
@@ -44,7 +51,7 @@ export class OrdersComponent {
     return this.orders.flatMap(order => order.articles).filter(article => article.checked).length;
   }
 
-  // Alle auswählen checkbox
+  // "Alle auswählen" checkbox
   allChecked = false;
 
   // Returns whether all check boxes are checked
@@ -70,6 +77,17 @@ export class OrdersComponent {
       })
     })
     this.checkedCount();
+  }
+
+
+  // "Jetzt inventarisieren" Button
+  // Will redirect to Details Page for inventarizing selected articles
+  inventarize() {
+    const checkedOrders: any[] = this.orders.flatMap(order => order.articles).filter(article => article.checked);
+    if(checkedOrders.length === 1){
+      this.router.navigate(['/inventory/', checkedOrders[0].id]);
+    }
+    //this.router.navigate(['/inventory/']);
   }
 
 
