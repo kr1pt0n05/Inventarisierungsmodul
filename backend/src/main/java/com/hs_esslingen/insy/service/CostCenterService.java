@@ -3,7 +3,6 @@ package com.hs_esslingen.insy.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hs_esslingen.insy.dto.CommentDTO;
 import com.hs_esslingen.insy.dto.CostCenterDTO;
 import com.hs_esslingen.insy.model.CostCenter;
 import com.hs_esslingen.insy.repository.CostCenterRepository;
@@ -18,16 +17,15 @@ public class CostCenterService {
     private final CostCenterRepository costCenterRepository;
 
     // Get CostCenters from repository
-    public List<CostCenterDTO> getAllCostCenter() {
+    public CostCenterDTO getAllCostCenter() {
         List<String> allDescriptions = costCenterRepository.findAll().stream()
                 .map(CostCenter::getDescription)
                 .sorted()
                 .collect(Collectors.toList());
 
-        CostCenterDTO dto = CostCenterDTO.builder()
+        return CostCenterDTO.builder()
                 .costCenters(allDescriptions)
                 .build();
 
-        return List.of(dto);
     }
 }

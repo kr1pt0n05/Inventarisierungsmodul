@@ -1,4 +1,4 @@
-/*
+
 
 package com.hs_esslingen.insy.configuration;
 
@@ -26,13 +26,13 @@ import lombok.RequiredArgsConstructor;
 import com.hs_esslingen.insy.model.User;
 import com.hs_esslingen.insy.model.CostCenter;
 
-*/
+
 /**
  * This class is used to seed the database with initial data.
  * It implements CommandLineRunner to execute code after the application context
  * is loaded.
  * Remove for production use.
- *//*
+ */
 
 
 @Component
@@ -131,4 +131,3 @@ public class DatabaseSeeder implements CommandLineRunner {
         return inventory;
     }
 }
-*/

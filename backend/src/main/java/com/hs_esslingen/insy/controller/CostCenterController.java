@@ -1,7 +1,5 @@
 package com.hs_esslingen.insy.controller;
 
-import java.util.List;
-import java.util.Set;
 
 import com.hs_esslingen.insy.dto.CostCenterDTO;
 import com.hs_esslingen.insy.service.CostCenterService;
@@ -19,8 +17,8 @@ public class CostCenterController {
     private final CostCenterService costCenterService;
 
     @GetMapping
-    public ResponseEntity<List<CostCenterDTO>> getAllCostCenter() {
-        List<CostCenterDTO> costCenters = costCenterService.getAllCostCenter();
+    public ResponseEntity<CostCenterDTO> getAllCostCenter() {
+        CostCenterDTO costCenters = costCenterService.getAllCostCenter();
         return new ResponseEntity<>(costCenters, HttpStatus.OK);
     }
 }

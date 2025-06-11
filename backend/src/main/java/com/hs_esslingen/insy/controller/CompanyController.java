@@ -1,8 +1,5 @@
 package com.hs_esslingen.insy.controller;
 
-import java.util.List;
-import java.util.Set;
-
 
 import com.hs_esslingen.insy.dto.CompanyDTO;
 import com.hs_esslingen.insy.service.CompanyService;
@@ -19,8 +16,8 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @GetMapping
-    public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
-        List<CompanyDTO> companies = companyService.getAllCompanies();
+    public ResponseEntity<CompanyDTO> getAllCompanies() {
+        CompanyDTO companies = companyService.getAllCompanies();
         return new ResponseEntity<>(companies, HttpStatus.OK);
     }
 }
