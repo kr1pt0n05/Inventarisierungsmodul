@@ -1,6 +1,6 @@
 import { CollectionViewer } from '@angular/cdk/collections';
 import { DataSource } from '@angular/cdk/table';
-import { EventEmitter, inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -46,7 +46,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   private readonly _data: BehaviorSubject<any[]>;
 
   // API to call, with corresponding Query parameters, if any of Paginator, Sorter or Filter changes.
-  private _service: InventoriesService  = inject(InventoriesService);
+  private _service: InventoriesService = inject(InventoriesService);
 
   // Paginator
   private _paginator: MatPaginator | undefined;
@@ -92,6 +92,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   // Update _data, check if it is an Array beforehand and notify subscribers.
   set data(data: any[]) {
     data = Array.isArray(data) ? data : [];
+    console.log('Setting data:', data); // Add this
     this._data.next(data);
   }
 
@@ -100,8 +101,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set paginator(paginator: MatPaginator) {
     this._paginator = paginator;
     this._paginator.page.subscribe((page: PageEvent) => {
-        this._queryParams.next({...this._queryParams.value, currentPage: {pageIndex: page.pageIndex, pageSize: page.pageSize}});
-        console.log(this._queryParams.getValue());
+      this._queryParams.next({...this._queryParams.value, currentPage: {pageIndex: page.pageIndex, pageSize: page.pageSize}
+      });
     })
   }
 
@@ -109,7 +110,6 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._sorter = sorter;
     this._sorter.sortChange.subscribe((sort: Sort) => {
       this._queryParams.next({...this._queryParams.value, currentSort: sort});
-      console.log(this._queryParams.getValue());
     })
   }
 
@@ -117,23 +117,26 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._filter = filter;
     this._filter.valueChanges.subscribe((filter: Filter) => {
       this._queryParams.next({...this._queryParams.value, currentFilter: filter});
-      console.log(this._queryParams.getValue());
     });
   }
 
   // Fetch Inventories from Inventory API & transform it to fit Mat-Table
   private fetchData(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter) {
     this._service.getInventories(pageNumber, pageSize, sortActive, sortDirection, filter).subscribe((inventories: Inventories) => {
-      this.data = inventories.content.map((item: InventoryItem) => ({
-        id: item.id,
-        description: item.description,
-        company: item.company,
-        price: item.price,
-        createdAt: item.createdAt,
-        serialNumber: item.serialNumber,
-        location: item.location,
-        orderer: item.orderer,
-      }));
+      if (inventories.content === undefined) {
+        this.data = [];
+      } else {
+        this.data = inventories.content.map((item: InventoryItem) => ({
+          id: item.id,
+          description: item.description,
+          company: item.company,
+          price: item.price,
+          createdAt: item.createdAt,
+          serialNumber: item.serialNumber,
+          location: item.location,
+          orderer: item.orderer,
+        }));
+      }
       if (this._paginator) this._paginator.length = inventories.totalElements;
     })
   }
@@ -146,6 +149,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
 
   // Used by the MatTable. Called when it disconnects from the data source.
   disconnect(collectionViewer: CollectionViewer): void {
+    this._data.complete();
   }
 
 }

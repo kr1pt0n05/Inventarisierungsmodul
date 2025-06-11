@@ -1,5 +1,7 @@
 package com.hs_esslingen.insy.controller;
 
+import com.hs_esslingen.insy.service.ExcelService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,15 +13,21 @@ import com.hs_esslingen.insy.service.CSVService;
 
 import java.io.IOException;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/upload")
 public class UploadController {
 
     private final CSVService csvService;
+    private final ExcelService excelService;
 
-    public UploadController(CSVService csvService) {
-        this.csvService = csvService;
+
+    @PostMapping("/excel")
+    public ResponseEntity<String> uploadExcel(@RequestParam("file") MultipartFile file) throws IOException {
+        excelService.importExcel(file);
+        return ResponseEntity.ok().build();
     }
+
 
     @PostMapping("/csv")
     public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) throws IOException {
