@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
 import { InventoriesService } from './inventories.service';
-import { FormGroup } from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 
 
 interface Page{
@@ -34,6 +34,7 @@ interface QueryParams{
   currentPage: Page,
   currentSort: Sort,
   currentFilter: Filter,
+  currentSearchText: string,
 }
 
 
@@ -57,6 +58,9 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   // Filter
   private _filter: FormGroup | undefined;
 
+  // User entered input from search bar
+  private _searchbar: FormControl | undefined;
+
   // Store currently selected Page, Sort & Filter as Query parameters for API
   private readonly _queryParams: BehaviorSubject<QueryParams>;
 
@@ -76,6 +80,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
       currentPage: {pageIndex: 0, pageSize: 10},
       currentSort: {active: 'id', direction: 'asc'},
       currentFilter: {},
+      currentSearchText: '',
     });
 
     this._queryParams.subscribe((queryParams: QueryParams) => {
@@ -84,7 +89,9 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
         queryParams.currentPage.pageSize,
         queryParams.currentSort.active,
         queryParams.currentSort.direction,
-        queryParams.currentFilter)
+        queryParams.currentFilter,
+        queryParams.currentSearchText,
+      )
     })
   }
 
@@ -120,9 +127,16 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     });
   }
 
+  set searchbar(searchbar: FormControl) {
+    this._searchbar = searchbar;
+    this._searchbar.valueChanges.subscribe((searchText: string) => {
+      this._queryParams.next({...this._queryParams.value, currentSearchText: searchText});
+    })
+  }
+
   // Fetch Inventories from Inventory API & transform it to fit Mat-Table
-  private fetchData(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter) {
-    this._service.getInventories(pageNumber, pageSize, sortActive, sortDirection, filter).subscribe((inventories: Inventories) => {
+  private fetchData(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter, searchText: string = '') {
+    this._service.getInventories(pageNumber, pageSize, sortActive, sortDirection, filter, searchText).subscribe((inventories: Inventories) => {
       if (inventories.content === undefined) {
         this.data = [];
       } else {

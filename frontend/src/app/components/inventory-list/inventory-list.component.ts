@@ -13,6 +13,7 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {DatePipe} from '@angular/common';
 import {ServerTableDataSourceService} from '../../services/server-table-data-source.service';
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-inventory-list',
@@ -33,6 +34,7 @@ import {ServerTableDataSourceService} from '../../services/server-table-data-sou
     MatInput,
     MatFormField,
     MatLabel,
+    ReactiveFormsModule,
   ],
   templateUrl: './inventory-list.component.html',
   styleUrl: './inventory-list.component.css'
@@ -44,11 +46,13 @@ export class InventoryListComponent implements AfterViewInit{
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  searchText = new FormControl('');
 
   ngAfterViewInit() {
     this.inventoryItems.paginator = this.paginator;
     this.paginator._intl.itemsPerPageLabel = "Artikel pro Seite:";
     this.inventoryItems.sorter = this.sort;
+    this.inventoryItems.searchbar = this.searchText;
   }
 
 }

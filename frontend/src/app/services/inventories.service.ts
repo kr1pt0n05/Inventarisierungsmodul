@@ -17,12 +17,13 @@ export class InventoriesService {
 
   constructor(private readonly http: HttpClient) { }
 
-  getInventories(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter): Observable<Inventories> {
+  getInventories(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter, searchText: string): Observable<Inventories> {
     const params: any = {
       'page': pageNumber,
       'size': pageSize,
       'orderBy': sortActive,
       'direction': sortDirection,
+      'searchText': searchText,
     }
 
     // Append filter fields to params if they are defined

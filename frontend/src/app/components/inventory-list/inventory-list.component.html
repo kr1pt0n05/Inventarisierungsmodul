@@ -1,7 +1,10 @@
 <div>
   <mat-form-field class="w-xl">
     <mat-label>Inventarliste durchsuchen</mat-label>
-    <input matInput placeholder="" #input>
+    <input matInput placeholder=""
+           #input
+           [formControl]="searchText"
+    >
   </mat-form-field>
 
   <table mat-table [dataSource]="inventoryItems" matSort>
