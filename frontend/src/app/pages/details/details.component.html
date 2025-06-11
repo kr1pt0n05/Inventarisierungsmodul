@@ -19,12 +19,9 @@
         <div class="grid grid-cols-[max-content_1fr] gap-x-16">
             @for (field of inventoryItemColumns.keys(); track field) {
             <div class="p-2">{{inventoryItemColumns.get(field)}}</div>
-            }
-            @for (field of inventoryItemColumns.keys(); track field) {
             <div class="p-2">{{inventoryItemInternal.get(field)}}
                 @if (field === 'price') {
-                <span>€</span>
-                }
+                <span>€</span> }
             </div>
             }
         </div>
