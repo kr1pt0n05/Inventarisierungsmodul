@@ -1,6 +1,6 @@
 import { CollectionViewer } from '@angular/cdk/collections';
 import { DataSource } from '@angular/cdk/table';
-import { EventEmitter, inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -92,6 +92,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   // Update _data, check if it is an Array beforehand and notify subscribers.
   set data(data: any[]) {
     data = Array.isArray(data) ? data : [];
+    console.log('Setting data:', data); // Add this
     this._data.next(data);
   }
 
@@ -100,11 +101,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set paginator(paginator: MatPaginator) {
     this._paginator = paginator;
     this._paginator.page.subscribe((page: PageEvent) => {
-      this._queryParams.next({
-        ...this._queryParams.value,
-        currentPage: {pageIndex: page.pageIndex, pageSize: page.pageSize}
+      this._queryParams.next({...this._queryParams.value, currentPage: {pageIndex: page.pageIndex, pageSize: page.pageSize}
       });
-      console.log(this._queryParams.getValue());
     })
   }
 
@@ -112,7 +110,6 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._sorter = sorter;
     this._sorter.sortChange.subscribe((sort: Sort) => {
       this._queryParams.next({...this._queryParams.value, currentSort: sort});
-      console.log(this._queryParams.getValue());
     })
   }
 
@@ -120,7 +117,6 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._filter = filter;
     this._filter.valueChanges.subscribe((filter: Filter) => {
       this._queryParams.next({...this._queryParams.value, currentFilter: filter});
-      console.log(this._queryParams.getValue());
     });
   }
 
@@ -153,6 +149,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
 
   // Used by the MatTable. Called when it disconnects from the data source.
   disconnect(collectionViewer: CollectionViewer): void {
+    this._data.complete();
   }
 
 }

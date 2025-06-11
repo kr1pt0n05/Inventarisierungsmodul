@@ -7,6 +7,7 @@ import com.hs_esslingen.insy.model.CostCenter;
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.User;
 import com.hs_esslingen.insy.repository.*;
+import com.hs_esslingen.insy.utils.StringParser;
 import lombok.AllArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -258,6 +259,7 @@ public class ExcelService {
             inv.setIsDeinventoried(obj.isDeinventoried());
             inv.setPrice(BigDecimal.valueOf(obj.getPrice()));
             inv.setLocation(obj.getLocation());
+            inv.setSearchText(StringParser.fullTextSearchString(inv));
             inventory.put(obj.getInventoryNumber(), inv);
         });
         inventoryRepository.saveAll(inventory.values());

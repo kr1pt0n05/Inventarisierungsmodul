@@ -13,7 +13,7 @@
         <app-chip-v2
           placeholder="Kostenstelle hinzufügen"
           heading="Kostenstellen"
-          [options]="['Option 1', 'Option 2', 'Option 3']"
+          [options]="costCenters"
           [control]="$any(inventoryForm).get('costCenter')"
 
         />
@@ -45,7 +45,7 @@
         <app-chip-v2
           placeholder="Firma hinzufügen"
           heading="Firma"
-          [options]="['Logitech','Steelseries','Razer']"
+          [options]="companies"
           [control]="$any(inventoryForm).get('company')"
         />
       </div>
@@ -67,7 +67,7 @@
         <app-chip-v2
           placeholder="Seriennummer hinzufügen"
           heading="Seriennummer"
-          [options]="['ABCDE12345','DEFGHI56789','JKLMN101112', 'ABCDE12345','DEFGHI56789','JKLMN101112', 'ABCDE12345','DEFGHI56789','JKLMN101112']"
+          [options]="serialNumbers"
           [control]="$any(inventoryForm).get('serialNumber')"
         />
       </div>
@@ -78,7 +78,7 @@
         <app-chip-v2
           placeholder="Standort oder Nutzer hinzufügen"
           heading="Standort/Nutzer"
-          [options]="['Andreas Heinrich','Jörg Nitzsche', 'F01.110']"
+          [options]="locations"
           [control]="$any(inventoryForm).get('location')"
         />
       </div>
@@ -89,7 +89,7 @@
         <app-chip-v2
           placeholder="Besteller hinzufügen"
           heading="Besteller"
-          [options]="['Emanuel Reichsöllner']"
+          [options]="orderers"
           [control]="$any(inventoryForm).get('orderer')"
         />
       </div>
@@ -100,7 +100,7 @@
         <app-chip-v2
           placeholder="Tags hinzufügen"
           heading="Tags"
-          [options]="['Netzteil', 'Mobil', 'Zubehör', 'Laptop Bedarf', 'ASUS']"
+          [options]="tags"
           [control]="$any(inventoryForm).get('tags')"
         />
       </div>

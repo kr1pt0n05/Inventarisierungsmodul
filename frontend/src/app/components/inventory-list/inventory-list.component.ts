@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, inject, ViewChild} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -40,7 +40,7 @@ import {ServerTableDataSourceService} from '../../services/server-table-data-sou
 export class InventoryListComponent implements AfterViewInit{
 
   displayedColumns = ['id', 'description', 'company', 'price', 'date', 'serialNumber', 'location', 'orderer'];
-  inventoryItems = new ServerTableDataSourceService<any>();
+  inventoryItems = inject(ServerTableDataSourceService);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;

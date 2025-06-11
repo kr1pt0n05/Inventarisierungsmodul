@@ -53,6 +53,9 @@ public class Inventory {
     @Column(nullable = true)
     private String location;
 
+    @Column(nullable = false)
+    private String searchText;
+
     @Column(name = "created_at", nullable = false)
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
@@ -71,6 +74,10 @@ public class Inventory {
     @ManyToMany
     @JoinTable(name = "inventory_tag", joinColumns = @JoinColumn(name = "inventory_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<History> histories = new ArrayList<>();
 
     // Konstruktor
     @Builder
