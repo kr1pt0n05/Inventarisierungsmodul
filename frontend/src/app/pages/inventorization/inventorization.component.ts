@@ -121,7 +121,7 @@ export class InventorizationComponent {
    * Saves changes to the inventory item and handles comment changes.
    * Emits the onInventorization event after saving.
    */
-  saveInvetarisation() {
+  saveInventorization() {
     if (this.inventoryItem() && this.inventoryItem()!.id) {
       this._getItemChanges(); // For debugging purposes, log the changes
       this.inventoriesService.updateInventoryById(this.inventoryItem()!.id, this._getItemChanges()).subscribe({
