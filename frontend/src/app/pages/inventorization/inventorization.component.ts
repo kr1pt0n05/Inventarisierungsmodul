@@ -135,7 +135,15 @@ export class InventorizationComponent {
       });
       this.handleCommentChanges();
     } else {
-      this.inventoriesService.addInventoryItem(this.editableInventoryItem());
+      this.inventoriesService.addInventoryItem(this.editableInventoryItem()).subscribe({
+        next: (newItem) => {
+          this.editableInventoryItem.set(newItem);
+          console.log('New inventory item created successfully:', newItem);
+        },
+        error: (error) => {
+          console.error('Error creating new inventory item:', error);
+        }
+      });
       this.handleCommentChanges();
     }
     this.onInventorization.emit(this.editableInventoryItem());
