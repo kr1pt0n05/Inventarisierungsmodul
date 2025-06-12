@@ -8,6 +8,7 @@ import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.User;
 import com.hs_esslingen.insy.repository.*;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.core.io.ByteArrayResource;
@@ -105,12 +106,12 @@ public class ExcelService {
 
     public void importExcel(MultipartFile file) throws IOException {
         // Check file is not empty
-        if(file.isEmpty()) throw new IllegalArgumentException("Datei darf nicht leer sein!");
+        if(file.isEmpty()) throw new BadRequestException("Datei darf nicht leer sein!");
 
         // Check file extension. Must be .xls or .xlsx
         String fileName = file.getOriginalFilename();
         if(fileName == null || !(fileName.endsWith(".xls") || fileName.endsWith(".xlsx"))
-        ) throw new IllegalArgumentException("Datei muss mit .xls oder .xlsx enden!");
+        ) throw new BadRequestException("Datei muss mit .xls oder .xlsx enden!");
 
         // Creates appropriate Workbook (HSSFWorkbook for .xls and XSSFWorkbook for .xls)
         Workbook wb = WorkbookFactory.create(file.getInputStream());

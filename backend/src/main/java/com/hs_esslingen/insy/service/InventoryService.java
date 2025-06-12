@@ -1,5 +1,7 @@
 package com.hs_esslingen.insy.service;
 
+import com.hs_esslingen.insy.exception.BadRequestException;
+import com.hs_esslingen.insy.exception.NotFoundException;
 import com.hs_esslingen.insy.repository.CompanyRepository;
 import com.hs_esslingen.insy.repository.CostCenterRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
@@ -147,7 +149,7 @@ public class InventoryService {
         if (orderBy != null && !orderBy.isEmpty()) {
             // Überprüfen, ob das orderBy-Feld erlaubt ist
             if (!OrderByUtils.ALLOWED_ORDER_BY_FIELDS.contains(orderBy)) {
-                throw new IllegalArgumentException("Ungültiges orderBy-Feld: " + orderBy);
+                throw new BadRequestException("Ungültiges orderBy-Feld: " + orderBy);
             }
 
             // Standardmäßig auf aufsteigende Sortierung setzen
@@ -190,7 +192,7 @@ public class InventoryService {
         // Existiert ein Inventar mit der Inventarnummer bereits?
         if (inventoriesRepository.existsById(dto.inventoriesId)) {
             // Wenn ja dann eine Exception werfen
-            throw new IllegalArgumentException("Inventar-ID bereits vorhanden: " + dto.inventoriesId);
+            throw new BadRequestException("Inventar-ID bereits vorhanden: " + dto.inventoriesId);
         }
         // ID setzen
         inventory.setId(dto.inventoriesId);
@@ -226,7 +228,7 @@ public class InventoryService {
         if (dto.getTags() != null && !dto.getTags().isEmpty()) {
             Set<Tag> tags = dto.getTags().stream()
                     .map(tagId -> tagsRepository.findById(tagId)
-                            .orElseThrow(() -> new IllegalArgumentException("Tag not found: " + tagId)))
+                            .orElseThrow(() -> new NotFoundException("Tag not found: " + tagId)))
                     .collect(Collectors.toSet());
             inventory.setTags(tags);
         }
@@ -353,11 +355,11 @@ public class InventoryService {
     private User resolveUser(Object orderer) {
         if (orderer instanceof Integer userId) {
             return usersRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("User-ID nicht gefunden: " + userId));
+                    .orElseThrow(() -> new NotFoundException("User-ID nicht gefunden: " + userId));
         } else if (orderer instanceof String userName) {
             return usersRepository.findByName(userName)
                     .orElseGet(() -> usersRepository.save(new User(userName)));
         }
-        throw new IllegalArgumentException("orderer muss Integer oder String sein.");
+        throw new BadRequestException("orderer muss Integer oder String sein.");
     }
 }

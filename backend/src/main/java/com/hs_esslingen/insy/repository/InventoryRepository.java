@@ -1,5 +1,6 @@
 package com.hs_esslingen.insy.repository;
 
+import com.hs_esslingen.insy.dto.PriceDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -7,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.hs_esslingen.insy.model.Inventory;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
@@ -22,4 +24,16 @@ public interface InventoryRepository
 
         @Query("SELECT i.id FROM Inventory i WHERE i.id IN :inventoriesIds")
         Set<Integer> findInventoriesIdIn(@Param("inventoriesIds") List<Integer> inventoriesIds);
+
+        @Query("SELECT MAX(i.price) from Inventory i")
+        BigDecimal findMaxPrice();
+
+        @Query("SELECT MIN(i.price) from Inventory i")
+        BigDecimal findMinPrice();
+
+        @Query("SELECT MAX(i.id) from Inventory i")
+        Integer findMaxId();
+
+        @Query("SELECT MIN(i.id) from Inventory i")
+        Integer findMinId();
 }
