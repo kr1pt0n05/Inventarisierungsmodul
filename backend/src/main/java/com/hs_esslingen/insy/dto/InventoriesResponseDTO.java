@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,20 +22,24 @@ public class InventoriesResponseDTO {
 
     private String description;
 
+    @JsonProperty("serial_number")
     private String serialNumber;
 
     private BigDecimal price;
 
     private String location;
 
+    @JsonProperty("cost_center")
     private String costCenter;
     
     private String company;
 
     private String orderer;
 
+    @JsonProperty("is_deinventoried")
     private Boolean isDeinventoried;
 
+    @JsonProperty("created_at")
     @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdAt;
 

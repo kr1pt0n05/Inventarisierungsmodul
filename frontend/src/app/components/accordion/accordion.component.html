@@ -1,8 +1,9 @@
 <div class="px-2 py-2">
   <mat-accordion multi #accordion="matAccordion">
     <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <div class="font-semibold text-xl">{{ title() }}</div>
+      <mat-expansion-panel-header class="flex items-center justify-between">
+        <ng-content select="[expansion-panel-header]"></ng-content>
+        <div class="font-semibold text-xl ml-2">{{ title() }}</div>
       </mat-expansion-panel-header>
         <ng-content select="[expansion-panel-content]"></ng-content>
     </mat-expansion-panel>
