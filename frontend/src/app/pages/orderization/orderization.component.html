@@ -1,0 +1,16 @@
+<!-- Header Section -->
+<div class="flex justify-between">
+  <div class="flex flex-wrap items-center gap-4">
+    <button class="p-2 max-h-10 border-2 border-red-600 flex">zurück</button> <!-- Back Button placeholder -->
+    <h1 class="font-semibold text-2xl">Inventarisierung</h1>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 p-4 gap-4">
+  <app-inventory-item-editor [(inventoryItem)]="editableArticle"></app-inventory-item-editor>
+
+    <button (click)="saveInventorization()" class="p-2 max-h-10 border-2 border-red-600 flex">
+      Speichern
+    </button> <!-- Save Button placeholder -->
+</div>
+

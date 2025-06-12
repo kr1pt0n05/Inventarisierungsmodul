@@ -9,8 +9,8 @@ export interface InventoryItem {
   costCenter: string,
   company: string,
   orderer: string,
-  isDeinventoried: boolean,
-  createdAt: string,
-  tags: Tag[],
+  isDeinventoried?: boolean,
+  createdAt?: string,
+  tags?: Tag[],
   [key: string]: any
 }
