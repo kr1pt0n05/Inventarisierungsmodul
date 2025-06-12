@@ -1,0 +1,14 @@
+<app-card title="Daten" class="">
+    <div card-content class="grid grid-cols-1 gap-2 pt-4">
+
+        <form [formGroup]="formGroup" class="flex flex-col gap-4">
+            @for (field of inventoryItemColumns.keys(); track field) {
+            <mat-form-field>
+                <mat-label>{{inventoryItemColumns.get(field)}}</mat-label>
+                <input matInput formControlName="{{field}}" />
+            </mat-form-field> }
+        </form>
+
+
+    </div>
+</app-card>

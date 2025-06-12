@@ -130,10 +130,10 @@ export class DetailsComponent {
     if (this.inventoryItem() && JSON.stringify(this.inventoryItem()) !== '{}') {
       this.inventoryItemInternal = new Map<string, string>([
         ['description', this.inventoryItem().description ?? ''],
-        ['costCenter', this.inventoryItem().costCenter.toString() ?? ''],
-        ['id', this.inventoryItem().id.toString()],
+        ['costCenter', this.inventoryItem().costCenter?.toString() ?? ''],
+        ['id', this.inventoryItem().id?.toString()],
         ['company', this.inventoryItem().company ?? ''],
-        ['price', this.inventoryItem().price.toString() ?? ''],
+        ['price', this.inventoryItem().price?.toString() ?? ''],
         ['date', this.inventoryItem().createdAt ?? ''],
         ['serialNumber', this.inventoryItem().serialNumber ?? ''],
         ['location', this.inventoryItem().location ?? ''],

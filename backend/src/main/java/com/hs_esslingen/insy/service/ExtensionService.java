@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.hs_esslingen.insy.dto.ExtensionCreateDTO;
 import com.hs_esslingen.insy.dto.ExtensionResponseDTO;
+import com.hs_esslingen.insy.exception.BadRequestException;
 import com.hs_esslingen.insy.mapper.ExtensionMapper;
 import com.hs_esslingen.insy.model.Company;
 import com.hs_esslingen.insy.model.Extension;
@@ -45,6 +46,7 @@ public class ExtensionService {
     public List<ExtensionResponseDTO> getAllExtensions(Integer inventoryId) {
         Inventory inventory = inventoryRepository.findById(inventoryId)
                 .orElseThrow(() -> new NotFoundException("Inventory not found with id: " + inventoryId));
+      
         List<Extension> extensions = inventory.getExtensions();
         return extensions.stream()
                 .map(extensionMapper::toDto)
@@ -92,7 +94,7 @@ public class ExtensionService {
      */
     public ExtensionResponseDTO getExtensionById(Integer id, Integer componentId) {
 
-        // Scuhe das Inventar anhand der ID, wirft Exception, wenn nicht gefunden
+        // Suche das Inventar anhand der ID, wirft Exception, wenn nicht gefunden
         Inventory inventory = inventoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Inventory not found with id: " + id));
 

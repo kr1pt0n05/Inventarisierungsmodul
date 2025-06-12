@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DetailsComponent } from './pages/details/details.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
+import { InventorizationComponent } from './pages/inventorization/inventorization.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
@@ -9,6 +10,7 @@ import { CommentsResolver } from './resolver/comments.resolver';
 import { ExtensionsResolver } from './resolver/extensions.resolver';
 import { InventoryItemResolver } from './resolver/inventory-item.resolver';
 import { DefaultGuardService } from './services/default-guard.service';
+import {OrdersComponent} from './pages/orders/orders.component';
 
 export const routes: Routes = [
   {
@@ -37,8 +39,21 @@ export const routes: Routes = [
       inventoryItem: InventoryItemResolver,
       extensions: ExtensionsResolver,
       comments: CommentsResolver,
-      changes: InventoryItemChangesResolver
+      changes: InventoryItemChangesResolver,
     }
+  },
+  {
+    title: "Bestellungen",
+    path: "orders",
+    component: OrdersComponent,
+  },
+  {
+    title: 'Inventarisierung',
+    path: 'edit/:id',
+    component: InventorizationComponent,
+    resolve: {
+      inventoryItem: InventoryItemResolver,
+    },
   },
   {
     title: '404 Not Found!',

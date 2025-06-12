@@ -11,10 +11,44 @@ import {AccordionComponent} from '../../components/accordion/accordion.component
 import {MatButton} from '@angular/material/button';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ChipV2Component} from '../../components/chip-v2/chip-v2.component';
-import {Filter, ServerTableDataSourceService} from '../../services/server-table-data-source.service';
+import {ServerTableDataSourceService} from '../../services/server-table-data-source.service';
 import {CacheInventoryService} from '../../services/cache-inventory.service';
 
 
+/**
+ * InventoryComponent
+ *
+ * This Angular component is responsible for displaying an inventory filtering interface.
+ * It allows users to filter and view inventory items based on various criteria, including cost centers,
+ * companies, price range, serial numbers, and more.
+ *
+ * Features:
+ * - Provides a form-based UI for filtering inventory items.
+ * - Supports dynamic data loading for filter options (cost centers, companies, serial numbers, etc.).
+ * - Integrates with custom components such as `RangeSliderComponent`, `DatepickerComponent`, and `AccordionComponent`.
+ * - Uses a cache service to reduce API calls and improve performance.
+ *
+ * Properties:
+ * - `serverTableDataSource`: The data source service that handles filtering and fetching of inventory items from the API.
+ * - `cache`: The service that handles the retrieval of cached data for filter options.
+ * - `accordions`: A reference to the `AccordionComponent` instances, used for controlling the visibility of accordion sections.
+ * - `inventoryForm`: The form group containing form controls used to filter inventory items.
+ * - `costCenters`, `companies`, `serialNumbers`, `locations`, `orderers`, `tags`: Arrays holding filter options that are fetched from the cache service.
+ *
+ * Methods:
+ * - `ngOnInit()`: Initializes the form and fetches the filter options from the cache service.
+ * - `openAllAccordion()`: Opens all sections of the accordion.
+ * - `closeAllAccordions()`: Closes all sections of the accordion.
+ *
+ * Usage:
+ * Place `<app-inventory>` in your template. The component will automatically manage inventory filtering and display.
+ *
+ * Dependencies:
+ * - Angular Material components for UI elements such as buttons.
+ * - ReactiveFormsModule for managing form controls.
+ * - Custom components (`CardComponent`, `RangeSliderComponent`, etc.) for UI and interaction.
+ * - `ServerTableDataSourceService` and `CacheInventoryService` for data handling and caching.
+ */
 @Component({
   selector: 'app-inventory',
   imports: [
@@ -31,15 +65,34 @@ import {CacheInventoryService} from '../../services/cache-inventory.service';
 })
 export class InventoryComponent implements OnInit {
 
-  // Needed for passing the FormGroup as Filter-QueryParameters to the API
+  /**
+   * The data source service that handles the filtering and fetching of inventory items from the API.
+   * This service is injected into the component for dynamic handling of inventory data.
+   */
   serverTableDataSource = inject(ServerTableDataSourceService);
+
+  /**
+   * The cache service that retrieves cached inventory filter options such as cost centers, companies, etc.
+   * This helps in reducing redundant API calls and enhances performance.
+   */
   cache = inject(CacheInventoryService);
 
+  /**
+   * A reference to the accordion components within the view.
+   * This allows programmatic control to open or close all accordion sections.
+   */
   @ViewChildren(AccordionComponent) accordions!: QueryList<AccordionComponent>;
 
-  // Form
+  /**
+   * The form group that contains all the filter controls for the inventory items.
+   * It allows the user to filter items based on various criteria (cost center, price, date, etc.).
+   */
   inventoryForm!: FormGroup;
 
+  /**
+   * Arrays that store filter options fetched from the cache service.
+   * These are used to populate dropdowns or other selection elements for filtering inventory items.
+   */
   costCenters: string[] = [];
   companies: string[] = [];
   serialNumbers: string[] = [];
@@ -47,7 +100,12 @@ export class InventoryComponent implements OnInit {
   orderers: string[] = [];
   tags: string[] = [];
 
+  /**
+   * Initializes the component and sets up the filter form and data fetching.
+   * This method runs when the component is initialized (`ngOnInit` lifecycle hook).
+   */
   ngOnInit(): void {
+    // Initializing the inventory form with empty values or default filter values
     this.inventoryForm = new FormGroup({
       costCenter: new FormControl([]),
       minId: new FormControl(''),
@@ -63,23 +121,33 @@ export class InventoryComponent implements OnInit {
       tags: new FormControl([]),
     })
 
+    // Assigning the form group as the filter for the server data sourc
     this.serverTableDataSource.filter = this.inventoryForm;
+
+    // Fetching filter options from the cache service
     this.cache.getCostCenters().subscribe(costCenters => this.costCenters = costCenters);
     this.cache.getCompanies().subscribe(companies => this.companies = companies);
-    this.cache.getSerialNumbers().subscribe(serialNumbers => this.serialNumbers = serialNumbers.filter(costCenter => costCenter !== null));
-    this.cache.getLocations().subscribe(locations => this.locations = locations.filter(costCenter => costCenter !== null));
+    this.cache.getSerialNumbers().subscribe(serialNumbers => this.serialNumbers = serialNumbers);
+    this.cache.getLocations().subscribe(locations => this.locations = locations);
     this.cache.getOrderers().subscribe(orderers => this.orderers = orderers);
-    this.cache.getTags().subscribe(tags => this.tags = tags.filter(costCenter => costCenter !== null));
+    this.cache.getTags().subscribe(tags => this.tags = tags);
   }
 
 
-  // Accordion
+  /**
+   * Opens all sections of the accordion.
+   * This method loops through all accordion components and triggers the `openAll()` method to expand all sections.
+   */
   openAllAccordion(){
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.openAll();
     })
   }
 
+  /**
+   * Closes all sections of the accordion.
+   * This method loops through all accordion components and triggers the `closeAll()` method to collapse all sections.
+   */
   closeAllAccordions(){
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.closeAll();

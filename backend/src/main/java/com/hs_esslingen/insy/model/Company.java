@@ -71,5 +71,4 @@ public class Company {
         this.extensions.remove(extension);
         extension.setCompany(null);
     }
-
 }

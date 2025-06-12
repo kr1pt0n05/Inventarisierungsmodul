@@ -15,18 +15,13 @@
     <mat-divider></mat-divider>
 
     <!-- Details Section -->
-    <div class="flex gap-16">
-        <div class="flex flex-col">
+    <div>
+        <div class="grid grid-cols-[max-content_1fr] gap-x-16">
             @for (field of inventoryItemColumns.keys(); track field) {
             <div class="p-2">{{inventoryItemColumns.get(field)}}</div>
-            }
-        </div>
-        <div class="flex flex-col">
-            @for (field of inventoryItemColumns.keys(); track field) {
             <div class="p-2">{{inventoryItemInternal.get(field)}}
                 @if (field === 'price') {
-                <span>€</span>
-                }
+                <span>€</span> }
             </div>
             }
         </div>

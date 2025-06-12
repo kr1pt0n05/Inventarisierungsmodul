@@ -1,7 +1,10 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+} from '@angular/common/http';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { AuthConfig, provideOAuthClient } from 'angular-oauth2-oidc';
 import { routes } from './app.routes';
@@ -13,9 +16,14 @@ export const appConfig: ApplicationConfig = {
     provideNativeDateAdapter(),
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
     provideHttpClient(
-      withFetch()
+      withFetch(),
     ),
-    provideOAuthClient()
+    provideOAuthClient({
+      resourceServer: {
+        allowedUrls: ['http://localhost:8080'],
+        sendAccessToken: true,
+      }
+    })
   ]
 };
 
