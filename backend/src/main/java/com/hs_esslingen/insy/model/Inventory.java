@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
 
 @Data
 @Builder
@@ -44,29 +46,31 @@ public class Inventory {
     private CostCenter costCenter;
 
     @ManyToOne
-    @JoinColumn(name = "users_id", nullable = false)
+    @JoinColumn(name = "users_id", nullable = true)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "companies_id", nullable = false)
+    @JoinColumn(name = "companies_id", nullable = true)
     private Company company;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String description;
 
-    @Column(name = "serial_number", nullable = false)
+    @Column(name = "serial_number", nullable = true)
     private String serialNumber;
 
     @Column(name = "is_deinventoried", nullable = false)
     @Builder.Default
-    private Boolean isDeinventoried = false; // ToDo: umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt
-                                             // schließt aber null nicht aus
+    private Boolean isDeinventoried = false; // umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt schließt aber null nicht aus
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private BigDecimal price;
 
     @Column(nullable = true)
     private String location;
+
+    @Column(nullable = false)
+    private String searchText;
 
     @Column(name = "created_at", nullable = false)
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
@@ -86,6 +90,10 @@ public class Inventory {
     @ManyToMany
     @JoinTable(name = "inventory_tag", joinColumns = @JoinColumn(name = "inventory_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<History> histories = new ArrayList<>();
 
     // Konstruktor
     @Builder

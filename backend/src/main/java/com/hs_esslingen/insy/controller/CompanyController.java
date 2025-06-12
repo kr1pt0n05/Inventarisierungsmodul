@@ -1,6 +1,7 @@
 package com.hs_esslingen.insy.controller;
 
-import java.util.List;
+
+import com.hs_esslingen.insy.dto.CompanyDTO;
 import com.hs_esslingen.insy.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +16,8 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @GetMapping
-    public ResponseEntity<List<String>> getAllCompanies() {
-        List<String> companies = companyService.getAllCompanies();
+    public ResponseEntity<CompanyDTO> getAllCompanies() {
+        CompanyDTO companies = companyService.getAllCompanies();
         return new ResponseEntity<>(companies, HttpStatus.OK);
     }
 }

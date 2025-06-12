@@ -1,0 +1,26 @@
+<!-- Header Section -->
+<div class="flex justify-between">
+    <div class="flex flex-wrap items-center gap-4">
+        <button class="p-2 max-h-10 border-2 border-red-600 flex">zurück</button> <!-- Back Button placeholder -->
+        <h1 class="font-semibold text-2xl">Inventarisierung</h1>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 p-4 gap-4">
+    <app-inventory-item-editor [(inventoryItem)]="editableInventoryItem"></app-inventory-item-editor>
+
+    <div class="flex flex-col gap-4">
+        <app-comments-editor [(unchangedComments)]="savedComments" [(newComments)]="newComments"
+            [(deletedComments)]="deletedComments" (onChanges)="handleCommentChanges()"></app-comments-editor>
+
+        <app-card title="Tags">
+            <!-- <app-chip-v2 placeholder="Tags hinzufügen" heading="Tags"              Change to reactive form control instead of tmeplate driven
+            [options]="['Netzteil', 'Mobil', 'Zubehör', 'Laptop Bedarf', 'ASUS']" [control]="$any(inventoryForm).get('tags')" /> -->
+        </app-card>
+
+        <button (click)="saveInventorization()" class="p-2 max-h-10 border-2 border-red-600 flex">
+            Speichern
+        </button> <!-- Save Button placeholder -->
+    </div>
+
+</div>

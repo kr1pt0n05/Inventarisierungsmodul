@@ -4,15 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,9 +24,14 @@ public class History {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "author_user_id", referencedColumnName = "id", nullable = true)
     @JsonBackReference
     private User author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference
+    private Inventory inventory;
 
     @Column(name = "attribute_changed", nullable = false)
     private String attributeChanged;

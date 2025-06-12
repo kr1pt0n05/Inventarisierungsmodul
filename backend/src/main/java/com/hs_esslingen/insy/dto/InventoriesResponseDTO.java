@@ -31,7 +31,7 @@ public class InventoriesResponseDTO {
 
     @JsonProperty("cost_center")
     private String costCenter;
-
+    
     private String company;
 
     private String orderer;

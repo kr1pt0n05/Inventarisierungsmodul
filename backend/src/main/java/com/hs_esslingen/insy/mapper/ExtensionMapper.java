@@ -1,15 +1,15 @@
 package com.hs_esslingen.insy.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.ReportingPolicy;
-
 import com.hs_esslingen.insy.dto.ExtensionCreateDTO;
 import com.hs_esslingen.insy.dto.ExtensionResponseDTO;
 import com.hs_esslingen.insy.model.Company;
 import com.hs_esslingen.insy.model.Extension;
 import com.hs_esslingen.insy.model.Inventory;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ExtensionMapper {
@@ -25,8 +25,7 @@ public interface ExtensionMapper {
 
     @Named("mapInventoryFromId")
     default Inventory mapInventoryFromId(Integer id) {
-        if (id == null)
-            return null;
+        if (id == null) return null;
         Inventory inventory = new Inventory();
         inventory.setId(id);
         return inventory;
@@ -34,8 +33,7 @@ public interface ExtensionMapper {
 
     @Named("mapCompanyFromName")
     default Company mapCompanyFromName(String name) {
-        if (name == null)
-            return null;
+        if (name == null) return null;
         return new Company(name);
     }
 }

@@ -1,4 +1,3 @@
-import { NgForOf, NgIf } from '@angular/common';
 import { afterNextRender, Component, input, QueryList, ViewChildren } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
@@ -43,8 +42,6 @@ import { Tag } from '../../models/tag';
   imports: [
     MatDividerModule,
     MatExpansionModule,
-    NgForOf,
-    NgIf,
     MatChipsModule,
     DynamicListComponent
   ],
@@ -133,10 +130,10 @@ export class DetailsComponent {
     if (this.inventoryItem() && JSON.stringify(this.inventoryItem()) !== '{}') {
       this.inventoryItemInternal = new Map<string, string>([
         ['description', this.inventoryItem().description ?? ''],
-        ['costCenter', this.inventoryItem().costCenter.toString() ?? ''],
-        ['id', this.inventoryItem().id.toString()],
+        ['costCenter', this.inventoryItem().costCenter?.toString() ?? ''],
+        ['id', this.inventoryItem().id?.toString()],
         ['company', this.inventoryItem().company ?? ''],
-        ['price', this.inventoryItem().price.toString() ?? ''],
+        ['price', this.inventoryItem().price?.toString() ?? ''],
         ['date', this.inventoryItem().createdAt ?? ''],
         ['serialNumber', this.inventoryItem().serialNumber ?? ''],
         ['location', this.inventoryItem().location ?? ''],

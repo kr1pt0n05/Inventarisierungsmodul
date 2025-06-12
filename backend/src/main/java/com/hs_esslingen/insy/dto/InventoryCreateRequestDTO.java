@@ -1,12 +1,12 @@
 package com.hs_esslingen.insy.dto;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
+import java.math.BigDecimal;
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -15,8 +15,8 @@ public class InventoryCreateRequestDTO {
     @JsonProperty("cost_center")
     private String costCenter;
 
+
     @JsonProperty("id")
-    // @NotNull
     private Integer inventoriesId;
 
     private String description;

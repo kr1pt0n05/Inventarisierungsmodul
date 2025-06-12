@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.hs_esslingen.insy.exception.BadRequest;
+import com.hs_esslingen.insy.dto.OrdererDTO;
 import com.hs_esslingen.insy.model.User;
 import com.hs_esslingen.insy.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 
 @RequiredArgsConstructor
 @Service
@@ -18,10 +20,15 @@ public class OrdererService {
     private final UserRepository userRepository;
 
     // Get Orderers from repository
-    public List<String> getAllCompanies() {
-        return userRepository.findAll().stream()
+    public OrdererDTO getAllOrderers() {
+        List<String> allCompanies = userRepository.findAll().stream()
                 .map(User::getName)
+                .sorted()
                 .collect(Collectors.toList());
+
+        return OrdererDTO.builder()
+                .orderers(allCompanies)
+                .build();
     }
 
     public User resolveUser(Object orderer) {

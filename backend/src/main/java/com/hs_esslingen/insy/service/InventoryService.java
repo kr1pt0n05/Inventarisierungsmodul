@@ -1,12 +1,25 @@
 package com.hs_esslingen.insy.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hs_esslingen.insy.model.*;
+import com.hs_esslingen.insy.repository.*;
+import com.hs_esslingen.insy.utils.OrderByUtils;
+import com.hs_esslingen.insy.configuration.InventorySpecification;
+import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
+import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
+import com.hs_esslingen.insy.mapper.InventoryMapper;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.hs_esslingen.insy.utils.StringParser;
+import org.javers.core.Javers;
+import org.javers.core.diff.Diff;
+import org.javers.core.diff.changetype.ValueChange;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +54,8 @@ public class InventoryService {
     private final InventoryMapper inventoriesMapper;
     private final OrdererService userService;
     private final CostCenterService costCenterService;
+    private final HistoryRepository historyRepository;
+    private final Javers javers;
 
     /**
      * Retrieves an inventory item by its ID.
@@ -201,6 +216,8 @@ public class InventoryService {
         inventory.setLocation(dto.getLocation());
         inventory.setUser(user);
 
+        inventory.setSearchText(StringParser.fullTextSearchString(inventory));
+
         // saven um Tags auch das inventory hinzufügen zu können
         inventoriesRepository.save(inventory);
 
@@ -251,6 +268,9 @@ public class InventoryService {
         }
 
         Inventory inventory = inventoryOptional.get();
+
+        // Inventory before change
+        InventoryCreateRequestDTO inventoryOld = InventoryService.mapInventoryToDto(inventory);
 
         for (Map.Entry<String, Object> entry : patchData.entrySet()) {
             String fieldName = entry.getKey();
@@ -315,8 +335,46 @@ public class InventoryService {
             }
         }
 
+
         Inventory updatedInventory = inventoriesRepository.save(inventory);
+
+        // Inventory after change
+        InventoryCreateRequestDTO inventoryNew = InventoryService.mapInventoryToDto(updatedInventory);
+
+        // Store the changes to History entity
+        List<History> historyList = new ArrayList<>();
+        Diff diff = javers.compare(inventoryOld, inventoryNew);
+
+        diff.getChangesByType(ValueChange.class).forEach(change -> {
+            String property = change.getPropertyName();
+            Object before = change.getLeft();
+            Object after = change.getRight();
+
+            History history = new History();
+            history.setAuthor(inventory.getUser()); // Replace this with user from  JWT token
+            history.setAttributeChanged(property);
+            history.setValueFrom(before == null ? "null" : before.toString());
+            history.setValueTo(after.toString());
+            history.setInventory(inventory);
+            historyList.add(history);
+        });
+        historyRepository.saveAll(historyList);
+
         InventoriesResponseDTO responseDTO = inventoriesMapper.toDto(updatedInventory);
         return ResponseEntity.ok(responseDTO);
+    }
+
+
+    private static InventoryCreateRequestDTO mapInventoryToDto(Inventory inventory) {
+        InventoryCreateRequestDTO dto = new InventoryCreateRequestDTO();
+        dto.setInventoriesId(inventory.getId());
+        dto.setDescription(inventory.getDescription() == null ? null : inventory.getDescription().toString());
+        dto.setSerialNumber(inventory.getSerialNumber() == null ? null : inventory.getSerialNumber().toString());
+        dto.setPrice(inventory.getPrice());
+        dto.setLocation(inventory.getLocation() == null ? null : inventory.getLocation().toString());
+        dto.setCostCenter(inventory.getCostCenter() == null ? null : inventory.getCostCenter().getDescription());
+        dto.setCompany(inventory.getCompany() == null ? null : inventory.getCompany().getName());
+        dto.setOrderer(inventory.getUser() == null ? null : inventory.getUser().getId());
+        return dto;
     }
 }

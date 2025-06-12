@@ -1,7 +1,9 @@
 package com.hs_esslingen.insy.controller;
 
-import java.util.List;
+
+import com.hs_esslingen.insy.dto.CostCenterDTO;
 import com.hs_esslingen.insy.service.CostCenterService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +17,8 @@ public class CostCenterController {
     private final CostCenterService costCenterService;
 
     @GetMapping
-    public ResponseEntity<List<String>> getAllCostCenter() {
-        List<String> costCenters = costCenterService.getAllCostCenter();
+    public ResponseEntity<CostCenterDTO> getAllCostCenter() {
+        CostCenterDTO costCenters = costCenterService.getAllCostCenter();
         return new ResponseEntity<>(costCenters, HttpStatus.OK);
     }
 }

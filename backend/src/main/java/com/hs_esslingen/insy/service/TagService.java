@@ -5,11 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.hs_esslingen.insy.dto.TagDTO;
 import com.hs_esslingen.insy.exception.BadRequest;
 import com.hs_esslingen.insy.mapper.TagMapper;
@@ -17,8 +12,11 @@ import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.Tag;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 import com.hs_esslingen.insy.repository.TagRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -35,11 +33,11 @@ public class TagService {
 
     public TagDTO getTagById(Integer id) {
         Optional<Tag> tag = tagRepository.findById(id);
-
+        
         if (tag.isEmpty()) {
             throw new IllegalArgumentException("Tag with the id: " + id + " not found");
         }
-
+        
         return tagMapper.toDto(tag.get());
     }
 
@@ -49,7 +47,7 @@ public class TagService {
         if (existingTag.isPresent()) {
             throw new IllegalArgumentException("Tag with the name: " + tagDTO.getName() + " already exists");
         }
-
+        
         Tag tag = Tag.builder()
                 .name(tagDTO.getName())
                 .build();
@@ -61,11 +59,11 @@ public class TagService {
     @Transactional
     public void deleteTag(Integer id) {
         Optional<Tag> tag = tagRepository.findById(id);
-
+        
         if (tag.isEmpty()) {
             throw new IllegalArgumentException("Tag with the id: " + id + " not found");
         }
-
+        
         tagRepository.deleteById(id);
     }
 

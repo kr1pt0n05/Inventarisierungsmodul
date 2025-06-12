@@ -1,0 +1,39 @@
+<app-card title="Kommentare">
+    <div card-content class="pt-4">
+
+        <div class="flex flex-col items-end pb-4">
+            <mat-form-field class="w-full">
+                <mat-label>Kommentar hinzufügen</mat-label>
+                <textarea matInput [formControl]="newCommentFormControl"></textarea>
+            </mat-form-field>
+
+            <button mat-stroked-button color="primary" class="max-w-fit" (click)="addComment()"
+                [disabled]="newCommentFormControl.value === ''">Kommentieren</button>
+        </div>
+
+        @if (displayedComments().data.length >= 0) {
+        <table mat-table [dataSource]="displayedComments()" matSort>
+
+            @for (id of getColumnIds(); track id) {
+
+            <ng-container matColumnDef="{{id}}">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> {{commentsColumns.get(id)}} </th>
+                <td mat-cell *matCellDef="let element">
+                    @if (id !== 'delete') {
+                    {{element[id]}}
+                    } @else {
+                    <button mat-button color="warn" (click)="deleteComment(element)">
+                        Löschen
+                    </button>
+                    }
+                </td>
+            </ng-container>
+            }
+
+            <tr mat-header-row *matHeaderRowDef="getColumnIds() sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: getColumnIds();"></tr>
+        </table>
+        }
+
+    </div>
+</app-card>

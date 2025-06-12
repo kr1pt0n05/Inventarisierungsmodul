@@ -1,9 +1,11 @@
 package com.hs_esslingen.insy.mapper;
 
-import org.mapstruct.Mapper;
-
 import com.hs_esslingen.insy.dto.TagDTO;
 import com.hs_esslingen.insy.model.Tag;
+
+import org.mapstruct.Mapper;
+
+
 
 @Mapper(componentModel = "spring")
 public interface TagMapper {
