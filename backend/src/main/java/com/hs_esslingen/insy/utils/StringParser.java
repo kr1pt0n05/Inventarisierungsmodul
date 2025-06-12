@@ -1,5 +1,7 @@
 package com.hs_esslingen.insy.utils;
 
+import com.hs_esslingen.insy.model.Inventory;
+
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -20,4 +22,20 @@ public class StringParser {
 
         return new BigDecimal(number.toString());
     }
+
+
+    public static String fullTextSearchString(Inventory inv) {
+        String text =
+                inv.getId()
+                + (inv.getCostCenter() == null ? "" : inv.getCostCenter().getDescription())
+                + (inv.getUser() == null ? "" : inv.getUser().getName())
+                + (inv.getCompany() == null ? "" : inv.getCompany().getName())
+                + (inv.getDescription() == null ? "" : inv.getDescription())
+                + (inv.getSerialNumber() == null ? "" : inv.getSerialNumber())
+                + (inv.getPrice() == null ? "" : inv.getPrice())
+                + (inv.getLocation() == null ? "" : inv.getLocation())
+                + (inv.getCreatedAt() == null ? "" : inv.getCreatedAt().getDayOfMonth() + "." + inv.getCreatedAt().getMonthValue() + "." + inv.getCreatedAt().getYear());
+        return text.toLowerCase().replaceAll(" ", "");
+    }
+
 }

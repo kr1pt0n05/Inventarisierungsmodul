@@ -2,11 +2,7 @@ package com.hs_esslingen.insy.mapper;
 
 import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.model.Company;
-import com.hs_esslingen.insy.model.CostCenter;
-import com.hs_esslingen.insy.model.Inventory;
-import com.hs_esslingen.insy.model.Tag;
-import com.hs_esslingen.insy.model.User;
+import com.hs_esslingen.insy.model.*;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -79,4 +75,5 @@ public interface InventoryMapper {
             return tag;
         }).collect(Collectors.toSet());
     }
+
 }

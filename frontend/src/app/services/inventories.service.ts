@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import {map, Observable} from 'rxjs';
 import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
@@ -35,7 +35,7 @@ export class InventoriesService {
 
     return this.http.get<Inventories>(this.url, {params: params});
   }
-  
+
   getInventoryById(id: number): Observable<InventoryItem> {
     return this.http.get<InventoryItem>(`${this.url}/${id}`);
   }
@@ -50,6 +50,36 @@ export class InventoriesService {
 
   getChangesForId(id: number): Observable<any> {
     return this.http.get<any>(`${this.url}/${id}/changes`);
+  }
+
+  getAllCostCenters(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/costCenters`).pipe(
+      map(response => response.costCenters)
+    );
+  }
+
+  getAllCompanies(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/companies`).pipe(
+      map(response => response.companies)
+    );
+  }
+
+  getAllSerialNumbers(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/serialNumbers`);
+  }
+
+  getAllLocations(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/locations`);
+  }
+
+  getAllOrderers(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/orderers`).pipe(
+      map(response => response.orderers)
+    );
+  }
+
+  getAlltags(): Observable<string[]> {
+    return this.http.get<any>(`${this.url}/tags`);
   }
 
 }
