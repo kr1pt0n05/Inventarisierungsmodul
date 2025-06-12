@@ -39,7 +39,6 @@ public class User {
     @JsonManagedReference
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
-
     /*
      * Auskommentiert zu Testzwecken
      * 
@@ -82,6 +81,6 @@ public class User {
 
     public void removeComment(Comment comment) {
         this.comments.remove(comment);
-        comment.setAuthor(this);
+        comment.setAuthor(null);
     }
 }

@@ -8,8 +8,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import lombok.*;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -17,7 +31,7 @@ import jakarta.persistence.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Entity
-@Table(name = "inventories") //Entity-Name in Einzahl
+@Table(name = "inventories")
 public class Inventory {
 
     @Id
@@ -45,7 +59,8 @@ public class Inventory {
 
     @Column(name = "is_deinventoried", nullable = false)
     @Builder.Default
-    private Boolean isDeinventoried = false; // umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt schließt aber null nicht aus
+    private Boolean isDeinventoried = false; // umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt schließt
+                                             // aber null nicht aus
 
     @Column(nullable = true)
     private BigDecimal price;
@@ -53,7 +68,7 @@ public class Inventory {
     @Column(nullable = true)
     private String location;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String searchText;
 
     @Column(name = "created_at", nullable = false)

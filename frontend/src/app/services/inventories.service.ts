@@ -6,7 +6,7 @@ import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
-import {Filter} from './server-table-data-source.service';
+import { Filter } from './server-table-data-source.service';
 
 
 /**
@@ -68,7 +68,7 @@ export class InventoriesService {
       }
     });
 
-    return this.http.get<Inventories>(this.url, {params: params});
+    return this.http.get<Inventories>(this.url, { params: params });
   }
 
   /**
@@ -81,7 +81,16 @@ export class InventoriesService {
     return this.http.get<InventoryItem>(`${this.url}/${id}`);
   }
 
-  /**
+
+  addInventoryItem(item: InventoryItem) {
+    return this.http.post<InventoryItem>(this.url, item);
+  }
+
+  updateInventoryById(id: number, item: InventoryItem) {
+    return this.http.patch<InventoryItem>(`${this.url}/${id}`, item);
+  }
+
+    /**
    * Fetches the comments associated with a specific inventory item by its ID.
    *
    * @param id - The ID of the inventory item for which to fetch comments.
@@ -91,7 +100,16 @@ export class InventoriesService {
     return this.http.get<any>(`${this.url}/${id}/comments`);
   }
 
-  /**
+  addCommentToId(id: number, comment: Comment): Observable<Comment> {
+    return this.http.post<Comment>(`${this.url}/${id}/comments`, comment);
+  }
+
+  deleteCommentFromId(id: number, commentId: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}/comments/${commentId}`);
+  }
+
+
+   /**
    * Fetches the extensions associated with a specific inventory item by its ID.
    *
    * @param id - The ID of the inventory item for which to fetch extensions.
