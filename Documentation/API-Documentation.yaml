@@ -409,7 +409,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Serial number'
+                $ref: '#/components/schemas/SerialNumber'
         "500":
           description: Interner Serverfehler
           content:
@@ -871,44 +871,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /inventories/filter:
-    get:
-      tags:
-        - Filter (über Query Parameter umsetzen)
-      summary: Finde Gegenstände mit Hilfe von Filtern, die in der Query übergeben werden
-      description: Mehrere Filter können mit komma separiert werden zB. Filter1, Filter2.
-      operationId: FilterItemsByTags
-      parameters:
-        - name: tags
-          in: query
-          description: Filterfunktion
-          required: false
-          explode: true
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        '200':
-          description: Erfolgreicht gefiltert
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InventoriesResponseDTO'
-        '400':
-          description: 'Error 400: Bad Request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '500':
-          description: Interner Serverfehler
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
   /statistics:
     get:
       tags:
@@ -1052,32 +1014,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /users/{user-id}/orders:
+  /orders:
     get:
+      summary: Ruft alle noch zu inventarisierenden Bestellungen ab.
+      description: Gibt eine Liste aller offenen Bestellungen zurück, bei denen `deleted_at` `null` ist.
+      operationId: getOpenOrders
       tags:
-        - users - orders
-      summary: Ruft alle offenen Bestellungen ab.
-      description: Alle Bestellungen, die von diesem User gemacht wurden, die noch offen sind.
-      operationId: openOrders
-      parameters:
-        - name: user-id
-          in: path
-          description: User-id vom User bei dem man die offenen Bestellungen sehen will
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - Orders
       responses:
         '200':
-          description: Anzeigen von offenen Bestellungen von dem jeweiligen User
+          description: Liste der offenen Bestellungen
           content:
             application/json:
               schema:
-                properties:
-                  orders:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Order'
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponseDTO'
+
         '400':
           description: 'Error 400: Bad Request'
           content:
@@ -1091,22 +1044,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
     post:
-      tags:
-        - users - orders
-      summary: Wird von BESY aufgerufen um eine getätigte Bestellung zu übermitteln
-      description: Eine neue Bestellung unter dem angegebenen user speichern/erstellen.
+      summary: Create new orders from BeSy
+      description: Erstellt neue Bestellungen auf Basis der von BeSy übermittelten Daten. Bereits existierende Bestellungen mit gleicher besyId werden ignoriert. Die Felder entsprechen den zugehörigen Attributen aus dem Besy-Datenbankmodell
       operationId: createOrder
-      parameters:
-        - name: user-id
-          in: path
-          description: User-id des Users bei dem die offene Bestellung angelegt werden soll
-          required: true
-          schema:
-            type: integer
-            format: int64
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderCreateDTO'
       responses:
         '200':
-          description: Bestellung wurde erfolgreich registriert
+          description: Bestellung(en) erfolgreich gespeichert
         '400':
           description: 'Error 400: Bad Request'
           content:
@@ -1119,38 +1072,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /users/{user-id}/orders/{order-id}:
+  /orders/{order-id}:
     get:
+      summary: Ruft eine Bestellung anhand seiner order-id ab
+      description: Gibt eine einzelne Bestellung anhand der ID zurück.
+      operationId: getOrderById
       tags:
-        - users - orders
-      summary: Ruft einzelne Bestellung ab
-      description: Die Informationen einer einzelnen Bestellung können abgerufen werden.
+        - Orders
       parameters:
-        - name: user-id
-          in: path
-          description: ID des Users
-          required: true
-          schema:
-            type: integer
-            format: int64
         - name: order-id
           in: path
-          description: ID der Bestellung
           required: true
+          description: Die ID der Bestellung
           schema:
             type: integer
-            format: int64
+            example: 42
       responses:
         '200':
-          description: Eine Bestellung wurde übertragen
+          description: Bestellung erfolgreich gefunden
           content:
             application/json:
               schema:
-                properties:
-                  order[id]:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Article'
+                $ref: '#/components/schemas/OrderResponseDTO'
+        '404':
+          description: Bestellung nicht gefunden
         '204':
           description: Bestellung nicht gefunden
         '500':
@@ -1160,29 +1105,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
     delete:
+      summary: Bestellung als verarbeitet markieren
+      description: 
+        Markiert eine Bestellung anhand ihrer ID als verarbeitet, indem ein `deletedAt`-Zeitstempel gesetzt wird. 
+        Die Bestellung wird dabei **nicht** physisch aus der Datenbank gelöscht (Soft Delete).
+      operationId: markOrderAsProcessed
       tags:
-        - users - orders
-      summary: Löscht eine Bestellung
-      description: Löscht eine registrierte Bestellung.
-      operationId: deleteOrder
+        - Orders
       parameters:
-        - name: user-id
-          in: path
-          description: ID des Users
-          required: true
-          schema:
-            type: integer
-            format: int64
         - name: order-id
           in: path
-          description: ID der Bestellung
           required: true
+          description: Die ID der zu verarbeitenden Bestellung
           schema:
             type: integer
-            format: int64
+            example: 102
       responses:
-        '200':
-          description: Bestellung wurde erfolgreich gelöscht
+        '204':
+          description: Die Bestellung wurde erfolgreich als verarbeitet markiert.
         '400':
           description: 'Error 400: Bad Request'
           content:
@@ -1195,40 +1135,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /users/{user-id}/orders/{order-id}/items:
+  /orders/all:
     get:
+      summary: Alle Bestellungen abrufen
+      description: 
+        Ruft eine Liste aller Bestellungen ab, einschließlich solcher, die bereits als gelöscht (Soft Delete) markiert, also deren Artikel vollständig inventarisiert wurden.
+      operationId: getAllOrders
       tags:
-        - users - orders - items
-      summary: Ruft Artikel einer Bestellung ab
-      description: Die Artikel einer einzelnen Bestellung können abgerufen werden.
-      parameters:
-        - name: user-id
-          in: path
-          description: ID des Users
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: order-id
-          in: path
-          description: ID der Bestellung
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - Orders
       responses:
         '200':
-          description: Eine Liste an Artikeln wurde übertragen
+          description: Erfolgreicher Abruf der Bestellungen.
           content:
             application/json:
               schema:
-                properties:
-                  order[id]:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Article'
-        '204':
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponseDTO'
+        '500':
+          description: Interner Serverfehler beim Abrufen der Bestellungen.
+  /orders/{orderId}/items:
+    get:
+      summary: Alle Artikel einer Bestellung abrufen
+      description: |
+        Liefert eine Liste sämtlicher Artikel, die zu der Bestellung mit der angegebenen **orderId** gehören.
+      operationId: getAllArticles
+      tags:
+        - Articles
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Die ID der Bestellung, deren Artikel abgefragt werden sollen
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Erfolgreicher Abruf der Artikel.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArticleDTO'
+        '400':
           description: Bestellung nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
         '500':
           description: Internal server error
           content:
@@ -1236,37 +1192,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
     post:
+      summary: Neuen Artikel zu einer Bestellung hinzufügen
+      description: |
+        Erstellt einen neuen Artikel und verknüpft ihn mit der Bestellung mit der angegebenen **orderId**.
+      operationId: createArticle
       tags:
-        - users - orders - items
-      summary: Artikel anlegen
-      description: Einen neuen Artikel unter einer Bestellung ablegen/erstellen. Nach anlegen eines Artikels wird überprüft, ob alle Artikel in der Bestellung inventarisiert wurden. Wenn ja wird die Bestellung als bearbeitet markiert.
-      operationId: createOrderItem
+        - Articles
       parameters:
-        - name: user-id
+        - name: orderId
           in: path
-          description: User-id des Users bei dem die offene Bestellung angelegt werden soll
           required: true
+          description: Die ID der Bestellung, der der neue Artikel zugeordnet werden soll
           schema:
             type: integer
-            format: int64
-        - name: order-id
-          in: path
-          description: ID der Bestellung
-          required: true
-          schema:
-            type: integer
-            format: int64
+            example: 102
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Article'
-        required: true
+              $ref: '#/components/schemas/ArticleDTO'
       responses:
         '200':
-          description: Artikel wurde erfolgreich registriert
+          description: Artikel erfolgreich erstellt.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDTO'
         '400':
-          description: 'Error 400: Bad Request'
+          description: Bestellung mit der angegebenen ID nicht gefunden oder ungültige Eingabedaten.
           content:
             application/json:
               schema:
@@ -1277,91 +1231,85 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /users/{user-id}/orders/{order-id}/items/{item-id}:
-    get:
+  /orders/{orderId}/items/{itemId}:
+    patch:
+      summary: Artikel in einer Bestellung aktualisieren
+      description: |
+        Aktualisiert einen bestehenden Artikel anhand der übergebenen Daten im Request-Body.  
+        Nur Felder, die im übermittelten `ArticleDTO` gesetzt sind (nicht null), werden tatsächlich aktualisiert.  
+        Wird das Feld `is_inventoried` im Patch-Request auf `true` gesetzt, prüft das System anschließend automatisch,  
+        ob **alle Artikel** der zugehörigen Bestellung bereits inventarisiert sind.  
+        Falls ja, wird die Bestellung als **abgeschlossen** markiert, indem ein `deletedAt`-Zeitstempel gesetzt wird.  
+        Die Bestellung wird dabei nicht aus der Datenbank gelöscht, sondern lediglich logisch entfernt ("soft delete"). Dies entspricht einem Aufruf der `DELETE /orders/{order-id}`-Api.
+      operationId: updateArticle
       tags:
-        - users - orders - items
-      summary: Ruft einzelnen Artikel ab
-      description: Die Informationen eines einzelnen Artikels können abgerufen werden.
+        - Articles
       parameters:
-        - name: user-id
+        - name: orderId
           in: path
-          description: ID des Users
           required: true
           schema:
             type: integer
-            format: int64
-        - name: order-id
+          description: Die ID der Bestellung, zu der der Artikel gehört.
+        - name: itemId
           in: path
-          description: ID der Bestellung
           required: true
           schema:
             type: integer
-            format: int64
-        - name: item-id
-          in: path
-          description: ID des Artikels
-          required: true
-          schema:
-            type: integer
-            format: int64
+          description: Die ID des Artikels, der aktualisiert werden soll.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleDTO'
       responses:
         '200':
-          description: Ein Artikel wurde übertragen
+          description: Der Artikel wurde erfolgreich aktualisiert.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Article'
-        '204':
-          description: Artikel nicht gefunden
+                $ref: '#/components/schemas/ArticleDTO'
+        '400':
+          description: 'Error 400: Bad Request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
         '500':
-          description: Internal server error
+          description: Interner Serverfehler
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-    patch:
-      tags:
-        - users - orders - items
-      summary: Ändert Artikel
+    get:
+      summary: Artikel anhand der ID abrufen
       description: |
-        Ändern der Daten eines Artikels mit gegebener ID.
-
-          Mögliche Felder sind:
-          - cost_center
-          - inventories_id
-          - inventories_description
-          - company
-          - inventories_price
-          - inventories_serial_number
-          - inventories_location
-          - orderer
-      operationId: editOrderItem
+        Gibt einen einzelnen Artikel anhand der übergebenen Artikel-ID zurück.  
+        Wird kein Artikel mit der angegebenen ID gefunden, gibt die API den HTTP-Status `404 Not Found` zurück.
+      operationId: getArticleById
+      tags:
+        - Articles
       parameters:
-        - name: user-id
+        - name: orderId
           in: path
-          description: ID des Users
           required: true
           schema:
             type: integer
-            format: int64
-        - name: order-id
+          description: Die ID der Bestellung, zu der der Artikel gehört.
+        - name: itemId
           in: path
-          description: ID der Bestellung
           required: true
           schema:
             type: integer
-            format: int64
-        - name: item-id
-          in: path
-          description: ID des Artikels
-          required: true
-          schema:
-            type: integer
-            format: int64
+          description: Die ID des abzurufenden Artikels.
       responses:
         '200':
-          description: Artikel erfolgreich bearbeitet
+          description: Der Artikel wurde erfolgreich gefunden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDTO'
         '400':
           description: 'Error 400: Bad Request'
           content:
@@ -1375,48 +1323,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
     delete:
+      summary: Artikel löschen
+      description: |
+        Löscht einen Artikel anhand seiner ID.  
+        Wenn der Artikel nicht existiert, wird ein entsprechender Fehlerstatus zurückgegeben.  
+        Die Löschung betrifft nur den Artikel, nicht die gesamte Bestellung.
+      operationId: deleteArticle
       tags:
-        - users - orders - items
-      summary: Löscht einen Artikel
-      description: Löscht einen Artikel einer registrierten Bestellung.
-      operationId: deleteOrderItem
+        - Articles
       parameters:
-        - name: user-id
+        - name: orderId
           in: path
-          description: ID des Users
           required: true
           schema:
             type: integer
-            format: int64
-        - name: order-id
+          description: Die ID der Bestellung, zu der der Artikel gehört.
+        - name: itemId
           in: path
-          description: ID der Bestellung
           required: true
           schema:
             type: integer
-            format: int64
-        - name: item-id
-          in: path
-          description: ID des Artikels
-          required: true
-          schema:
-            type: integer
-            format: int64
+          description: Die ID des zu löschenden Artikels.
       responses:
-        '200':
-          description: Artikel wurde erfolgreich gelöscht
-        '400':
-          description: 'Error 400: Bad Request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '500':
-          description: Interner Serverfehler
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
+        '204':
+          description: Der Artikel wurde erfolgreich gelöscht.
 components:
   schemas:
     InventoriesCreateDTO:
@@ -1425,23 +1355,23 @@ components:
         cost_center:
           type: string
           example: 723458320Z
-        inventories_id:
+        id:
           type: integer
           example: 1
-        inventories_description:
+        description:
           type: string
           example: Asus Gaming Laptop
         company:
           type: string
           example: Gedankenfabrik AG
-        inventories_price:
+        price:
           type: number
           format: float
           example: 1299.99
-        inventories_serial_number:
+        serial_number:
           type: string
           example: 834Z32T32H
-        inventories_location:
+        location:
           type: string
           example: F99.234
         orderer:
@@ -1473,7 +1403,7 @@ components:
         description:
           type: string
           example: HP Laptop mit Dockingstation
-        serialNumber:
+        serial_number:
           type: string
           example: SN123456789
         price:
@@ -1483,7 +1413,7 @@ components:
         location:
           type: string
           example: Raum 2.14, Regal A
-        costCenter:
+        cost_center:
           type: string
           example: IT-Abteilung
         company:
@@ -1492,10 +1422,10 @@ components:
         orderer:
           type: string
           example: Max Mustermann
-        isDeinventoried:
+        is_deinventoried:
           type: boolean
           example: false
-        createdAt:
+        created_at:
           type: string
           format: date-time
           example: 24.05.2025 13:32:17
@@ -1816,10 +1746,137 @@ components:
           type: array
           items:
             example: "Location1, Location2"
-    Serial number:
+    SerialNumber:
       type: object
       properties:
         content:
           type: array
           items:
             example: "Serial number1, Serial number2"
+    OrderResponseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        description:
+          type: string
+          example: "Bestellung 102"
+        price:
+          type: number
+          format: double
+          example: 199.99
+        company:
+          type: string
+          example: "Office Supplies AG"
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleDTO'
+        deleted_at:
+          type: string
+          format: date-time
+          example: "2025-06-12T00:14:57.781451"
+        order_date:
+          type: string
+          example: "11.06.2025 00:14:12"
+        orderer:
+          type: string
+          example: "User 1"
+          
+    ArticleDTO:
+      type: object
+      properties:
+        article_id:
+          type: integer
+          nullable: false
+          example: 4
+        inventories_id:
+          type: integer
+          nullable: true
+          example: null
+        description:
+          type: string
+          example: "Beispielartikel"
+        price:
+          type: number
+          format: double
+          example: 149.99
+        company:
+          type: string
+          example: "Tech Solutions GmbH"
+        is_inventoried:
+          type: boolean
+          nullable: true
+          example: null
+        inventories_serial_number:
+          type: string
+          example: "ABC-123-XYZ"
+        location:
+          type: string
+          example: "Lager A3"
+        orderer:
+          type: string
+          example: "Max Mustermann"
+        is_extension:
+          type: boolean
+          nullable: true
+          example: null
+        tags:
+          type: array
+          items:
+            type: integer
+            example: 1
+    ItemCreateDTO:
+      type: object
+      properties:
+        item_id:
+          type: integer
+          example: 1
+        item_name:
+          type: string
+          example: "Monitor"
+        item_price_per_unit:
+          type: number
+          format: float
+          example: 199.99
+      required:
+        - item_id
+        - item_name
+        - item_price_per_unit
+
+    OrderCreateDTO:
+      type: object
+      properties:
+        order_id:
+          type: integer
+          example: 1001
+        order_created_date:
+          type: string
+          format: date-time
+          example: "2025-06-11T14:30:00"
+        supplier_name:
+          type: string
+          example: "Tech GmbH"
+        cost_center_name:
+          type: string
+          example: "IT-Abteilung"
+        user_name:
+          type: string
+          example: "Max Mustermann"
+        order_quote_price:
+          type: number
+          format: float
+          example: 1299.99
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemCreateDTO'
+      required:
+        - order_id
+        - order_created_date
+        - supplier_name
+        - cost_center_name
+        - user_name
+        - order_quote_price
+        - items

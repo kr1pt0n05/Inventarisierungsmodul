@@ -13,30 +13,26 @@ import java.util.List;
 public class InventoryCreateRequestDTO {
 
     @JsonProperty("cost_center")
-    public String costCenter;
+    private String costCenter;
 
-    @JsonProperty("inventories_id")
-    //@NotNull
-    public Integer inventoriesId;
 
-    @JsonProperty("inventories_description")
-    public String description;
+    @JsonProperty("id")
+    private Integer inventoriesId;
 
-    @JsonProperty("company")
-    public String company;
+    private String description;
 
-    @JsonProperty("inventories_price")
-    public BigDecimal price;
+    private String company;
 
-    @JsonProperty("inventories_serial_number")
-    public String serialNumber;
+    private BigDecimal price;
 
-    @JsonProperty("inventories_location")
-    public String location;
+    @JsonProperty("serial_number")
+    private String serialNumber;
+
+    private String location;
 
     @JsonProperty("orderer")
-    public Object orderer; // weil "orderer" int **oder** String sein kann
+    private Object orderer; // weil "orderer" int **oder** String sein kann
 
     @JsonProperty("tags")
-    public List<Integer> tags;
+    private List<Integer> tags;
 }
