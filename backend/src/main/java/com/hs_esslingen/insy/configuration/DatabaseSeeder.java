@@ -1,21 +1,18 @@
-/*
-
 
 package com.hs_esslingen.insy.configuration;
 
 import java.math.BigDecimal;
-
-
 import java.util.List;
-
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.hs_esslingen.insy.model.Comment;
 import com.hs_esslingen.insy.model.Company;
+import com.hs_esslingen.insy.model.CostCenter;
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.Tag;
+import com.hs_esslingen.insy.model.User;
 import com.hs_esslingen.insy.repository.CompanyRepository;
 import com.hs_esslingen.insy.repository.CostCenterRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
@@ -24,19 +21,12 @@ import com.hs_esslingen.insy.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
-import com.hs_esslingen.insy.model.User;
-import com.hs_esslingen.insy.model.CostCenter;
-
-
-*/
 /**
  * This class is used to seed the database with initial data.
  * It implements CommandLineRunner to execute code after the application context
  * is loaded.
  * Remove for production use.
- *//*
-
-
+ */
 
 @Component
 @RequiredArgsConstructor
@@ -47,7 +37,6 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final InventoryRepository inventoryRepository;
     private final UserRepository userRepository;
     private final CostCenterRepository costCenterRepository;
-
 
     @Override
     public void run(String... args) {
@@ -80,7 +69,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         CostCenter costCenter4 = new CostCenter("Forschung und Entwicklung");
         costCenterRepository.saveAll(List.of(costCenter, costCenter2, costCenter3, costCenter4));
 
-        // Inventory 
+        // Inventory
         Inventory inv = new Inventory();
         inv.setId(2434);
         inv.setDescription("Testgerät");
@@ -96,21 +85,28 @@ public class DatabaseSeeder implements CommandLineRunner {
         inventoryRepository.save(inv);
 
         // Weitere Inventories (IDs werden automatisch generiert – außer 1)
-            List<Inventory> newInventories = List.of(
-        createInventory(2, "Dell Latitude 5530", "SN12345", "Büro 101", new BigDecimal("850.00"), comp2, costCenter, adminUser, List.of(tag1)),
-        createInventory(3, "HP Z24 Monitor", "SN12346", "Büro 102", new BigDecimal("240.00"), comp1, costCenter2, user1, List.of(tag2)),
-        createInventory(4, "Canon LaserJet 2300", "SN12347", "Druckerraum", new BigDecimal("410.50"), comp3, costCenter3, guestUser, List.of(tag3)),
-        createInventory(5, "iPhone 14 Pro", "SN12348", "Büro 103", new BigDecimal("1240.00"), comp4, costCenter4, adminUser, List.of(tag4)),
-        createInventory(6, "Samsung Galaxy S22", "SN12349", "F&E-Abteilung", new BigDecimal("1190.00"), comp4, costCenter4, testUser, List.of(tag4)),
-        createInventory(7, "Logitech MX Master 3", "SN12350", "Schreibtisch 7", new BigDecimal("99.99"), comp2, costCenter3, user1, List.of()),
-        createInventory(8, "ThinkPad Dock", "SN12351", "Lager", new BigDecimal("189.00"), comp1, costCenter2, guestUser, List.of()),
-        createInventory(9, "MacBook Pro M2", "SN12352", "Büro 201", new BigDecimal("1899.00"), comp3, costCenter, testUser, List.of(tag1))
-    );
+        List<Inventory> newInventories = List.of(
+                createInventory(2, "Dell Latitude 5530", "SN12345", "Büro 101", new BigDecimal("850.00"), comp2,
+                        costCenter, adminUser, List.of(tag1)),
+                createInventory(3, "HP Z24 Monitor", "SN12346", "Büro 102", new BigDecimal("240.00"), comp1,
+                        costCenter2, user1, List.of(tag2)),
+                createInventory(4, "Canon LaserJet 2300", "SN12347", "Druckerraum", new BigDecimal("410.50"), comp3,
+                        costCenter3, guestUser, List.of(tag3)),
+                createInventory(5, "iPhone 14 Pro", "SN12348", "Büro 103", new BigDecimal("1240.00"), comp4,
+                        costCenter4, adminUser, List.of(tag4)),
+                createInventory(6, "Samsung Galaxy S22", "SN12349", "F&E-Abteilung", new BigDecimal("1190.00"), comp4,
+                        costCenter4, testUser, List.of(tag4)),
+                createInventory(7, "Logitech MX Master 3", "SN12350", "Schreibtisch 7", new BigDecimal("99.99"), comp2,
+                        costCenter3, user1, List.of()),
+                createInventory(8, "ThinkPad Dock", "SN12351", "Lager", new BigDecimal("189.00"), comp1, costCenter2,
+                        guestUser, List.of()),
+                createInventory(9, "MacBook Pro M2", "SN12352", "Büro 201", new BigDecimal("1899.00"), comp3,
+                        costCenter, testUser, List.of(tag1)));
 
         // Setze bei zwei Inventories isDeinventoried = true
         newInventories.get(2).setIsDeinventoried(true); // Canon Drucker
         newInventories.get(7).setIsDeinventoried(true); // MacBook
-        
+
         inventoryRepository.saveAll(newInventories);
     }
 
@@ -134,4 +130,3 @@ public class DatabaseSeeder implements CommandLineRunner {
         return inventory;
     }
 }
-*/

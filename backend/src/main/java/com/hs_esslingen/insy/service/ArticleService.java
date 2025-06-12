@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.hs_esslingen.insy.dto.ArticleDTO;
-import com.hs_esslingen.insy.exception.BadRequest;
+import com.hs_esslingen.insy.exception.BadRequestException;
 import com.hs_esslingen.insy.mapper.ArticleMapper;
 import com.hs_esslingen.insy.model.Article;
 import com.hs_esslingen.insy.model.Order;
@@ -37,7 +37,7 @@ public class ArticleService {
     public ResponseEntity<ArticleDTO> updateArticle(Integer id, ArticleDTO dto) {
         Optional<Article> optionalArticle = articleRepository.findById(id);
         if (optionalArticle.isEmpty()) {
-            throw new BadRequest("Article with id " + id + " not found.");
+            throw new BadRequestException("Article with id " + id + " not found.");
         }
 
         Article article = optionalArticle.get();
@@ -107,7 +107,7 @@ public class ArticleService {
 
     public ResponseEntity<ArticleDTO> createArticle(Integer orderId, ArticleDTO articleDTO) {
         Order order = orderService.retrieveOrderById(orderId)
-                .orElseThrow(() -> new BadRequest("Order with id " + orderId + " not found."));
+                .orElseThrow(() -> new BadRequestException("Order with id " + orderId + " not found."));
 
         Article article = articleMapper.toEntity(articleDTO);
         article.setOrder(order);
@@ -122,7 +122,7 @@ public class ArticleService {
             ArticleDTO dto = articleMapper.toDto(article.get());
             return ResponseEntity.ok(dto);
         } else {
-            throw new BadRequest("Article with id " + articleId + " not found.");
+            throw new BadRequestException("Article with id " + articleId + " not found.");
         }
     }
 
@@ -132,7 +132,7 @@ public class ArticleService {
             articleRepository.delete(article.get());
             return ResponseEntity.noContent().build();
         } else {
-            throw new BadRequest("Article with id " + articleId + " not found.");
+            throw new BadRequestException("Article with id " + articleId + " not found.");
         }
     }
 }

@@ -1,22 +1,13 @@
 package com.hs_esslingen.insy.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hs_esslingen.insy.model.*;
-import com.hs_esslingen.insy.repository.*;
-import com.hs_esslingen.insy.utils.OrderByUtils;
-import com.hs_esslingen.insy.configuration.InventorySpecification;
-import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
-import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.mapper.InventoryMapper;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import com.hs_esslingen.insy.utils.StringParser;
 import org.javers.core.Javers;
 import org.javers.core.diff.Diff;
 import org.javers.core.diff.changetype.ValueChange;
@@ -32,15 +23,18 @@ import org.springframework.stereotype.Service;
 import com.hs_esslingen.insy.configuration.InventorySpecification;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
 import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
-import com.hs_esslingen.insy.exception.BadRequest;
+import com.hs_esslingen.insy.exception.BadRequestException;
 import com.hs_esslingen.insy.mapper.InventoryMapper;
 import com.hs_esslingen.insy.model.Company;
 import com.hs_esslingen.insy.model.CostCenter;
+import com.hs_esslingen.insy.model.History;
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.User;
+import com.hs_esslingen.insy.repository.HistoryRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 import com.hs_esslingen.insy.utils.OrderByUtils;
 import com.hs_esslingen.insy.utils.RelationUtils;
+import com.hs_esslingen.insy.utils.StringParser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -148,7 +142,7 @@ public class InventoryService {
         if (orderBy != null && !orderBy.isEmpty()) {
             // Überprüfen, ob das orderBy-Feld erlaubt ist
             if (!OrderByUtils.ALLOWED_ORDER_BY_FIELDS.contains(orderBy)) {
-                throw new BadRequest("Invalid orderBy-field: " + orderBy);
+                throw new BadRequestException("Invalid orderBy-field: " + orderBy);
             }
 
             // Standardmäßig auf aufsteigende Sortierung setzen
@@ -193,7 +187,7 @@ public class InventoryService {
         // Existiert ein Inventar mit der Inventarnummer bereits?
         if (inventoriesRepository.existsById(dto.getInventoriesId())) {
             // Wenn ja dann eine Exception werfen
-            throw new BadRequest("Inventory with id " + dto.getInventoriesId() + " already exists");
+            throw new BadRequestException("Inventory with id " + dto.getInventoriesId() + " already exists");
         }
         // ID setzen
         inventory.setId(dto.getInventoriesId());
@@ -246,7 +240,7 @@ public class InventoryService {
             inventoriesRepository.delete(inventory.get());
             return ResponseEntity.noContent().build();
         } else {
-            throw new BadRequest("Inventory with id " + id + " not found.");
+            throw new BadRequestException("Inventory with id " + id + " not found.");
         }
     }
 
@@ -335,7 +329,6 @@ public class InventoryService {
             }
         }
 
-
         Inventory updatedInventory = inventoriesRepository.save(inventory);
 
         // Inventory after change
@@ -351,7 +344,7 @@ public class InventoryService {
             Object after = change.getRight();
 
             History history = new History();
-            history.setAuthor(inventory.getUser()); // Replace this with user from  JWT token
+            history.setAuthor(inventory.getUser()); // Replace this with user from JWT token
             history.setAttributeChanged(property);
             history.setValueFrom(before == null ? "null" : before.toString());
             history.setValueTo(after.toString());
@@ -363,7 +356,6 @@ public class InventoryService {
         InventoriesResponseDTO responseDTO = inventoriesMapper.toDto(updatedInventory);
         return ResponseEntity.ok(responseDTO);
     }
-
 
     private static InventoryCreateRequestDTO mapInventoryToDto(Inventory inventory) {
         InventoryCreateRequestDTO dto = new InventoryCreateRequestDTO();

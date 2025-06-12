@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.hs_esslingen.insy.exception.BadRequest;
 import com.hs_esslingen.insy.dto.CompanyDTO;
+import com.hs_esslingen.insy.exception.BadRequestException;
 import com.hs_esslingen.insy.model.Company;
 import com.hs_esslingen.insy.repository.CompanyRepository;
 
@@ -42,12 +42,12 @@ public class CompanyService {
     public Company resolveCompany(Object company) {
         if (company instanceof Integer companyId) {
             return companyRepository.findById(companyId)
-                    .orElseThrow(() -> new BadRequest("Couldn't find company with id: " + companyId));
+                    .orElseThrow(() -> new BadRequestException("Couldn't find company with id: " + companyId));
         } else if (company instanceof String companyName) {
             return companyRepository.findByName(companyName)
                     .orElseGet(() -> companyRepository.save(new Company(companyName)));
         }
-        throw new BadRequest("Company must be of type Integer or String");
+        throw new BadRequestException("Company must be of type Integer or String");
     }
 
     public Company createCompanyByName(String name) {

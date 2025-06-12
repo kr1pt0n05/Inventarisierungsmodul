@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +24,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @Builder
@@ -61,7 +59,8 @@ public class Inventory {
 
     @Column(name = "is_deinventoried", nullable = false)
     @Builder.Default
-    private Boolean isDeinventoried = false; // umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt schließt aber null nicht aus
+    private Boolean isDeinventoried = false; // umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt schließt
+                                             // aber null nicht aus
 
     @Column(nullable = true)
     private BigDecimal price;
@@ -69,7 +68,7 @@ public class Inventory {
     @Column(nullable = true)
     private String location;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String searchText;
 
     @Column(name = "created_at", nullable = false)

@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.hs_esslingen.insy.exception.BadRequest;
 import com.hs_esslingen.insy.dto.CostCenterDTO;
+import com.hs_esslingen.insy.exception.BadRequestException;
 import com.hs_esslingen.insy.model.CostCenter;
 import com.hs_esslingen.insy.repository.CostCenterRepository;
 
@@ -21,15 +21,15 @@ public class CostCenterService {
     public CostCenter resolveCostCenter(Object costCenter) {
         if (costCenter instanceof Integer costCenterId) {
             return costCenterRepository.findById(costCenterId)
-                    .orElseThrow(() -> new BadRequest("Couldn't find costCenter with id: " + costCenterId));
+                    .orElseThrow(() -> new BadRequestException("Couldn't find costCenter with id: " + costCenterId));
         } else if (costCenter instanceof String costCenterName) {
             return costCenterRepository.findByName(costCenterName)
                     .orElseGet(() -> costCenterRepository.save(new CostCenter(costCenterName)));
         }
-        throw new BadRequest("costCenter must be of type Integer or String");
+        throw new BadRequestException("costCenter must be of type Integer or String");
     }
-      
-     // Get CostCenters from repository
+
+    // Get CostCenters from repository
     public CostCenterDTO getAllCostCenter() {
         List<String> allDescriptions = costCenterRepository.findAll().stream()
                 .map(CostCenter::getDescription)
