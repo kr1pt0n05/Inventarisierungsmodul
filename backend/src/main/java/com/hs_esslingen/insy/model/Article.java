@@ -51,7 +51,6 @@ public class Article {
     @Column(name = "price")
     private BigDecimal price;
 
-    @JoinColumn(name = "company")
     private String company;
 
     @Column(name = "is_inventoried")
