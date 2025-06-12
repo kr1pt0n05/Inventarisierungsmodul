@@ -1,10 +1,12 @@
-import {Component, QueryList, ViewChildren} from '@angular/core';
+import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {CardComponent} from '../../components/card/card.component';
 import {AccordionComponent} from '../../components/accordion/accordion.component';
 import {MatButton} from '@angular/material/button';
 import {MatCheckbox} from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 import {NgClass} from '@angular/common';
+import {OrderService} from '../../services/order.service';
+import {Order} from '../../models/Order';
 
 @Component({
   selector: 'app-orders',
@@ -18,9 +20,26 @@ import {NgClass} from '@angular/common';
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
 })
-export class OrdersComponent {
+export class OrdersComponent implements OnInit{
 
-  constructor(private router: Router) {
+  constructor(private readonly router: Router, private readonly orderService: OrderService) {
+  }
+
+  // Orders
+  orders: Order[] = [];
+
+  // get all active orders
+  ngOnInit(): void {
+    // Fetch orders and add checked attribute to each article, to track which orders the user has selected for inventorization
+    this.orderService.getOpenOrders().subscribe(orders => {
+      this.orders = orders.map(order => ({
+        ...order,
+        articles: order.articles.map(article => ({
+          ...article,
+          checked: false
+        }))
+      }))
+    });
   }
 
   // Accordion
@@ -89,37 +108,5 @@ export class OrdersComponent {
     }
     //this.router.navigate(['/inventory/']);
   }
-
-
-  // Data structure to hold articles of all orders
-  // and mapping them to accordions & checkboxes each
-  orders = [
-    {
-      title: "Order 1",
-      articles: [
-        {
-          title: "Tobii Expo/iCan Application",
-          id: 3605,
-          price: 900.00,
-          company: "Tobii Technology AB",
-          orderer: "Orderer 1",
-          checked: false,
-        }
-      ]
-    },
-    {
-      title: "Order 2",
-      articles: [
-        {
-          title: "Creative Suite 4 Premium",
-          id: 3606,
-          price: 627.99,
-          company: "Adobe (asknet)",
-          orderer: "Orderer 1",
-          checked: false,
-        }
-      ]
-    }
-  ]
 
 }

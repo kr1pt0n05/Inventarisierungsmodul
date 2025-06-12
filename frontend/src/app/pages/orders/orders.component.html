@@ -59,9 +59,9 @@
           </div>
         </div>
 
-        @for (order of orders; track order.title) {
-          @for (article of order.articles; track article.id) {
-            <app-accordion title="{{article.title}}, Bestellnummer: {{article.id}}, {{article.price}}€, ...">
+        @for (order of orders; track order.id) {
+          @for (article of order.articles; track article.article_id) {
+            <app-accordion title="{{order.description}}: {{article.description}}, {{article.price}}€, {{article.company}}">
               <div expansion-panel-header>
                 <mat-checkbox class="example-margin" (click)="checkBox($event, article)" [checked]="article.checked"></mat-checkbox>
               </div>
