@@ -37,7 +37,7 @@ public class InventoryController {
     // Alle Elemente der Inventarisierungsliste abrufen
     @GetMapping
     public Page<InventoriesResponseDTO> getAllInventories(
-            @RequestParam(required = false) List<Integer> tags,
+            @RequestParam(name = "tags", required = false) List<Integer> tags,
             @RequestParam(required = false) Integer minId,
             @RequestParam(required = false) Integer maxId,
             @RequestParam(required = false) Integer minPrice,

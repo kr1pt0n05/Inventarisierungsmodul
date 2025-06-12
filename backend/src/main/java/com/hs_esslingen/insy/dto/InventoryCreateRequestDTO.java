@@ -13,30 +13,26 @@ import lombok.Setter;
 public class InventoryCreateRequestDTO {
 
     @JsonProperty("cost_center")
-    public String costCenter;
+    private String costCenter;
 
-    @JsonProperty("inventories_id")
+    @JsonProperty("id")
     // @NotNull
-    public Integer inventoriesId;
+    private Integer inventoriesId;
 
-    @JsonProperty("inventories_description")
-    public String description;
+    private String description;
 
-    @JsonProperty("company")
-    public String company;
+    private String company;
 
-    @JsonProperty("inventories_price")
-    public BigDecimal price;
+    private BigDecimal price;
 
-    @JsonProperty("inventories_serial_number")
-    public String serialNumber;
+    @JsonProperty("serial_number")
+    private String serialNumber;
 
-    @JsonProperty("inventories_location")
-    public String location;
+    private String location;
 
     @JsonProperty("orderer")
-    public Object orderer; // weil "orderer" int **oder** String sein kann
+    private Object orderer; // weil "orderer" int **oder** String sein kann
 
     @JsonProperty("tags")
-    public List<Integer> tags;
+    private List<Integer> tags;
 }

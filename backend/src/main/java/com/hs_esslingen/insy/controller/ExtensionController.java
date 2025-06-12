@@ -28,13 +28,13 @@ public class ExtensionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ExtensionResponseDTO>> getAllExtensions(@PathVariable Integer id) {
+    public ResponseEntity<List<ExtensionResponseDTO>> getAllExtensions(@PathVariable(name = "id") Integer id) {
         List<ExtensionResponseDTO> extensions = extensionsService.getAllExtensions(id);
         return ResponseEntity.ok(extensions);
     }
 
     @PostMapping
-    public ResponseEntity<ExtensionResponseDTO> createExtension(@PathVariable Integer id,
+    public ResponseEntity<ExtensionResponseDTO> createExtension(@PathVariable(name = "id") Integer id,
             @RequestBody ExtensionCreateDTO extensionData) {
 
         ExtensionResponseDTO response = extensionsService.addExtension(id, extensionData);
@@ -42,21 +42,22 @@ public class ExtensionController {
     }
 
     @GetMapping("/{componentId}")
-    public ResponseEntity<ExtensionResponseDTO> getExtensionById(@PathVariable Integer id,
-            @PathVariable Integer componentId) {
+    public ResponseEntity<ExtensionResponseDTO> getExtensionById(@PathVariable(name = "id") Integer id,
+            @PathVariable(name = "componentId") Integer componentId) {
         ExtensionResponseDTO extension = extensionsService.getExtensionById(id, componentId);
         return ResponseEntity.ok(extension);
     }
 
     @PatchMapping("/{componentId}")
-    public ResponseEntity<ExtensionResponseDTO> updateExtension(@PathVariable Integer id,
-            @PathVariable Integer componentId, @RequestBody ExtensionCreateDTO extensionData) {
+    public ResponseEntity<ExtensionResponseDTO> updateExtension(@PathVariable(name = "id") Integer id,
+            @PathVariable(name = "componentId") Integer componentId, @RequestBody ExtensionCreateDTO extensionData) {
         ExtensionResponseDTO updatedExtension = extensionsService.updateExtension(id, componentId, extensionData);
         return ResponseEntity.ok(updatedExtension);
     }
 
     @DeleteMapping("/{componentId}")
-    public ResponseEntity<Void> deleteExtension(@PathVariable Integer id, @PathVariable Integer componentId) {
+    public ResponseEntity<Void> deleteExtension(@PathVariable(name = "id") Integer id,
+            @PathVariable(name = "componentId") Integer componentId) {
         extensionsService.deleteExtension(id, componentId);
         return ResponseEntity.noContent().build();
     }

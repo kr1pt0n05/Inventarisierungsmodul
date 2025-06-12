@@ -97,6 +97,10 @@
 			<version>0.2.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -107,11 +111,11 @@
 			<version>3.8.1</version>
 			<configuration>
 				<annotationProcessorPaths>
-				<path>
-					<groupId>org.mapstruct</groupId>
-					<artifactId>mapstruct-processor</artifactId>
-					<version>1.5.5.Final</version>
-				</path>
+					<path>
+						<groupId>org.mapstruct</groupId>
+						<artifactId>mapstruct-processor</artifactId>
+						<version>1.5.5.Final</version>
+					</path>
 					<path>
 						<groupId>org.projectlombok</groupId>
 						<artifactId>lombok</artifactId>

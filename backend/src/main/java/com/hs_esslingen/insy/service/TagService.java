@@ -2,6 +2,7 @@ package com.hs_esslingen.insy.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hs_esslingen.insy.dto.TagDTO;
+import com.hs_esslingen.insy.exception.BadRequest;
 import com.hs_esslingen.insy.mapper.TagMapper;
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.Tag;
@@ -83,43 +85,41 @@ public class TagService {
                 .collect(Collectors.toList());
     }
 
+    // Adds tags to an inventory item. If the inventory item does not exist, it
+    // throws a BadRequest exception.
     @Transactional
     public void addTagsToInventory(Integer inventoryId, List<Integer> tagIds) {
-        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
+        Inventory inventory = inventoryRepository.findById(inventoryId)
+                .orElseThrow(() -> new BadRequest("Inventory with the id: " + inventoryId + " not found"));
 
-        if (inventory.isEmpty()) {
-            throw new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found");
-        }
+        if (tagIds == null || tagIds.isEmpty())
+            return;
 
-        Inventory inventoryItem = inventory.get();
+        Set<Tag> tags = tagIds.stream()
+                .map(tagId -> tagRepository.findById(tagId)
+                        .orElseThrow(() -> new BadRequest("Tag not found: " + tagId)))
+                .collect(Collectors.toSet());
 
-        for (Integer tagId : tagIds) {
-            Optional<Tag> tag = tagRepository.findById(tagId);
-            if (tag.isEmpty()) {
-                throw new IllegalArgumentException("Tag with the id: " + tagId + " not found");
-            }
-            inventoryItem.getTags().add(tag.get());
-        }
+        inventory.setTags(tags);
 
-        inventoryRepository.save(inventoryItem);
+        inventoryRepository.save(inventory);
     }
 
     @Transactional
     public void removeTagFromInventory(Integer inventoryId, Integer tagId) {
         Inventory inventory = inventoryRepository.findById(inventoryId)
                 .orElseThrow(
-                        () -> new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found"));
+                        () -> new BadRequest("Inventory with the id: " + inventoryId + " not found"));
 
         Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new IllegalArgumentException("Tag with the id: " + tagId + " not found"));
+                .orElseThrow(() -> new BadRequest("Tag with the id: " + tagId + " not found"));
 
         if (!inventory.getTags().contains(tag)) {
-            throw new IllegalArgumentException(
+            throw new BadRequest(
                     "Tag with the id: " + tagId + " is not assigned to inventory item " + inventoryId);
         }
 
         inventory.getTags().remove(tag);
         inventoryRepository.save(inventory);
     }
-
 }

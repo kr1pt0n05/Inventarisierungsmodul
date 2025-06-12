@@ -1,30 +1,12 @@
 package com.hs_esslingen.insy.service;
 
-import com.hs_esslingen.insy.repository.CompanyRepository;
-import com.hs_esslingen.insy.repository.CostCenterRepository;
-import com.hs_esslingen.insy.repository.InventoryRepository;
-import com.hs_esslingen.insy.repository.TagRepository;
-import com.hs_esslingen.insy.repository.UserRepository;
-import com.hs_esslingen.insy.utils.OrderByUtils;
-import com.hs_esslingen.insy.configuration.InventorySpecification;
-import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
-import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.mapper.InventoryMapper;
-import com.hs_esslingen.insy.model.CostCenter;
-import com.hs_esslingen.insy.model.Inventory;
-import com.hs_esslingen.insy.model.Tag;
-import com.hs_esslingen.insy.model.Company;
-import com.hs_esslingen.insy.model.User;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,30 +16,31 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.hs_esslingen.insy.configuration.InventorySpecification;
+import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
+import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
+import com.hs_esslingen.insy.exception.BadRequest;
+import com.hs_esslingen.insy.mapper.InventoryMapper;
+import com.hs_esslingen.insy.model.Company;
+import com.hs_esslingen.insy.model.CostCenter;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.model.User;
+import com.hs_esslingen.insy.repository.InventoryRepository;
+import com.hs_esslingen.insy.utils.OrderByUtils;
+import com.hs_esslingen.insy.utils.RelationUtils;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class InventoryService {
 
     private final InventoryRepository inventoriesRepository;
-    private final UserRepository usersRepository;
-    private final CompanyRepository companiesRepository;
-    private final CostCenterRepository costCentersRepository;
-    private final TagRepository tagsRepository;
+    private final CompanyService companyService;
+    private final TagService tagService;
     private final InventoryMapper inventoriesMapper;
-
-    public InventoryService(
-            InventoryRepository inventoryRepository,
-            UserRepository userRepository,
-            CompanyRepository companyRepository,
-            CostCenterRepository costCenterRepository,
-            TagRepository tagRepository,
-            InventoryMapper inventoryMapper) {
-        this.inventoriesRepository = inventoryRepository;
-        this.usersRepository = userRepository;
-        this.companiesRepository = companyRepository;
-        this.costCentersRepository = costCenterRepository;
-        this.tagsRepository = tagRepository;
-        this.inventoriesMapper = inventoryMapper;
-    }
+    private final OrdererService userService;
+    private final CostCenterService costCenterService;
 
     /**
      * Retrieves an inventory item by its ID.
@@ -114,22 +97,26 @@ public class InventoryService {
             String direction,
             Pageable pageable) {
 
-
         // Umwandlung der Query-Parameter von LocalDate in LocalDateTime
         // Damit die Filterung auf die Datenbank funktioniert
 
-        // Setzt den Startzeitpunkt auf 00:00 Uhr, um alle Einträge ab diesem Datum zu berücksichtigen
+        // Setzt den Startzeitpunkt auf 00:00 Uhr, um alle Einträge ab diesem Datum zu
+        // berücksichtigen
         LocalDateTime createdAfterTime = createdAfter != null ? createdAfter.atStartOfDay() : null;
-        // Setzt den Endzeipunkt auf 23:59:59, um alle Einträge bis zu diesem Datum zu berücksichtigen
-        LocalDateTime createdBeforeTime = createdBefore != null ? createdBefore.plusDays(1).atStartOfDay().minusNanos(1) : null;
+        // Setzt den Endzeipunkt auf 23:59:59, um alle Einträge bis zu diesem Datum zu
+        // berücksichtigen
+        LocalDateTime createdBeforeTime = createdBefore != null ? createdBefore.plusDays(1).atStartOfDay().minusNanos(1)
+                : null;
 
-        /*  Erstellt SQL-Statement im Stil:
-        SELECT * FROM inventories
-        WHERE 
-            tag_id IN (...)
-            AND id BETWEEN ...
-            AND price BETWEEN ...
-            AND ...*/
+        /*
+         * Erstellt SQL-Statement im Stil:
+         * SELECT * FROM inventories
+         * WHERE
+         * tag_id IN (...)
+         * AND id BETWEEN ...
+         * AND price BETWEEN ...
+         * AND ...
+         */
         Specification<Inventory> spec = Specification
                 .where(InventorySpecification.hasTagId(tags))
                 .and(InventorySpecification.idBetween(minId, maxId))
@@ -142,12 +129,11 @@ public class InventoryService {
                 .and(InventorySpecification.hasSerialNumber(serialNumber))
                 .and(InventorySpecification.createdBetween(createdAfterTime, createdBeforeTime));
 
-
         // Sortierung erstellen
         if (orderBy != null && !orderBy.isEmpty()) {
             // Überprüfen, ob das orderBy-Feld erlaubt ist
             if (!OrderByUtils.ALLOWED_ORDER_BY_FIELDS.contains(orderBy)) {
-                throw new IllegalArgumentException("Ungültiges orderBy-Feld: " + orderBy);
+                throw new BadRequest("Invalid orderBy-field: " + orderBy);
             }
 
             // Standardmäßig auf aufsteigende Sortierung setzen
@@ -158,14 +144,16 @@ public class InventoryService {
             }
 
             // Überprüfen, ob das orderBy-Feld verschachtelt ist (z. B. "user.name")
-            // Wenn es verschachtelt ist, dann muss die Sortierung über eine angepasste Specification gemacht werden
+            // Wenn es verschachtelt ist, dann muss die Sortierung über eine angepasste
+            // Specification gemacht werden
             if (OrderByUtils.FOREIGN_SET.contains(orderBy)) {
                 // Sortierung über verschachtelte Felder wird NICHT im Pageable gesetzt,
                 // sondern muss über eine angepasste Specification gemacht werden – siehe unten.
                 spec = spec.and(
                         InventorySpecification.sortByNestedField(orderBy, Sort.Direction.fromString(direction)));
 
-            // Wenn es nicht verschachtelt ist, dann kann die Sortierung direkt im Pageable gesetzt werden
+                // Wenn es nicht verschachtelt ist, dann kann die Sortierung direkt im Pageable
+                // gesetzt werden
             } else {
                 Sort sort = Sort.by(sortDirection, orderBy);
                 pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
@@ -188,34 +176,29 @@ public class InventoryService {
         Inventory inventory = new Inventory();
 
         // Existiert ein Inventar mit der Inventarnummer bereits?
-        if (inventoriesRepository.existsById(dto.inventoriesId)) {
+        if (inventoriesRepository.existsById(dto.getInventoriesId())) {
             // Wenn ja dann eine Exception werfen
-            throw new IllegalArgumentException("Inventar-ID bereits vorhanden: " + dto.inventoriesId);
+            throw new BadRequest("Inventory with id " + dto.getInventoriesId() + " already exists");
         }
         // ID setzen
-        inventory.setId(dto.inventoriesId);
+        inventory.setId(dto.getInventoriesId());
 
         // CostCenter holen oder erstellen
-        CostCenter costCenter = costCentersRepository.findByName(dto.costCenter);
-        if (costCenter == null) {
-            costCenter = new CostCenter(dto.costCenter);
-            costCentersRepository.save(costCenter);
-        }
+        CostCenter costCenter = costCenterService.resolveCostCenter(dto.getCostCenter());
         inventory.setCostCenter(costCenter);
 
         // Company holen oder erstellen
-        Company company = companiesRepository.findByName(dto.company)
-                .orElseGet(() -> companiesRepository.save(new Company(dto.company)));
+        Company company = companyService.resolveCompany(dto.getCompany());
         inventory.setCompany(company);
 
         // User holen oder erstellen
-        User user = resolveUser(dto.orderer);
+        User user = userService.resolveUser(dto.getOrderer());
 
         // Restliche Felder setzen
-        inventory.setDescription(dto.description);
-        inventory.setSerialNumber(dto.serialNumber);
-        inventory.setPrice(dto.price);
-        inventory.setLocation(dto.location);
+        inventory.setDescription(dto.getDescription());
+        inventory.setSerialNumber(dto.getSerialNumber());
+        inventory.setPrice(dto.getPrice());
+        inventory.setLocation(dto.getLocation());
         inventory.setUser(user);
 
         // saven um Tags auch das inventory hinzufügen zu können
@@ -223,17 +206,13 @@ public class InventoryService {
 
         // 6. Tags verknüpfen
 
-        if (dto.getTags() != null && !dto.getTags().isEmpty()) {
-            Set<Tag> tags = dto.getTags().stream()
-                    .map(tagId -> tagsRepository.findById(tagId)
-                            .orElseThrow(() -> new IllegalArgumentException("Tag not found: " + tagId)))
-                    .collect(Collectors.toSet());
-            inventory.setTags(tags);
-        }
+        tagService.addTagsToInventory(inventory.getId(), dto.getTags());
 
-        inventoriesRepository.save(inventory);
+        // Muss nochmal gefetched werden, da die neu hinzugefügten Tags sonst nicht
+        // im DTO enthalten sind
+        Inventory updatedInventory = inventoriesRepository.findById(inventory.getId()).orElseThrow();
 
-        return inventoriesMapper.toDto(inventory);
+        return inventoriesMapper.toDto(updatedInventory);
     }
 
     /**
@@ -250,7 +229,7 @@ public class InventoryService {
             inventoriesRepository.delete(inventory.get());
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.notFound().build();
+            throw new BadRequest("Inventory with id " + id + " not found.");
         }
     }
 
@@ -278,65 +257,57 @@ public class InventoryService {
             Object fieldValue = entry.getValue();
 
             switch (fieldName) {
-                case "costCenter":
+                case "cost_center":
                     if (fieldValue != null) {
-                        CostCenter costCenter = costCentersRepository.findByName(fieldValue.toString());
-                        if (costCenter == null) {
-                            costCenter = new CostCenter(fieldValue.toString());
-                            costCentersRepository.save(costCenter);
-                        }
-                        inventory.setCostCenter(costCenter);
+                        CostCenter newCostCenter = costCenterService.resolveCostCenter(fieldValue);
+                        CostCenter oldCostCenter = inventory.getCostCenter();
+                        RelationUtils.switchRelation(
+                                oldCostCenter != null ? oldCostCenter.getInventories() : null,
+                                newCostCenter != null ? newCostCenter.getInventories() : null,
+                                inventory);
+                        inventory.setCostCenter(newCostCenter);
                     }
                     break;
-                case "inventories_description":
+                case "description":
                     if (fieldValue != null) {
                         inventory.setDescription((String) fieldValue);
                     }
                     break;
                 case "company":
                     if (fieldValue != null) {
-                        Company company = companiesRepository
-                                .findByName(fieldValue.toString())
-                                .orElseGet(() -> companiesRepository.save(new Company(fieldValue.toString())));
-                        inventory.setCompany(company);
+                        Company newCompany = companyService.resolveCompany(fieldValue);
+                        Company oldCompany = inventory.getCompany();
+                        RelationUtils.switchRelation(
+                                oldCompany != null ? oldCompany.getInventories() : null,
+                                newCompany != null ? newCompany.getInventories() : null,
+                                inventory);
+                        inventory.setCompany(newCompany);
                     }
                     break;
-                case "inventories_price":
+                case "price":
                     if (fieldValue != null) {
                         inventory.setPrice(new BigDecimal(fieldValue.toString()));
                     }
                     break;
-                case "inventories_serialNumber":
+                case "serial_number":
                     if (fieldValue != null) {
                         inventory.setSerialNumber((String) fieldValue);
                     }
                     break;
-                case "inventories_location":
+                case "location":
                     if (fieldValue != null) {
                         inventory.setLocation((String) fieldValue);
                     }
                     break;
                 case "orderer":
                     if (fieldValue != null) {
-                        Integer userId = null;
-                        try {
-                            userId = (Integer) fieldValue;
-                        } catch (ClassCastException e) {
-                            try {
-                                userId = Integer.parseInt(fieldValue.toString());
-                            } catch (NumberFormatException ex) {
-                                break;
-                            }
-                        }
-                        if (userId != null) {
-                            User user = usersRepository.findById(userId).orElse(null);
-                            if (user == null) {
-                                user = new User();
-                                user.setId(userId);
-                                usersRepository.save(user);
-                            }
-                            inventory.setUser(user);
-                        }
+                        User newUser = userService.resolveUser(fieldValue);
+                        User oldUser = inventory.getUser();
+                        RelationUtils.switchRelation(
+                                oldUser != null ? oldUser.getInventories() : null,
+                                newUser != null ? newUser.getInventories() : null,
+                                inventory);
+                        inventory.setUser(newUser);
                     }
                     break;
                 default:
@@ -347,17 +318,5 @@ public class InventoryService {
         Inventory updatedInventory = inventoriesRepository.save(inventory);
         InventoriesResponseDTO responseDTO = inventoriesMapper.toDto(updatedInventory);
         return ResponseEntity.ok(responseDTO);
-    }
-
-    // Eventuell in UserService auslagern
-    private User resolveUser(Object orderer) {
-        if (orderer instanceof Integer userId) {
-            return usersRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("User-ID nicht gefunden: " + userId));
-        } else if (orderer instanceof String userName) {
-            return usersRepository.findByName(userName)
-                    .orElseGet(() -> usersRepository.save(new User(userName)));
-        }
-        throw new IllegalArgumentException("orderer muss Integer oder String sein.");
     }
 }

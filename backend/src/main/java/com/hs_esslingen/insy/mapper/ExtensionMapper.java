@@ -19,8 +19,8 @@ public interface ExtensionMapper {
     Extension toEntity(ExtensionCreateDTO dto);
 
     @Mapping(target = "company", source = "company.name")
-    @Mapping(target = "created_at", source = "createdAt")
-    @Mapping(target = "serial_number", source = "serialNumber")
+    @Mapping(target = "createdAt", source = "createdAt")
+    @Mapping(target = "serialNumber", source = "serialNumber")
     ExtensionResponseDTO toDto(Extension entity);
 
     @Named("mapInventoryFromId")
