@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
 import com.hs_esslingen.insy.service.InventoryService;

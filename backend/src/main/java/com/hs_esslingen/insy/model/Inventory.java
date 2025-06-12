@@ -53,7 +53,7 @@ public class Inventory {
     @Column(nullable = true)
     private String location;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String searchText;
 
     @Column(name = "created_at", nullable = false)

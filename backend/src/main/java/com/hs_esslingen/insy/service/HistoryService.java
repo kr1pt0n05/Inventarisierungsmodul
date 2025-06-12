@@ -1,7 +1,5 @@
 package com.hs_esslingen.insy.service;
 
-import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
-import com.hs_esslingen.insy.mapper.InventoryMapper;
 import com.hs_esslingen.insy.model.History;
 import com.hs_esslingen.insy.repository.HistoryRepository;
 import lombok.AllArgsConstructor;
