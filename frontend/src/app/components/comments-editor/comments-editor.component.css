@@ -1,0 +1,9 @@
+td,
+th {
+    white-space: normal;
+    word-wrap: break-word;
+    hyphens: auto;
+    max-width: 30vw;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
