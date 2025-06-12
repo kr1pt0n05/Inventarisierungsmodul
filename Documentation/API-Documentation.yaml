@@ -1355,23 +1355,23 @@ components:
         cost_center:
           type: string
           example: 723458320Z
-        inventories_id:
+        id:
           type: integer
           example: 1
-        inventories_description:
+        description:
           type: string
           example: Asus Gaming Laptop
         company:
           type: string
           example: Gedankenfabrik AG
-        inventories_price:
+        price:
           type: number
           format: float
           example: 1299.99
-        inventories_serial_number:
+        serial_number:
           type: string
           example: 834Z32T32H
-        inventories_location:
+        location:
           type: string
           example: F99.234
         orderer:
@@ -1403,7 +1403,7 @@ components:
         description:
           type: string
           example: HP Laptop mit Dockingstation
-        serialNumber:
+        serial_number:
           type: string
           example: SN123456789
         price:
@@ -1413,7 +1413,7 @@ components:
         location:
           type: string
           example: Raum 2.14, Regal A
-        costCenter:
+        cost_center:
           type: string
           example: IT-Abteilung
         company:
@@ -1422,10 +1422,10 @@ components:
         orderer:
           type: string
           example: Max Mustermann
-        isDeinventoried:
+        is_deinventoried:
           type: boolean
           example: false
-        createdAt:
+        created_at:
           type: string
           format: date-time
           example: 24.05.2025 13:32:17
