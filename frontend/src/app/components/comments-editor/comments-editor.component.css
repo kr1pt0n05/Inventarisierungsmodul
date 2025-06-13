@@ -1,9 +1,21 @@
+tr:nth-child(2n) {
+    background-color: #f0f0f0;
+}
+
+tr:hover {
+    background-color: #bfbfbf;
+}
+
 td,
 th {
     white-space: normal;
     word-wrap: break-word;
     hyphens: auto;
-    max-width: 30vw;
+    max-width: 30%;
     padding-top: 8px;
     padding-bottom: 8px;
+}
+
+table {
+    width: 100%;
 }
