@@ -1,23 +1,23 @@
 import { CollectionViewer } from '@angular/cdk/collections';
 import { DataSource } from '@angular/cdk/table';
 import { inject, Injectable } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
 import { InventoriesService } from './inventories.service';
-import {FormControl, FormGroup} from '@angular/forms';
 
 
 // Interface for Pagination details (pageIndex and pageSize)
-interface Page{
+interface Page {
   pageIndex: number,
   pageSize: number,
 }
 
 // Interface for filtering options
-export interface Filter{
+export interface Filter {
   tags?: string[],
   minId?: number,
   maxId?: number,
@@ -33,7 +33,7 @@ export interface Filter{
 
 // Interface for query parameters used for API request
 // tracking currently selected pagesize, pageindex, filters, sorting & text of searchbar
-interface QueryParams{
+interface QueryParams {
   currentPage: Page,
   currentSort: Sort,
   currentFilter: Filter,
@@ -131,8 +131,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     // Initialize the data and query parameters
     this._data = new BehaviorSubject<InventoryItem[]>([]);
     this._queryParams = new BehaviorSubject<QueryParams>({
-      currentPage: {pageIndex: 0, pageSize: 10},
-      currentSort: {active: 'id', direction: 'asc'},
+      currentPage: { pageIndex: 0, pageSize: 10 },
+      currentSort: { active: 'id', direction: 'asc' },
       currentFilter: {},
       currentSearchText: '',
     });
@@ -170,7 +170,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set paginator(paginator: MatPaginator) {
     this._paginator = paginator;
     this._paginator.page.subscribe((page: PageEvent) => {
-      this._queryParams.next({...this._queryParams.value, currentPage: {pageIndex: page.pageIndex, pageSize: page.pageSize}
+      this._queryParams.next({
+        ...this._queryParams.value, currentPage: { pageIndex: page.pageIndex, pageSize: page.pageSize }
       });
     })
   }
@@ -183,7 +184,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set sorter(sorter: MatSort) {
     this._sorter = sorter;
     this._sorter.sortChange.subscribe((sort: Sort) => {
-      this._queryParams.next({...this._queryParams.value, currentSort: sort});
+      this._queryParams.next({ ...this._queryParams.value, currentSort: sort });
     })
   }
 
@@ -195,7 +196,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set filter(filter: FormGroup) {
     this._filter = filter;
     this._filter.valueChanges.subscribe((filter: Filter) => {
-      this._queryParams.next({...this._queryParams.value, currentFilter: filter});
+      this._queryParams.next({ ...this._queryParams.value, currentFilter: filter });
     });
   }
 
@@ -207,7 +208,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set searchbar(searchbar: FormControl) {
     this._searchbar = searchbar;
     this._searchbar.valueChanges.subscribe((searchText: string) => {
-      this._queryParams.next({...this._queryParams.value, currentSearchText: searchText});
+      this._queryParams.next({ ...this._queryParams.value, currentSearchText: searchText });
     })
   }
 
@@ -233,8 +234,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
           description: item.description,
           company: item.company,
           price: item.price,
-          createdAt: item.createdAt,
-          serialNumber: item.serialNumber,
+          createdAt: item.created_at,
+          serialNumber: item.serial_number,
           location: item.location,
           orderer: item.orderer,
         }));
