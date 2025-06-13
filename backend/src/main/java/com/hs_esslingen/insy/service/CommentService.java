@@ -25,7 +25,7 @@ public class CommentService {
     public List<CommentDTO> getCommentsByInventoryId(Integer inventoryId) {
         //Verify that the provided Inventory exists
         inventoryRepository.findById(inventoryId)
-                .orElseThrow(() -> new NotFoundException("Inventory with id: " + inventoryId + " not found"));;
+                .orElseThrow(() -> new NotFoundException("Inventory with id: " + inventoryId + " not found"));
 
         // Get comments from repository
         List<Comment> comments = commentRepository.findCommentsByInventoryId(inventoryId);
