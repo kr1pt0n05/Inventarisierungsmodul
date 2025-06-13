@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hs_esslingen.insy.dto.TagDTO;
 import com.hs_esslingen.insy.exception.BadRequestException;
+import com.hs_esslingen.insy.exception.NotFoundException;
 import com.hs_esslingen.insy.mapper.TagMapper;
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.Tag;
@@ -37,7 +38,7 @@ public class TagService {
         Optional<Tag> tag = tagRepository.findById(id);
 
         if (tag.isEmpty()) {
-            throw new IllegalArgumentException("Tag with the id: " + id + " not found");
+            throw new NotFoundException("Tag with the id: " + id + " not found");
         }
 
         return tagMapper.toDto(tag.get());
@@ -47,7 +48,7 @@ public class TagService {
         // Check if tag with same name already exists
         Optional<Tag> existingTag = tagRepository.findByName(tagDTO.getName());
         if (existingTag.isPresent()) {
-            throw new IllegalArgumentException("Tag with the name: " + tagDTO.getName() + " already exists");
+            throw new BadRequestException("Tag with the name: " + tagDTO.getName() + " already exists");
         }
 
         Tag tag = Tag.builder()
@@ -63,7 +64,7 @@ public class TagService {
         Optional<Tag> tag = tagRepository.findById(id);
 
         if (tag.isEmpty()) {
-            throw new IllegalArgumentException("Tag with the id: " + id + " not found");
+            throw new NotFoundException("Tag with the id: " + id + " not found");
         }
 
         tagRepository.deleteById(id);
@@ -73,7 +74,7 @@ public class TagService {
         Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
 
         if (inventory.isEmpty()) {
-            throw new IllegalArgumentException("Inventory with the id: " + inventoryId + " not found");
+            throw new NotFoundException("Inventory with the id: " + inventoryId + " not found");
         }
 
         // Get tags directly from the inventory object
@@ -97,7 +98,7 @@ public class TagService {
 
         Set<Tag> tags = tagIds.stream()
                 .map(tagId -> tagRepository.findById(tagId)
-                        .orElseThrow(() -> new BadRequestException("Tag not found: " + tagId)))
+                        .orElseThrow(() -> new NotFoundException("Tag not found: " + tagId)))
                 .collect(Collectors.toSet());
 
         inventory.setTags(tags);
@@ -109,10 +110,10 @@ public class TagService {
     public void removeTagFromInventory(Integer inventoryId, Integer tagId) {
         Inventory inventory = inventoryRepository.findById(inventoryId)
                 .orElseThrow(
-                        () -> new BadRequestException("Inventory with the id: " + inventoryId + " not found"));
+                        () -> new NotFoundException("Inventory with the id: " + inventoryId + " not found"));
 
         Tag tag = tagRepository.findById(tagId)
-                .orElseThrow(() -> new BadRequestException("Tag with the id: " + tagId + " not found"));
+                .orElseThrow(() -> new NotFoundException("Tag with the id: " + tagId + " not found"));
 
         if (!inventory.getTags().contains(tag)) {
             throw new BadRequestException(
