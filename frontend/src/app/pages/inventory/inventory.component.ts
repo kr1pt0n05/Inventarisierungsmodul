@@ -15,6 +15,17 @@ import {ServerTableDataSourceService} from '../../services/server-table-data-sou
 import {CacheInventoryService} from '../../services/cache-inventory.service';
 
 
+
+export interface minAndMaxId{
+  maxId: number,
+  minId: number,
+}
+
+export interface minAndMaxPrice{
+  maxPrice: number,
+  minPrice: number,
+}
+
 /**
  * InventoryComponent
  *
@@ -99,6 +110,8 @@ export class InventoryComponent implements OnInit {
   locations: string[] = [];
   orderers: string[] = [];
   tags: string[] = [];
+  minAndMaxId: minAndMaxId = {} as minAndMaxId;
+  minAndMaxPrice: minAndMaxPrice = {} as minAndMaxPrice;
 
   /**
    * Initializes the component and sets up the filter form and data fetching.
@@ -131,6 +144,8 @@ export class InventoryComponent implements OnInit {
     this.cache.getLocations().subscribe(locations => this.locations = locations);
     this.cache.getOrderers().subscribe(orderers => this.orderers = orderers);
     this.cache.getTags().subscribe(tags => this.tags = tags);
+    this.cache.getMinAndMaxPrice().subscribe(minAndMaxPrice => this.minAndMaxPrice = minAndMaxPrice);
+    this.cache.getMinAndMaxId().subscribe(minAndMaxId => this.minAndMaxId = minAndMaxId);
   }
 
 
