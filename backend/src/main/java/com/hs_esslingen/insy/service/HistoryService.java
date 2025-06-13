@@ -1,14 +1,14 @@
 package com.hs_esslingen.insy.service;
 
-import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
-import com.hs_esslingen.insy.mapper.InventoryMapper;
-import com.hs_esslingen.insy.model.History;
-import com.hs_esslingen.insy.repository.HistoryRepository;
-import lombok.AllArgsConstructor;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.hs_esslingen.insy.model.History;
+import com.hs_esslingen.insy.repository.HistoryRepository;
+
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Service
@@ -19,7 +19,6 @@ public class HistoryService {
     public ResponseEntity<List<History>> getHistory(Integer id) {
         List<History> history = historyRepository.getHistoriesByInventory_IdOrderByCreatedAtAsc(id);
         return ResponseEntity.ok(history);
-
 
     }
 }

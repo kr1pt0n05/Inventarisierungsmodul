@@ -6,7 +6,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.javers.core.Javers;
 import org.javers.core.diff.Diff;
@@ -34,7 +37,6 @@ import com.hs_esslingen.insy.repository.HistoryRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 import com.hs_esslingen.insy.utils.OrderByUtils;
 import com.hs_esslingen.insy.utils.RelationUtils;
-import com.hs_esslingen.insy.utils.StringParser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +44,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class InventoryService {
 
-    private final InventoryRepository inventoriesRepository;
+    private final InventoryRepository inventoryRepository;
     private final CompanyService companyService;
     private final TagService tagService;
     private final InventoryMapper inventoriesMapper;
@@ -59,7 +61,7 @@ public class InventoryService {
      *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<InventoriesResponseDTO> getInventoryById(Integer id) {
-        Optional<Inventory> inventory = inventoriesRepository.findById(id);
+        Optional<Inventory> inventory = inventoryRepository.findById(id);
         if (inventory.isPresent()) {
             InventoriesResponseDTO responseDTO = inventoriesMapper.toDto(inventory.get());
             return ResponseEntity.ok(responseDTO);
@@ -104,6 +106,7 @@ public class InventoryService {
             LocalDate createdBefore,
             String orderBy,
             String direction,
+            String searchText,
             Pageable pageable) {
 
         // Umwandlung der Query-Parameter von LocalDate in LocalDateTime
@@ -136,7 +139,8 @@ public class InventoryService {
                 .and(InventorySpecification.hasLocation(location))
                 .and(InventorySpecification.hasCostCenter(costCenter))
                 .and(InventorySpecification.hasSerialNumber(serialNumber))
-                .and(InventorySpecification.createdBetween(createdAfterTime, createdBeforeTime));
+                .and(InventorySpecification.createdBetween(createdAfterTime, createdBeforeTime))
+                .and(InventorySpecification.hasSearchText(searchText));
 
         // Sortierung erstellen
         if (orderBy != null && !orderBy.isEmpty()) {
@@ -169,7 +173,7 @@ public class InventoryService {
             }
         }
 
-        Page<Inventory> page = inventoriesRepository.findAll(spec, pageable);
+        Page<Inventory> page = inventoryRepository.findAll(spec, pageable);
 
         return page.map(inventoriesMapper::toDto);
     }
@@ -185,7 +189,7 @@ public class InventoryService {
         Inventory inventory = new Inventory();
 
         // Existiert ein Inventar mit der Inventarnummer bereits?
-        if (inventoriesRepository.existsById(dto.getInventoriesId())) {
+        if (inventoryRepository.existsById(dto.getInventoriesId())) {
             // Wenn ja dann eine Exception werfen
             throw new BadRequestException("Inventory with id " + dto.getInventoriesId() + " already exists");
         }
@@ -210,10 +214,10 @@ public class InventoryService {
         inventory.setLocation(dto.getLocation());
         inventory.setUser(user);
 
-        inventory.setSearchText(StringParser.fullTextSearchString(inventory));
+        changeFullTextSearchString(inventory);
 
         // saven um Tags auch das inventory hinzufügen zu können
-        inventoriesRepository.save(inventory);
+        inventoryRepository.save(inventory);
 
         // 6. Tags verknüpfen
 
@@ -221,7 +225,7 @@ public class InventoryService {
 
         // Muss nochmal gefetched werden, da die neu hinzugefügten Tags sonst nicht
         // im DTO enthalten sind
-        Inventory updatedInventory = inventoriesRepository.findById(inventory.getId()).orElseThrow();
+        Inventory updatedInventory = inventoryRepository.findById(inventory.getId()).orElseThrow();
 
         return inventoriesMapper.toDto(updatedInventory);
     }
@@ -235,9 +239,9 @@ public class InventoryService {
      *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<Void> deleteInventory(Integer id) {
-        Optional<Inventory> inventory = inventoriesRepository.findById(id);
+        Optional<Inventory> inventory = inventoryRepository.findById(id);
         if (inventory.isPresent()) {
-            inventoriesRepository.delete(inventory.get());
+            inventoryRepository.delete(inventory.get());
             return ResponseEntity.noContent().build();
         } else {
             throw new BadRequestException("Inventory with id " + id + " not found.");
@@ -256,7 +260,7 @@ public class InventoryService {
      *         or a 404 Not Found status if the item does not exist.
      */
     public ResponseEntity<InventoriesResponseDTO> updateInventory(Integer id, Map<String, Object> patchData) {
-        Optional<Inventory> inventoryOptional = inventoriesRepository.findById(id);
+        Optional<Inventory> inventoryOptional = inventoryRepository.findById(id);
         if (inventoryOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -329,7 +333,9 @@ public class InventoryService {
             }
         }
 
-        Inventory updatedInventory = inventoriesRepository.save(inventory);
+        Inventory updatedInventory = inventoryRepository.save(inventory);
+        changeFullTextSearchString(updatedInventory);
+        inventoryRepository.save(updatedInventory);
 
         // Inventory after change
         InventoryCreateRequestDTO inventoryNew = InventoryService.mapInventoryToDto(updatedInventory);
@@ -357,6 +363,14 @@ public class InventoryService {
         return ResponseEntity.ok(responseDTO);
     }
 
+    /**
+     * Maps an Inventory object to an InventoryCreateRequestDTO.
+     * This method is used to convert an Inventory entity to a DTO for
+     * creating a update history entry.
+     *
+     * @param inventory the Inventory entity to map
+     * @return the mapped InventoryCreateRequestDTO
+     */
     private static InventoryCreateRequestDTO mapInventoryToDto(Inventory inventory) {
         InventoryCreateRequestDTO dto = new InventoryCreateRequestDTO();
         dto.setInventoriesId(inventory.getId());
@@ -369,4 +383,44 @@ public class InventoryService {
         dto.setOrderer(inventory.getUser() == null ? null : inventory.getUser().getId());
         return dto;
     }
+
+    /**
+     * Generates a full-text search string for an inventory item.
+     * This string is used for searching across multiple fields in the inventory.
+     *
+     * @param inventory the inventory item
+     * @return a string containing all searchable fields, concatenated and separated
+     *         by spaces, and lowercased
+     */
+    public void changeFullTextSearchString(Inventory inventory) {
+        // Felder des Inventory selbst
+        List<String> baseFields = Stream.of(
+                inventory.getDescription(),
+                inventory.getSerialNumber(),
+                inventory.getLocation(),
+                inventory.getCompany() != null ? inventory.getCompany().getName() : null,
+                inventory.getCostCenter() != null ? inventory.getCostCenter().getDescription() : null,
+                inventory.getUser() != null ? inventory.getUser().getName() : null)
+                .filter(Objects::nonNull)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+
+        // Erweiterungen (Extensions) – Beschreibung + Company-Name
+        List<String> extensionFields = inventory.getExtensions().stream()
+                .flatMap(ext -> Stream.of(
+                        ext.getDescription(),
+                        ext.getCompany() != null ? ext.getCompany().getName() : null))
+                .filter(Objects::nonNull)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+
+        // Alle zusammenfügen, getrennt durch Leerzeichen
+        List<String> allFields = new ArrayList<>();
+        allFields.addAll(baseFields);
+        allFields.addAll(extensionFields);
+
+        // Setzen des Suchtextes für das Inventory
+        inventory.setSearchText(String.join(" ", allFields));
+    }
+
 }
