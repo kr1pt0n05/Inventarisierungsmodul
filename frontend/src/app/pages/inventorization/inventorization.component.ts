@@ -52,13 +52,23 @@ import { InventoriesService } from '../../services/inventories.service';
  * - _getItemChanges(): Computes and returns the changed fields of the inventory item.
  *
  * Usage Examples:
- * - New Inventorization:
+ * - New Inventorization with Empty Form:
  * ```
  * <app-inventorization
  *   [isNewInventorization]="true"
  *   (onInventorization)="handleInventorization($event)">
  * </app-inventorization>
  * ```
+ * 
+ * - New Inventorization with Pre-filled Data:
+ * ```
+ * <app-inventorization
+ *   [isNewInventorization]="true"
+ *   [inventoryItem]="newItem"
+ *   (onInventorization)="handleInventorization($event)">
+ * </app-inventorization>
+ * ```
+ * 
  * - Editing Existing Item:
  * ```
  * <app-inventorization
