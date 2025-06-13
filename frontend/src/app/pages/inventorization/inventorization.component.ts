@@ -119,16 +119,16 @@ export class InventorizationComponent {
    * Signal holding a mutable copy of the inventory item for editing.
    */
   editableInventoryItem = signal<InventoryItem>({} as InventoryItem);
+  isEditedValid = signal<boolean>(false);
 
   /**
-   * Map of input fields that should be disabled in the editor.
-   * This is used to prevent editing of certain fields, such as 'id' for existing items.
-   * 
-   * Default is an empty map, meaning no fields are disabled initially.
-   * For existing items, the 'id' field is set to true to disable it.
+   * Signal holding an array of input field names that should be disabled.
    */
-  disabledInputs = signal<Map<string, boolean>>(new Map<string, boolean>());
+  disabledInputs = signal<string[]>([]);
 
+  /**
+   * Signal holding the list of comments that have been persisted (saved).
+   */
   savedComments = signal([] as Comment[]);
 
   /**
@@ -153,7 +153,7 @@ export class InventorizationComponent {
     this.editableInventoryItem.set({ ...this.inventoryItem() });
 
     if (!this.isNewInventorization()) {
-      this.disabledInputs.set(new Map<string, boolean>([['id', true]]));
+      this.disabledInputs.set(['id']);
       this._fetchComments();
     }
   }

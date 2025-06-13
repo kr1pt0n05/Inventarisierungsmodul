@@ -5,7 +5,8 @@
             @for (field of inventoryItemColumns.keys(); track field) {
             <mat-form-field>
                 <mat-label>{{inventoryItemColumns.get(field)}}</mat-label>
-                <input matInput formControlName="{{field}}" [matAutocomplete]="auto" />
+                <input matInput formControlName="{{field}}" [matAutocomplete]="auto"
+                    [placeholder]="initialValues[field]" [required]="requiredInputs().includes(field)" />
             </mat-form-field>
 
             <mat-autocomplete #auto="matAutocomplete">

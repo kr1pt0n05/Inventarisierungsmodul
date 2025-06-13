@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, model } from '@angular/core';
+import { Component, EventEmitter, model, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -67,7 +67,15 @@ export class InventoryItemEditorComponent {
    * Holds the current inventory item being edited.
    */
   inventoryItem = model<InventoryItem>({} as InventoryItem);
-  disabledInputs = model<Map<string, boolean>>(new Map<string, boolean>());
+  disabledInputs = model<string[]>([]);
+  requiredInputs = model<string[]>(['id', 'cost_center', 'company', 'orderer']);
+  initialValues!: InventoryItem;
+
+  /**
+   * Event emitter that emits when the form is valid or invalid.
+   * Emits a boolean indicating the validity of the form.
+   */
+  @Output() isValid = new EventEmitter<boolean>(false);
 
   /**
    * Defines the fields to display in the editor and their labels.
@@ -94,11 +102,13 @@ export class InventoryItemEditorComponent {
    * Initializes form controls, sets up autocomplete, and disables fields as specified.
    */
   ngOnInit() {
+    this.initialValues = { ...this.inventoryItem() };
+
     this._setupFormControls();
     this._setupAutocomplete();
 
     for (const [key, control] of this.formControls.entries()) {
-      if (this.disabledInputs().get(key)) {
+      if (this.disabledInputs().includes(key)) {
         control.disable();
         console.log(`Input ${key} is disabled.`);
       }
@@ -107,8 +117,8 @@ export class InventoryItemEditorComponent {
 
   /**
    * Sets up form controls with initial values from the inventory item,
-   * synchronizes form changes with the model, and fills default values for
-   * 'created_at' and 'orderer' if not already set.
+   * synchronizes form changes with the model, checks if the data is valid and
+   * fills default values for 'created_at' and 'orderer' if not already set.
    * @private
    */
   private _setupFormControls() {
@@ -125,6 +135,8 @@ export class InventoryItemEditorComponent {
         }
         return item;
       });
+
+      this.isValid.emit(this.formGroup.valid && this.requiredInputs().every(input => this.formControls.get(input)?.value));
     });
 
     if (!this.inventoryItem().created_at) {

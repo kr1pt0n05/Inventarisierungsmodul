@@ -9,12 +9,12 @@
             }
         </h1>
     </div>
-    <button mat-button color="primary" (click)="saveInventorization()">Speichern</button>
+    <button mat-button color="primary" (click)="saveInventorization()" [disabled]="!isEditedValid()">Speichern</button>
 </div>
 
 <div class="grid grid-cols-1 xl:grid-cols-2 p-4 gap-4">
-    <app-inventory-item-editor [(inventoryItem)]="editableInventoryItem"
-        [(disabledInputs)]="disabledInputs"></app-inventory-item-editor>
+    <app-inventory-item-editor [(inventoryItem)]="editableInventoryItem" [(disabledInputs)]="disabledInputs"
+        (isValid)="isEditedValid.set($event)"></app-inventory-item-editor>
 
     <div class="flex flex-col gap-4">
         <app-comments-editor [(unchangedComments)]="savedComments" [(newComments)]="newComments"
