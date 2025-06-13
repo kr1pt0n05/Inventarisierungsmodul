@@ -12,17 +12,17 @@ import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory
 import { Tag } from '../../models/tag';
 
 /**
- * Component for displaying detailed information about an inventory item.
+ * DetailsComponent
  *
- * This component organizes and displays the main attributes of an inventory item as well as its related
- * extensions, comments, tags, and change history. The information is grouped into expandable panels using
- * Angular Material Expansion Panels. Each panel uses a dynamic list or chip set to present its data.
+ * This component displays detailed information about a specific inventory item, including its main attributes,
+ * related extensions, comments, tags, and change history. The information is organized into expandable panels
+ * using Angular Material Expansion Panels. Each panel presents its data using dynamic lists or chip sets.
  *
  * ## Inputs
- * - `inventoryItemInput`: The main inventory item to display (type: InventoryItem).
- * - `extensions`: Array of extension objects related to the inventory item (type: InventoryExtension[]).
- * - `comments`: Array of comments related to the inventory item (type: InventoryItemcomments[]).
- * - `changes`: Array of change history entries (type: InventoryItemChange[]) for the inventory item.
+ * - `inventoryItem`: The main inventory item to display (type: InventoryItem, required).
+ * - `extensions`: Array of extension objects related to the inventory item (type: Extension[]).
+ * - `comments`: Array of comments related to the inventory item (type: Comment[]).
+ * - `changes`: Array of change history entries (type: Change[]) for the inventory item.
  *
  * ## Features
  * - Displays item attributes in a two-column layout.
@@ -30,12 +30,13 @@ import { Tag } from '../../models/tag';
  * - Displays an items tags as chips.
  * - Automatically opens all expansion panels after rendering.
  * - Handles empty states for each panel.
+ * - Transforms change history entries to merge table and column names for display.
  *
  * @example
  * <app-details
- *   [inventoryItemInput]="item"
+ *   [inventoryItem]="item"
  *   [extensions]="itemExtensions"
- *   [comments]="itemcomments"
+ *   [comments]="itemComments"
  *   [changes]="itemChanges">
  * </app-details>
  */
@@ -120,6 +121,11 @@ export class DetailsComponent {
     });
   }
 
+  /**
+ * Lifecycle hook that is called when any data-bound property of a directive changes.
+ * Initializes the internal representation of the inventory item and its tags for display.
+ * If no inventory item is provided, sets default values for display.
+ */
   ngOnChanges() {
     if (this.inventoryItem() && JSON.stringify(this.inventoryItem()) !== '{}') {
       this.inventoryItemInternal = new Map<string, string>();
@@ -152,8 +158,9 @@ const changesColumnNames = new Map<string, string>([
 
 /**
  * Helper function to merge table and column names for change history entries.
+ * Used to transform raw change history data for display in the change history panel.
  * @param {Change[]} rawChanges - The raw change history entries.
- * @returns {any[]} The transformed change history entries.
+ * @returns {ChangeInternal[]} The transformed change history entries.
  */
 function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
   let changes = rawChanges.map((change: Change) => {

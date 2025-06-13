@@ -24,13 +24,15 @@ import { InventoriesService } from '../../services/inventories.service';
  * of comments (adding, deleting, and fetching).
  *
  * Features:
- * - Loads and displays an inventory item for editing.
- * - Handles saving of inventory item changes.
+ * - Loads and displays an inventory item for editing, or provides an empty form for new items.
+ * - Handles saving of inventory item changes and creation of new inventory items.
  * - Manages comments: fetches, adds, and deletes comments for the inventory item.
  * - Emits an event when inventorization is completed.
+ * - Navigates to the detail page of the item after saving.
  *
  * Properties:
- * - inventoryItem: Input signal for the inventory item to be edited.
+ * - isNewInventorization: Input signal indicating whether a new item is being inventorized.
+ * - inventoryItem: Input signal for the inventory item to be edited (or unset for new items).
  * - editableInventoryItem: Signal holding a mutable copy of the inventory item for editing.
  * - savedComments: Signal holding the list of persisted comments.
  * - newComments: Signal holding the list of newly added (unsaved) comments.
@@ -39,17 +41,32 @@ import { InventoriesService } from '../../services/inventories.service';
  *
  * Methods:
  * - ngOnInit(): Initializes the editable item and loads comments if an item is present.
- * - saveInvetarisation(): Saves changes to the inventory item and handles comment changes.
+ * - saveInventorization(): Saves changes to the inventory item (creates or updates) and handles comment changes.
  * - handleCommentChanges(): Processes new and deleted comments for the current item.
  * - _fetchComments(): Loads comments for the current inventory item from the backend.
  * - _handleNewComments(): Persists new comments to the backend and updates local state.
  * - _handleDeletedComments(): Deletes marked comments from the backend and updates local state.
+ * - _saveNewInventorization(): Creates a new inventory item and saves comments.
+ * - _saveExistingInventorization(): Updates an existing inventory item and saves comments.
+ * - _onInventorization(): Updates local state and emits the onInventorization event after saving.
  * - _getItemChanges(): Computes and returns the changed fields of the inventory item.
  *
- * Usage:
- * Place <app-inventorization> in your template. Bind the inventoryItem input and listen to the onInventorization output.
- * If a new inventory item should be created, pass an inventoryItem with no id.
- *
+ * Usage Examples:
+ * - New Inventorization:
+ * ```
+ * <app-inventorization
+ *   [isNewInventorization]="true"
+ *   (onInventorization)="handleInventorization($event)">
+ * </app-inventorization>
+ * ```
+ * - Editing Existing Item:
+ * ```
+ * <app-inventorization
+ *  [inventoryItem]="existingItem"
+ *  (onInventorization)="handleInventorization($event)">
+ * </app-inventorization>
+ * ```
+ * 
  * Dependencies:
  * - Angular Material modules, ReactiveFormsModule.
  * - CommentsEditorComponent, InventoryItemEditorComponent, CardComponent.
@@ -77,9 +94,22 @@ import { InventoriesService } from '../../services/inventories.service';
 export class InventorizationComponent {
   constructor(private readonly inventoriesService: InventoriesService, private readonly router: Router) { }
 
+  /**
+   * Input signal indicating whether a new inventory item is being inventorized.
+   * Defaults to false, meaning the component is in edit mode for an existing item.
+   */
   isNewInventorization = input<boolean>(false);
+
+  /**
+   * Input signal for the inventory item to be edited (or undefined for new items).
+   */
   inventoryItem = input<InventoryItem>({} as InventoryItem);
+
+  /**
+   * Signal holding a mutable copy of the inventory item for editing.
+   */
   editableInventoryItem = signal<InventoryItem>({} as InventoryItem);
+
   /**
    * Map of input fields that should be disabled in the editor.
    * This is used to prevent editing of certain fields, such as 'id' for existing items.
@@ -90,7 +120,15 @@ export class InventorizationComponent {
   disabledInputs = signal<Map<string, boolean>>(new Map<string, boolean>());
 
   savedComments = signal([] as Comment[]);
+
+  /**
+   * Signal holding the list of newly added (unsaved) comments.
+   */
   newComments = signal([] as Comment[]);
+
+  /**
+   * Signal holding the list of comments marked for deletion.
+   */
   deletedComments = signal([] as Comment[]);
 
   /**
@@ -197,6 +235,11 @@ export class InventorizationComponent {
     }
   }
 
+  /**
+   * Creates a new inventory item and saves comments.
+   * If the item already exists, logs an error.
+   * @private
+   */
   private _saveNewInventorization() {
     this.inventoriesService.getInventoryById(this.editableInventoryItem()!.id).subscribe({
       next: () => {
@@ -218,6 +261,11 @@ export class InventorizationComponent {
     });
   }
 
+  /**
+   * Updates an existing inventory item and saves comments.
+   * If the item does not exist, logs an error.
+   * @private
+   */
   private _saveExistingInventorization() {
     this.inventoriesService.getInventoryById(this.inventoryItem()!.id).subscribe({
       next: () => {
@@ -239,6 +287,12 @@ export class InventorizationComponent {
     });
   }
 
+  /**
+   * Updates local state and emits the onInventorization event after saving.
+   * Navigates to the detail page of the saved inventory item.
+   * @param inventoryItem The saved inventory item.
+   * @private
+   */
   private _onInventorization(inventoryItem: InventoryItem) {
     this.editableInventoryItem.set(inventoryItem);
     this.onInventorization.emit(inventoryItem);

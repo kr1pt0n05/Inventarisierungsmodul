@@ -105,7 +105,8 @@ export class CommentsEditorComponent {
 
   /**
    * Adds a new comment to the newComments model and emits a change event.
-   * The comment's author is currently hardcoded and should be replaced with actual user data.
+   * The comment's author is set to the current user (from AuthenticationService).
+   * The creation date is set to the current date and time.
    * Resets the input form after adding.
    */
   addComment(): void {

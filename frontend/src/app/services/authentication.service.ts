@@ -66,6 +66,12 @@ export class AuthenticationService {
     return (this.oauthService.hasValidIdToken() && this.oauthService.hasValidAccessToken());
   }
 
+  /**
+   * Retrieves the username of the authenticated user.
+   * 
+   * @returns {string} - Returns the username of the authenticated user.
+   * If the username is not available, it returns an empty string.
+   */
   getUsername(): string {
     return this.oauthService.getIdentityClaims()?.['name'] || '';
   }
