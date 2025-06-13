@@ -4,14 +4,158 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+
+    <list default="true" id="b0635f81-cb1b-4b97-9498-b1bb9f73d29a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/InventoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/repository/InventoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/CommentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExcelService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExcelService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExtensionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/ExtensionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/InventoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/InventoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/TagService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/hs_esslingen/insy/service/TagService.java" afterDir="false" />
     <list default="true" id="0d2c07a2-65a4-4799-95b0-9e8659a2ba31" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/../frontend/src/app/models/Order.ts" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Valentinn02&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/kr1pt0n05/Inventarisierungsmodul.git&quot;,
+    &quot;accountId&quot;: &quot;85f063b4-1b93-4e03-a647-fa5a77ffaa19&quot;
+  }
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2xh4t349gJqNTg37CsEfswkFinq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "HTTP Request.http-requests-log | #1.executor": "Run",
+    "HTTP Request.http-requests-log | #10.executor": "Run",
+    "HTTP Request.http-requests-log | #11.executor": "Run",
+    "HTTP Request.http-requests-log | #13.executor": "Run",
+    "HTTP Request.http-requests-log | #14.executor": "Run",
+    "HTTP Request.http-requests-log | #16.executor": "Run",
+    "HTTP Request.http-requests-log | #18.executor": "Run",
+    "HTTP Request.http-requests-log | #2.executor": "Run",
+    "HTTP Request.http-requests-log | #20.executor": "Run",
+    "HTTP Request.http-requests-log | #22.executor": "Run",
+    "HTTP Request.http-requests-log | #24.executor": "Run",
+    "HTTP Request.http-requests-log | #26.executor": "Run",
+    "HTTP Request.http-requests-log | #3.executor": "Run",
+    "HTTP Request.http-requests-log | #30.executor": "Run",
+    "HTTP Request.http-requests-log | #32.executor": "Run",
+    "HTTP Request.http-requests-log | #4.executor": "Run",
+    "HTTP Request.http-requests-log | #5.executor": "Run",
+    "HTTP Request.http-requests-log | #50.executor": "Run",
+    "HTTP Request.http-requests-log | #51.executor": "Run",
+    "HTTP Request.http-requests-log | #6.executor": "Run",
+    "HTTP Request.http-requests-log | #7.executor": "Run",
+    "HTTP Request.http-requests-log | #8.executor": "Run",
+    "HTTP Request.http-requests-log | #9.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.InsyApplication.executor": "Run",
+    "git-widget-placeholder": "main-Valentin",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Sandr/Documents/GitHub/Inventarisierungsmodul/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="HTTP Request.http-requests-log | #8">
+    <configuration name="http-requests-log | #4" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#4" index="4" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="http-requests-log | #5" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#5" index="5" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="http-requests-log | #6" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#6" index="6" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="http-requests-log | #7" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#7" index="7" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="http-requests-log | #8" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" executionIdentifier="#8" index="8" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="HTTP Request.http-requests-log | #8" />
+        <item itemvalue="HTTP Request.http-requests-log | #7" />
+        <item itemvalue="HTTP Request.http-requests-log | #6" />
+        <item itemvalue="HTTP Request.http-requests-log | #5" />
+        <item itemvalue="HTTP Request.http-requests-log | #4" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b0635f81-cb1b-4b97-9498-b1bb9f73d29a" name="Changes" comment="" />
+      <created>1748377185864</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748377185864</updated>
+      <workItem from="1748377188631" duration="51000" />
+      <workItem from="1748424345828" duration="9868000" />
+      <workItem from="1748511808523" duration="6445000" />
+      <workItem from="1748946480665" duration="118000" />
+      <workItem from="1748966533968" duration="14466000" />
+      <workItem from="1749033083744" duration="14492000" />
+      <workItem from="1749284039580" duration="3687000" />
+      <workItem from="1749455854245" duration="15336000" />
+      <workItem from="1749546491470" duration="8706000" />
+      <workItem from="1749647235886" duration="121000" />
+      <workItem from="1749654922008" duration="17000" />
+      <workItem from="1749741579922" duration="1452000" />
+      <workItem from="1749746863033" duration="7094000" />
+    </task>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
