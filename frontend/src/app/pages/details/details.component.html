@@ -5,7 +5,7 @@
             <h1 class="font-semibold text-2xl">{{inventoryItemInternal.get('description')}}</h1>
             <h2>{{inventoryItemInternal.get('id')}}</h2>
         </div>
-        <a mat-button color="primary" routerLink="/edit/{{inventoryItemInternal.get('id')}}">Bearbeiten</a>
+        <a mat-button color="primary" [routerLink]="['/edit', inventoryItemInternal.get('id')]">Bearbeiten</a>
     </div>
 
     <!-- Divider -->
