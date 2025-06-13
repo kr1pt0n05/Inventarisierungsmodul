@@ -27,6 +27,12 @@ export class OrdersComponent implements OnInit{
 
   // Orders
   orders: Order[] = [];
+  numberOfArticles = () => {
+    return this.orders.flatMap(order => order.articles).length;
+  }
+  checkedArticles = () => {
+    return this.orders.flatMap(order => order.articles).filter(article => article.checked);
+  }
 
   // get all active orders
   ngOnInit(): void {
@@ -99,14 +105,21 @@ export class OrdersComponent implements OnInit{
   }
 
 
-  // "Jetzt inventarisieren" Button
+  // "Artikel inventarisieren" or "Erweiterungen" inventarisieren Button
   // Will redirect to Details Page for inventarizing selected articles
-  inventarize() {
-    const checkedOrders: any[] = this.orders.flatMap(order => order.articles).filter(article => article.checked);
-    if(checkedOrders.length === 1){
-      this.router.navigate(['/inventory/', checkedOrders[0].id]);
+  // if component = false: inventorize as new Inventory Item, if component = true: inventorize as component of an already existing Inventory Item
+  inventarizeSingleArticle() {
+
+    const checkedArticles = this.checkedArticles();
+
+    // Inventorize single article as new Inventory Item
+    if (checkedArticles.length === 1) {
+      this.router.navigate(['/orderize/', checkedArticles.at(0)?.article_id]);
     }
-    //this.router.navigate(['/inventory/']);
+  }
+
+  inventarize(){
+    console.log("Inventarize");
   }
 
 }
