@@ -1,8 +1,13 @@
+import { AsyncPipe } from '@angular/common';
 import { Component, model } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { InventoryItem } from '../../models/inventory-item';
+import { map, Observable, startWith } from 'rxjs';
+import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
+import { AuthenticationService } from '../../services/authentication.service';
+import { CacheInventoryService } from '../../services/cache-inventory.service';
 import { CardComponent } from "../card/card.component";
 
 /**
@@ -36,33 +41,28 @@ import { CardComponent } from "../card/card.component";
   selector: 'app-inventory-item-editor',
   imports: [
     CardComponent,
+    MatFormFieldModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatAutocompleteModule,
+    AsyncPipe
   ],
   templateUrl: './inventory-item-editor.component.html',
   styleUrl: './inventory-item-editor.component.css'
 })
 export class InventoryItemEditorComponent {
+  constructor(private readonly cache: CacheInventoryService, private readonly authService: AuthenticationService) { }
   /**
    * Holds the current inventory item being edited.
    */
   inventoryItem = model<InventoryItem>({} as InventoryItem);
+  disabledInputs = model<Map<string, boolean>>(new Map<string, boolean>());
 
   /**
    * Defines the fields to display in the editor and their labels.
    */
-  inventoryItemColumns = new Map<string, string>([
-    ['costCenter', 'Kostenstelle'],
-    ['id', 'Inventarnummer'],
-    ['description', 'Geräte-/Softwaretyp'],
-    ['company', 'Firma'],
-    ['price', 'Preis'],
-    ['createdAt', 'Bestelldatum'],
-    ['serialNumber', 'Seriennummer'],
-    ['location', 'Standort/Nutzer:in'],
-    ['orderer', 'Bestellt von']
-  ]);
+  inventoryItemColumns = inventoryItemDisplayNames;
 
   /**
    * Map of FormControl objects for each inventory item property.
@@ -76,16 +76,32 @@ export class InventoryItemEditorComponent {
    */
   formGroup = new FormGroup(Object.fromEntries(this.formControls.entries()));
 
+  options = new Map<string, string[]>();
+  filteredOptions = new Map<string, Observable<string[]>>();
+
   /**
    * Initializes the form controls with the current inventory item values.
    * Sets up a subscription to synchronize form changes with the inventory item model.
    */
   ngOnInit() {
-    if (this.inventoryItem()) {
-      for (const [key, control] of this.formControls.entries()) {
-        control.setValue(this.inventoryItem()![key as keyof InventoryItem]);
+    this._setupFormControls();
+    this._setupAutocomplete();
+
+    for (const [key, control] of this.formControls.entries()) {
+      if (this.disabledInputs().get(key)) {
+        control.disable();
+        console.log(`Input ${key} is disabled.`);
       }
     }
+  }
+
+  private _setupFormControls() {
+    if (this.inventoryItem()) {
+      for (const [key, control] of this.formControls.entries()) {
+        control.setValue(this.inventoryItem()![key as keyof InventoryItem]) ?? '';
+      }
+    }
+
     this.formGroup.valueChanges.subscribe(value => {
       this.inventoryItem.update(item => {
         for (const [key, control] of this.formControls.entries()) {
@@ -94,8 +110,41 @@ export class InventoryItemEditorComponent {
         return item;
       });
     });
+
+    if (!this.inventoryItem().created_at) {
+      this.formControls.get('created_at')?.setValue(new Date().toISOString().split('T')[0]);
+    }
+    if (!this.inventoryItem().orderer) {
+      this.formControls.get('orderer')?.setValue(this.authService.getUsername() ?? '-');
+    }
+
   }
 
+  private _setupAutocomplete() {
+    for (const key of inventoryItemDisplayNames.keys()) {
+      this.options.set(key, [] as string[]);
+    }
+    this.cache.getCostCenters().subscribe(costCenters => this.options.set('cost_center', costCenters));
+    this.cache.getCompanies().subscribe(companies => this.options.set('company', companies));
+    this.cache.getSerialNumbers().subscribe(serialNumbers => this.options.set('serial_number', serialNumbers));
+    this.cache.getLocations().subscribe(locations => this.options.set('location', locations));
+    this.cache.getOrderers().subscribe(orderers => this.options.set('orderer', orderers));
+
+    for (const [key, control] of this.formControls.entries()) {
+      this.filteredOptions.set(key, control.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filter(value || '', key))
+        )
+      );
+    }
+
+  }
+
+  private _filter(value: string, id: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.options.get(id)?.filter(option => option.toLowerCase().includes(filterValue)) ?? [];
+  }
   // TODO: Implement auto complete, validation
 
 }
