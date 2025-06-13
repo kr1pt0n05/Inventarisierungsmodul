@@ -277,10 +277,10 @@ export class InventorizationComponent {
    * @private
    */
   private _saveExistingInventorization() {
-    this.inventoriesService.getInventoryById(this.inventoryItem()!.id).subscribe({
+    this.inventoriesService.getInventoryById(this.editableInventoryItem()!.id).subscribe({
       next: () => {
         this.handleCommentChanges();
-        this.inventoriesService.updateInventoryById(this.inventoryItem()!.id, this._getItemChanges()).subscribe({
+        this.inventoriesService.updateInventoryById(this.editableInventoryItem()!.id, this._getItemChanges()).subscribe({
           next: (updatedItem) => {
             this._onInventorization(updatedItem);
           },
