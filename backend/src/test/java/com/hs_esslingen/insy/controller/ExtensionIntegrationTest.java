@@ -43,7 +43,7 @@ public class ExtensionIntegrationTest {
         String jsonBody = objectMapper.writeValueAsString(dto);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                .post("/inventories/2/components") // <- Route ggf. anpassen
+                .post("/inventories/2/components")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody))
                 .andExpect(status().isCreated())

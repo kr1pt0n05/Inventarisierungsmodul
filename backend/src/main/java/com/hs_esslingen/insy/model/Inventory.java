@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -130,10 +129,6 @@ public class Inventory {
 
     // Adds an extension to the inventory and updates the price accordingly
     public void addExtension(Extension extension) {
-        System.out.println("Extensions (IDs): " + this.extensions.stream()
-                .map(Extension::getId)
-                .collect(Collectors.toList()));
-
         if (!this.extensions.contains(extension)) {
             this.extensions.add(extension);
             extension.setInventory(this);
