@@ -2,7 +2,6 @@ import {Component, input, OnInit, signal} from '@angular/core';
 import {InventoryItemEditorComponent} from '../../components/inventory-item-editor/inventory-item-editor.component';
 import {InventoryItem} from '../../models/inventory-item';
 import {Article} from '../../models/Article';
-import {OrderService} from '../../services/order.service';
 import {InventoriesService} from '../../services/inventories.service';
 
 @Component({
@@ -60,5 +59,11 @@ export class OrderizationComponent implements OnInit{
         console.error('Error creating new inventory item:', error);
       }
     })
+  }
+
+
+  // navigate back to Orders
+  navigateBack() {
+    window.history.back();
   }
 }

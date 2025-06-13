@@ -11,7 +11,7 @@
                 'opacity-50': this.checkedCount() != 1,
                 'hover:bg-he-lightblue': checkedCount() === 1
                 }"
-               (click)="inventarize()"
+               (click)="inventarizeSingleArticle()"
         >
           Artikel inventarisieren
         </button>
@@ -21,28 +21,17 @@
                 'opacity-50': this.checkedCount() < 1,
                 'hover:bg-he-lightblue': checkedCount() >= 1
                 }"
-                (click)="inventarize()"
+                (click)="inventarizeSingleArticle()"
         >
           Erweiterungen inventarisieren
         </button>
-
-        <button class="bg-he-darkblue text-white font-medium py-3 px-6 rounded-full w-full"
-                [ngClass]="{
-                'opacity-50': this.checkedCount() <= 1,
-                'hover:bg-he-lightblue': checkedCount() > 1
-                }"
-                (click)="inventarize()"
-        >
-          Artikel mit Erweiterungen inventarisieren
-        </button>
-
       </div>
     </app-card>
   </div>
 
 
   <div class="w-2/3">
-    <app-card title="Zu inventarisierende Artikel (2)">
+    <app-card title="Zu inventarisierende Artikel ({{numberOfArticles()}})">
       <div card-content>
 
         <div card-content class="flex items-center justify-between space-x-4">
