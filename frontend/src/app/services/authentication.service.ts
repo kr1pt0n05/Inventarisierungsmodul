@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {OAuthService} from 'angular-oauth2-oidc';
-import {authCodeFlowConfig} from '../app.config';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { authCodeFlowConfig } from '../app.config';
 
 
 /**
@@ -65,5 +65,8 @@ export class AuthenticationService {
   validToken(): boolean {
     return (this.oauthService.hasValidIdToken() && this.oauthService.hasValidAccessToken());
   }
-}
 
+  getUsername(): string {
+    return this.oauthService.getIdentityClaims()?.['name'] || '';
+  }
+}
