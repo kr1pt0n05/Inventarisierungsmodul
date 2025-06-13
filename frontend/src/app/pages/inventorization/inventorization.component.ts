@@ -1,11 +1,13 @@
 import { Component, EventEmitter, input, Output, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { Router } from '@angular/router';
 import { CardComponent } from "../../components/card/card.component";
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
@@ -57,6 +59,7 @@ import { InventoriesService } from '../../services/inventories.service';
 @Component({
   selector: 'app-inventorization',
   imports: [
+    MatButtonModule,
     MatDividerModule,
     MatExpansionModule,
     MatChipsModule,
@@ -72,31 +75,22 @@ import { InventoriesService } from '../../services/inventories.service';
   styleUrl: './inventorization.component.css'
 })
 export class InventorizationComponent {
-  constructor(private readonly inventoriesService: InventoriesService) { }
+  constructor(private readonly inventoriesService: InventoriesService, private readonly router: Router) { }
 
-  /**
-   * Input signal for the inventory item to be edited.
-   */
-  inventoryItem = input<InventoryItem | undefined>(undefined);
-
-  /**
-   * Signal holding a mutable copy of the inventory item for editing.
-   */
+  isNewInventorization = input<boolean>(false);
+  inventoryItem = input<InventoryItem>({} as InventoryItem);
   editableInventoryItem = signal<InventoryItem>({} as InventoryItem);
-
   /**
-   * Signal holding the list of persisted comments.
+   * Map of input fields that should be disabled in the editor.
+   * This is used to prevent editing of certain fields, such as 'id' for existing items.
+   * 
+   * Default is an empty map, meaning no fields are disabled initially.
+   * For existing items, the 'id' field is set to true to disable it.
    */
+  disabledInputs = signal<Map<string, boolean>>(new Map<string, boolean>());
+
   savedComments = signal([] as Comment[]);
-
-  /**
-   * Signal holding the list of newly added (unsaved) comments.
-   */
   newComments = signal([] as Comment[]);
-
-  /**
-   * Signal holding the list of comments marked for deletion.
-   */
   deletedComments = signal([] as Comment[]);
 
   /**
@@ -108,11 +102,10 @@ export class InventorizationComponent {
    * Initializes the editable inventory item and loads comments if an item is present.
    */
   ngOnInit() {
-    if (this.inventoryItem() !== undefined) {
-      this.editableInventoryItem.set({ ...this.inventoryItem()! });
-    }
+    this.editableInventoryItem.set({ ...this.inventoryItem() });
 
-    if (this.inventoryItem() && this.inventoryItem()!.id) {
+    if (!this.isNewInventorization()) {
+      this.disabledInputs.set(new Map<string, boolean>([['id', true]]));
       this._fetchComments();
     }
   }
@@ -122,40 +115,33 @@ export class InventorizationComponent {
    * Emits the onInventorization event after saving.
    */
   saveInventorization() {
-    if (this.inventoryItem() && this.inventoryItem()!.id) {
-      this._getItemChanges(); // For debugging purposes, log the changes
-      this.inventoriesService.updateInventoryById(this.inventoryItem()!.id, this._getItemChanges()).subscribe({
-        next: (updatedItem) => {
-          this.editableInventoryItem.set(updatedItem);
-          console.log('Inventory item updated successfully:', updatedItem);
-        },
-        error: (error) => {
-          console.error('Error updating inventory item:', error);
-        }
-      });
-      this.handleCommentChanges();
+    if (this.isNewInventorization()) {
+      this._saveNewInventorization();
     } else {
-      this.inventoriesService.addInventoryItem(this.editableInventoryItem()).subscribe({
-        next: (newItem) => {
-          this.editableInventoryItem.set(newItem);
-          console.log('New inventory item created successfully:', newItem);
-        },
-        error: (error) => {
-          console.error('Error creating new inventory item:', error);
-        }
-      });
-      this.handleCommentChanges();
+      if (Object.keys(this._getItemChanges()).length > 0) {
+        this._saveExistingInventorization();
+      } else {
+        console.warn('No changes detected, skipping save.');
+        this._onInventorization(this.editableInventoryItem());
+      }
     }
-    this.onInventorization.emit(this.editableInventoryItem());
   }
 
   /**
    * Processes new and deleted comments for the current inventory item.
    */
   handleCommentChanges() {
-    if (this.inventoryItem() && this.inventoryItem()!.id) {
-      this._handleDeletedComments();
-      this._handleNewComments();
+    if (this.editableInventoryItem().id) {
+      this.inventoriesService.getInventoryById(this.editableInventoryItem().id).subscribe({
+        next: () => {
+          this._handleDeletedComments();
+          this._handleNewComments();
+          this._fetchComments();
+        },
+        error: (error) => {
+          console.error('Inventory item not found:', error);
+        }
+      });
     }
   }
 
@@ -165,7 +151,7 @@ export class InventorizationComponent {
    * @private
    */
   private _fetchComments() {
-    this.inventoriesService.getCommentsForId(this.inventoryItem()!.id).subscribe({
+    this.inventoriesService.getCommentsForId(this.editableInventoryItem()!.id).subscribe({
       next: (comments) => { this.savedComments.update(() => comments) },
       error: (error) => { console.error('Error fetching comments:', error); }
     });
@@ -178,7 +164,7 @@ export class InventorizationComponent {
    */
   private _handleNewComments() {
     for (const comment of this.newComments()) {
-      this.inventoriesService.addCommentToId(this.inventoryItem()!.id, comment).subscribe({
+      this.inventoriesService.addCommentToId(this.editableInventoryItem()!.id, comment).subscribe({
         next: (savedComment) => {
           this.savedComments.update(currentComments => [...currentComments, savedComment]);
           this.newComments.update(currentNewComments => currentNewComments.filter(c => c !== comment));
@@ -198,7 +184,7 @@ export class InventorizationComponent {
   private _handleDeletedComments() {
     for (const comment of this.deletedComments()) {
       if (comment.id) {
-        this.inventoriesService.deleteCommentFromId(this.inventoryItem()!.id, comment.id).subscribe({
+        this.inventoriesService.deleteCommentFromId(this.editableInventoryItem()!.id, comment.id).subscribe({
           next: () => {
             this.savedComments.update(currentComments => currentComments.filter(c => c.id !== comment.id));
             this.deletedComments.update(currentDeletedComments => currentDeletedComments.filter(c => c !== comment));
@@ -209,6 +195,55 @@ export class InventorizationComponent {
         });
       }
     }
+  }
+
+  private _saveNewInventorization() {
+    this.inventoriesService.getInventoryById(this.editableInventoryItem()!.id).subscribe({
+      next: () => {
+        console.error('Inventory item already exists, cannot create a new one.');
+      },
+
+      error: () => {
+        this.inventoriesService.addInventoryItem(this.editableInventoryItem()).subscribe({
+          next: (newItem) => {
+            this.handleCommentChanges();
+            this._onInventorization(newItem);
+          },
+
+          error: (error) => {
+            console.error('Error creating new inventory item:', error);
+          }
+        });
+      }
+    });
+  }
+
+  private _saveExistingInventorization() {
+    this.inventoriesService.getInventoryById(this.inventoryItem()!.id).subscribe({
+      next: () => {
+        this.handleCommentChanges();
+        this.inventoriesService.updateInventoryById(this.inventoryItem()!.id, this._getItemChanges()).subscribe({
+          next: (updatedItem) => {
+            this._onInventorization(updatedItem);
+          },
+
+          error: (error) => {
+            console.error('Error updating inventory item:', error);
+          }
+        });
+      },
+
+      error: () => {
+        console.error('Inventory item does not exist, cannot update.');
+      }
+    });
+  }
+
+  private _onInventorization(inventoryItem: InventoryItem) {
+    this.editableInventoryItem.set(inventoryItem);
+    this.onInventorization.emit(inventoryItem);
+    console.log('Inventorization completed:', inventoryItem);
+    this.router.navigate(['/inventory/', inventoryItem.id]);
   }
 
   /**
