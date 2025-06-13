@@ -17,25 +17,17 @@ import com.hs_esslingen.insy.repository.CompanyRepository;
 import com.hs_esslingen.insy.repository.ExtensionRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ExtensionService {
 
     private final ExtensionRepository extensionRepository;
+    private final InventoryService inventoryService;
     private final InventoryRepository inventoryRepository;
     private final CompanyRepository companyRepository;
     private final ExtensionMapper extensionMapper;
-
-    public ExtensionService(
-            ExtensionRepository extensionsRepository,
-            InventoryRepository inventoriesRepository,
-            CompanyRepository companiesRepository,
-            ExtensionMapper extensionsMapper) {
-
-        this.extensionRepository = extensionsRepository;
-        this.inventoryRepository = inventoriesRepository;
-        this.companyRepository = companiesRepository;
-        this.extensionMapper = extensionsMapper;
-    }
 
     /**
      * Retrieves all extensions for a given inventory.
@@ -61,13 +53,10 @@ public class ExtensionService {
      * @return the created ExtensionsResponseDTO
      */
     public ExtensionResponseDTO addExtension(Integer inventoryId, ExtensionCreateDTO dto) {
-
         Inventory inventory = inventoryRepository.findById(inventoryId)
                 .orElseThrow(() -> new NotFoundException("Inventory not found with id: " + inventoryId));
 
         Extension extension = extensionMapper.toEntity(dto);
-
-        // Muss extra gesetzt werden, da nicht in DTO enthalten
         extension.setInventory(inventory);
 
         if (dto.getCompanyName() != null) {
@@ -75,12 +64,12 @@ public class ExtensionService {
                     .findByName(dto.getCompanyName())
                     .orElseGet(() -> companyRepository.save(new Company(dto.getCompanyName())));
             extension.setCompany(company);
-            company.addExtension(extension);
         }
 
         inventory.addExtension(extension);
-
-        inventoryRepository.save(inventory);
+        inventoryService.changeFullTextSearchString(inventory);
+        extensionRepository.save(extension);
+        inventoryRepository.flush();
 
         return extensionMapper.toDto(extension);
     }
@@ -173,6 +162,7 @@ public class ExtensionService {
             // Entferne die Extension aus dem alten Inventar
             Inventory oldInventory = extension.getInventory();
             oldInventory.removeExtension(extension);
+            inventoryService.changeFullTextSearchString(oldInventory);
 
             // Finde das neue Inventar
             Inventory newInventory = inventoryRepository.findById(patchData.getInventoryId())
@@ -181,6 +171,7 @@ public class ExtensionService {
 
             // Füge die Extension zum neuen Inventar hinzu
             newInventory.addExtension(extension);
+            inventoryService.changeFullTextSearchString(newInventory);
         }
 
         Extension updated = extensionRepository.save(extension);

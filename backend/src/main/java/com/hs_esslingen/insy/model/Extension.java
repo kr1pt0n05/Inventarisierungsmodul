@@ -33,13 +33,12 @@ public class Extension {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "inventory_id", referencedColumnName = "id", nullable = false)
     @JsonBackReference
+    @JoinColumn(name = "inventory_id", referencedColumnName = "id", nullable = false)
     private Inventory inventory;
 
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
-    @JsonBackReference
     private Company company;
 
     private String description;
@@ -52,7 +51,6 @@ public class Extension {
 
     @Column(name = "created_at", nullable = false)
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
-
 
     @Builder
     public Extension(Inventory inventory, Company company, String description, String serialNumber,
