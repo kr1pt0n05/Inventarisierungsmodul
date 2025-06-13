@@ -54,7 +54,6 @@ import { CardComponent } from "../card/card.component";
     CardComponent,
     MatFormFieldModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
     AsyncPipe
