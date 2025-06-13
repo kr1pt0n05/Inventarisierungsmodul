@@ -115,7 +115,7 @@ export class InventoryItemEditorComponent {
   private _setupFormControls() {
     if (this.inventoryItem()) {
       for (const [key, control] of this.formControls.entries()) {
-        control.setValue(this.inventoryItem()![key as keyof InventoryItem]) ?? '';
+        control.setValue(this.inventoryItem()![key as keyof InventoryItem] ?? '');
       }
     }
 
