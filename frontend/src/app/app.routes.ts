@@ -5,6 +5,7 @@ import { InventorizationComponent } from './pages/inventorization/inventorizatio
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { OrdersComponent } from './pages/orders/orders.component';
 import { InventoryItemChangesResolver } from './resolver/changes.resolver';
 import { CommentsResolver } from './resolver/comments.resolver';
 import { ExtensionsResolver } from './resolver/extensions.resolver';
@@ -13,6 +14,7 @@ import { DefaultGuardService } from './services/default-guard.service';
 import {OrdersComponent} from './pages/orders/orders.component';
 import {OrderizationComponent} from './pages/orderization/orderization.component';
 import {OrderResolverService} from './resolver/order-resolver.service';
+
 
 export const routes: Routes = [
   {
@@ -59,11 +61,21 @@ export const routes: Routes = [
   },
   {
     title: 'Inventarisierung',
+    title: 'Inventarisierung bearbeiten',
     path: 'edit/:id',
     component: InventorizationComponent,
     resolve: {
       inventoryItem: InventoryItemResolver,
+      isNewInventorization: () => false,
     },
+  },
+  {
+    title: 'Neue Inventarisierung',
+    path: 'new',
+    component: InventorizationComponent,
+    resolve: {
+      isNewInventorization: () => true,
+    }
   },
   {
     title: '404 Not Found!',

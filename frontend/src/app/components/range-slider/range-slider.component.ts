@@ -3,7 +3,6 @@ import {MatSlider, MatSliderRangeThumb} from '@angular/material/slider';
 import {MatFormField} from '@angular/material/form-field';
 import {MatInput, MatLabel} from '@angular/material/input';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-range-slider',
@@ -26,6 +25,11 @@ export class RangeSliderComponent {
       this.controlMin().setValue(this.leftValue());
       this.controlMax().setValue(this.rightValue());
     });
+
+    effect(() => {
+      this.leftValue.set(this.minValue());
+      this.rightValue.set(this.maxValue());
+    });
   }
 
   minValue = input<number>(0);
@@ -37,8 +41,4 @@ export class RangeSliderComponent {
   leftValue = signal<number>(0);
   rightValue = signal<number>(1000);
 
-  ngOnInit(): void {
-    this.leftValue.set(this.minValue());
-    this.rightValue.set(this.maxValue());
-  }
 }

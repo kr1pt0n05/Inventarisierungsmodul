@@ -7,6 +7,7 @@ import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
 import { Filter } from './server-table-data-source.service';
+import {minAndMaxId, minAndMaxPrice} from '../pages/inventory/inventory.component';
 
 
 /**
@@ -194,5 +195,13 @@ export class InventoriesService {
       map(response => response.tags)
     );
   }
+
+  getMinAndMaxId():Observable<minAndMaxId> {
+    return this.http.get<minAndMaxId>(`${this.url}/maxAndMinId`);
+  }
+
+  getMinAndMaxPrice():Observable<minAndMaxPrice> {
+  return this.http.get<minAndMaxPrice>(`${this.url}/maxAndMinPrice`);
+}
 
 }
