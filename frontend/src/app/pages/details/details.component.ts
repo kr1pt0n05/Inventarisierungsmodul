@@ -1,12 +1,14 @@
 import { afterNextRender, Component, input, QueryList, ViewChildren } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
+import { RouterModule } from '@angular/router';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
 import { Extension } from '../../models/extension';
-import { InventoryItem } from '../../models/inventory-item';
+import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { Tag } from '../../models/tag';
 
 /**
@@ -43,7 +45,9 @@ import { Tag } from '../../models/tag';
     MatDividerModule,
     MatExpansionModule,
     MatChipsModule,
-    DynamicListComponent
+    DynamicListComponent,
+    RouterModule,
+    MatButtonModule,
   ],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css'
@@ -76,17 +80,7 @@ export class DetailsComponent {
 
   // Defines the column headers for the different panels
   // The keys are the internal names of the columns, the values are the display names
-  inventoryItemColumns = new Map<string, string>([
-    ['costCenter', 'Kostenstelle'],
-    ['id', 'Inventarnummer'],
-    ['description', 'Geräte-/Softwaretyp'],
-    ['company', 'Firma'],
-    ['price', 'Preis'],
-    ['date', 'Bestelldatum'],
-    ['serialNumber', 'Seriennummer'],
-    ['location', 'Standort/Nutzer:in'],
-    ['orderer', 'Bestellt von']
-  ]);
+  inventoryItemColumns = inventoryItemDisplayNames;
 
   extensionColumns = new Map<string, string>([
     ['description', 'Erweiterungstyp'],
@@ -128,18 +122,14 @@ export class DetailsComponent {
 
   ngOnChanges() {
     if (this.inventoryItem() && JSON.stringify(this.inventoryItem()) !== '{}') {
-      this.inventoryItemInternal = new Map<string, string>([
-        ['description', this.inventoryItem().description ?? ''],
-        ['costCenter', this.inventoryItem().costCenter?.toString() ?? ''],
-        ['id', this.inventoryItem().id?.toString()],
-        ['company', this.inventoryItem().company ?? ''],
-        ['price', this.inventoryItem().price?.toString() ?? ''],
-        ['date', this.inventoryItem().createdAt ?? ''],
-        ['serialNumber', this.inventoryItem().serialNumber ?? ''],
-        ['location', this.inventoryItem().location ?? ''],
-        ['orderer', this.inventoryItem().orderer ?? '']
-      ]);
+      this.inventoryItemInternal = new Map<string, string>();
+
+      for (const key of this.inventoryItemColumns.keys()) {
+        const value = this.inventoryItem()[key as keyof InventoryItem];
+        this.inventoryItemInternal.set(key, value ? value.toString() : '');
+      }
       this.tags = this.inventoryItem().tags ?? [];
+
     } else {
       this.inventoryItemInternal = new Map<string, string>();
       for (let id of this.inventoryItemColumns.keys()) {
