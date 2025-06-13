@@ -112,9 +112,10 @@ export class CommentsEditorComponent {
   addComment(): void {
     const description = this.newCommentFormControl.value;
     if (description) {
+      const username = this.authService.getUsername();
       const newComment: Comment = {
         description,
-        author: this.authService.getUsername() ?? '-', // TODO: Replace with actual user data
+        author: username && username.trim() !== '' ? username : 'Unknown',
         createdAt: new Date().toLocaleString("de-De",
           {
             day: '2-digit',
