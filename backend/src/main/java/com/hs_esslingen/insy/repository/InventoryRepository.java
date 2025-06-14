@@ -28,7 +28,7 @@ public interface InventoryRepository
         BigDecimal findMaxPrice();
 
         @Query("SELECT MIN(i.price) from Inventory i")
-        BigDecimal findMinPrice();
+        Integer findMinPrice();
 
         @Query("SELECT MAX(i.id) from Inventory i")
         Integer findMaxId();

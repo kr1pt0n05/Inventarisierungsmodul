@@ -14,10 +14,10 @@ public class PriceService {
 
     public PriceDTO getMaxAndMinPrice() {
         BigDecimal maxPrice = inventoryRepository.findMaxPrice();
-        BigDecimal minPrice = inventoryRepository.findMinPrice();
+        Integer minPrice = inventoryRepository.findMinPrice();
 
         return PriceDTO.builder()
-                .maxPrice(maxPrice)
+                .maxPrice((int) Math.ceil(maxPrice.doubleValue()))
                 .minPrice(minPrice)
                 .build();
     }
