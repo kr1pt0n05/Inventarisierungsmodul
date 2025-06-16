@@ -1,4 +1,4 @@
-import { Article } from './Order';
+import { Article } from './Article';
 import { Tag } from './tag';
 
 export interface InventoryItem {
@@ -15,7 +15,6 @@ export interface InventoryItem {
   tags?: Tag[],
   is_deinventoried: boolean,
   created_at: string,
-  tags: Tag[],
   [key: string]: any
 }
 

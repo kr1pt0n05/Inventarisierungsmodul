@@ -1,8 +1,8 @@
-import {Component, input, OnInit, signal} from '@angular/core';
-import {InventoryItemEditorComponent} from '../../components/inventory-item-editor/inventory-item-editor.component';
-import {InventoryItem} from '../../models/inventory-item';
-import {Article} from '../../models/Article';
-import {InventoriesService} from '../../services/inventories.service';
+import { Component, input, OnInit, signal } from '@angular/core';
+import { InventoryItemEditorComponent } from '../../components/inventory-item-editor/inventory-item-editor.component';
+import { Article } from '../../models/Article';
+import { InventoryItem } from '../../models/inventory-item';
+import { InventoriesService } from '../../services/inventories.service';
 
 @Component({
   selector: 'app-orderization',
@@ -12,7 +12,7 @@ import {InventoriesService} from '../../services/inventories.service';
   templateUrl: './orderization.component.html',
   styleUrl: './orderization.component.css'
 })
-export class OrderizationComponent implements OnInit{
+export class OrderizationComponent implements OnInit {
 
 
   constructor(private readonly inventoriesService: InventoriesService,) {
@@ -33,15 +33,17 @@ export class OrderizationComponent implements OnInit{
    * Initializes the editable inventory item and loads comments if an item is present.
    */
   ngOnInit() {
-    if(this.article()) this.editableArticle.set({
+    if (this.article()) this.editableArticle.set({
       id: this.article()?.article_id ?? 0,
       description: this.article()?.description ?? "",
-      serialNumber: this.article()?.inventories_serial_number ?? "",
+      serial_number: this.article()?.inventories_serial_number ?? "",
       price: this.article()?.price ?? 0,
       location: this.article()?.location ?? "",
-      costCenter: "",
       company: this.article()?.company ?? "",
       orderer: this.article()?.orderer ?? "",
+      cost_center: '',
+      is_deinventoried: false,
+      created_at: ''
     });
   }
 

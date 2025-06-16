@@ -1,4 +1,5 @@
-import { Article } from "./Order";
+import { Article } from "./Article";
+
 
 export interface Extension {
   id?: number,
