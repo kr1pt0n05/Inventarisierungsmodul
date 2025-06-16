@@ -1,7 +1,6 @@
 package com.hs_esslingen.insy.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hs_esslingen.insy.model.Inventory;
@@ -24,16 +23,14 @@ public class CommentService {
 
 
     public List<CommentDTO> getCommentsByInventoryId(Integer inventoryId) {
-        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
-
-        if (inventory.isEmpty()) {
-            throw new NotFoundException("Inventory with the id: " + inventoryId + " not found");
-        }
+        //Verify that the provided Inventory exists
+        inventoryRepository.findById(inventoryId)
+                .orElseThrow(() -> new NotFoundException("Inventory with id: " + inventoryId + " not found"));
 
         // Get comments from repository
         List<Comment> comments = commentRepository.findCommentsByInventoryId(inventoryId);
 
-        // Convert to DTOs
+        // Convert to DTO
         return comments.stream()
                 .map(comment -> CommentDTO.builder()
                         .id(comment.getId())
@@ -45,14 +42,14 @@ public class CommentService {
     }
 
     public CommentDTO createComment(Integer inventoryId, CommentDTO commentDTO) {
-        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
-        if (inventory.isEmpty()) {
-            throw new NotFoundException("Inventory with id: " + inventoryId + " not found");
-        }
+        //Verify that the provided Inventory exists
+        Inventory inventory = inventoryRepository.findById(inventoryId)
+                .orElseThrow(() -> new NotFoundException("Inventory with id: " + inventoryId + " not found"));
+
         Comment comment = Comment.builder()
-                .inventories(inventory.get())
+                .inventories(inventory)
                 .description(commentDTO.getDescription())
-                .author(inventory.get().getUser())
+                .author(inventory.getUser())
                 .build();
 
         // Save and convert back to DTO
@@ -64,21 +61,19 @@ public class CommentService {
                 .createdAt(savedComment.getCreatedAt())
                 .author(savedComment.getAuthor().getName())
                 .build();
+
     }
 
     @Transactional
     public void deleteComment(Integer inventoryId, Integer commentId) {
-        // Verify that the inventory with the given id exists
-        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
+            // Verify that the inventory with the given id exists
+            inventoryRepository.findById(inventoryId)
+                .orElseThrow(() -> new NotFoundException("Inventory with id: " + inventoryId + " not found"));
 
-        if (inventory.isEmpty()) {
-            throw new NotFoundException("Inventory with id: " + inventoryId + " not found");
-        }
-        // Verify that the comment belongs to the given inventoryId
-        Optional<Comment> commentOpt = commentRepository.findByCommentIdAndInventoryId(commentId, inventoryId);
-        if (commentOpt.isEmpty()) {
-            throw new BadRequestException("Comment with id: " + commentId + " doesn't exist or doesn't belong to the inventory with id: " + inventoryId);
-        }
+            // Verify that the comment belongs to the given inventoryId
+            commentRepository.findByCommentIdAndInventoryId(commentId, inventoryId)
+                .orElseThrow(() -> new BadRequestException("Comment with id: " + commentId + " doesn't exist or doesn't belong to the inventory with id: " + inventoryId));
+
             // Delete the specific comment
             commentRepository.deleteByCommentId(commentId);
     }

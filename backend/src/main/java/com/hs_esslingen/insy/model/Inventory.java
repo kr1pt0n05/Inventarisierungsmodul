@@ -131,7 +131,6 @@ public class Inventory {
     public void addExtension(Extension extension) {
         if (!this.extensions.contains(extension)) {
             this.extensions.add(extension);
-
             extension.setInventory(this);
 
             if (this.price == null) {

@@ -3,6 +3,7 @@ package com.hs_esslingen.insy.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.hs_esslingen.insy.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.hs_esslingen.insy.dto.ExtensionCreateDTO;
@@ -16,25 +17,17 @@ import com.hs_esslingen.insy.repository.CompanyRepository;
 import com.hs_esslingen.insy.repository.ExtensionRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ExtensionService {
 
     private final ExtensionRepository extensionRepository;
+    private final InventoryService inventoryService;
     private final InventoryRepository inventoryRepository;
     private final CompanyRepository companyRepository;
     private final ExtensionMapper extensionMapper;
-
-    public ExtensionService(
-            ExtensionRepository extensionsRepository,
-            InventoryRepository inventoriesRepository,
-            CompanyRepository companiesRepository,
-            ExtensionMapper extensionsMapper) {
-
-        this.extensionRepository = extensionsRepository;
-        this.inventoryRepository = inventoriesRepository;
-        this.companyRepository = companiesRepository;
-        this.extensionMapper = extensionsMapper;
-    }
 
     /**
      * Retrieves all extensions for a given inventory.
@@ -44,7 +37,8 @@ public class ExtensionService {
      */
     public List<ExtensionResponseDTO> getAllExtensions(Integer inventoryId) {
         Inventory inventory = inventoryRepository.findById(inventoryId)
-                .orElseThrow(() -> new BadRequestException("Inventory not found with id: " + inventoryId));
+                .orElseThrow(() -> new NotFoundException("Inventory not found with id: " + inventoryId));
+      
         List<Extension> extensions = inventory.getExtensions();
         return extensions.stream()
                 .map(extensionMapper::toDto)
@@ -59,13 +53,10 @@ public class ExtensionService {
      * @return the created ExtensionsResponseDTO
      */
     public ExtensionResponseDTO addExtension(Integer inventoryId, ExtensionCreateDTO dto) {
-
         Inventory inventory = inventoryRepository.findById(inventoryId)
-                .orElseThrow(() -> new BadRequestException("Inventory not found with id: " + inventoryId));
+                .orElseThrow(() -> new NotFoundException("Inventory not found with id: " + inventoryId));
 
         Extension extension = extensionMapper.toEntity(dto);
-
-        // Muss extra gesetzt werden, da nicht in DTO enthalten
         extension.setInventory(inventory);
 
         if (dto.getCompanyName() != null) {
@@ -73,12 +64,12 @@ public class ExtensionService {
                     .findByName(dto.getCompanyName())
                     .orElseGet(() -> companyRepository.save(new Company(dto.getCompanyName())));
             extension.setCompany(company);
-            company.addExtension(extension);
         }
 
         inventory.addExtension(extension);
-
-        inventoryRepository.save(inventory);
+        inventoryService.changeFullTextSearchString(inventory);
+        extensionRepository.save(extension);
+        inventoryRepository.flush();
 
         return extensionMapper.toDto(extension);
     }
@@ -94,7 +85,7 @@ public class ExtensionService {
 
         // Suche das Inventar anhand der ID, wirft Exception, wenn nicht gefunden
         Inventory inventory = inventoryRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Inventory not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Inventory not found with id: " + id));
 
         // Suche die Extension anhand der ID im Inventar
         // Optional wird verwendet, um zu vermeiden, dass eine NullPointerException
@@ -107,7 +98,7 @@ public class ExtensionService {
         if (extensionOpt.isPresent()) {
             return extensionMapper.toDto(extensionOpt.get());
         } else {
-            throw new BadRequestException("Extension not found with id: " + componentId);
+            throw new NotFoundException("Extension not found with id: " + componentId);
         }
     }
 
@@ -123,7 +114,7 @@ public class ExtensionService {
     public ExtensionResponseDTO updateExtension(Integer id, Integer componentId, ExtensionCreateDTO patchData) {
 
         Extension extension = extensionRepository.findById(componentId)
-                .orElseThrow(() -> new BadRequestException("Extension not found with id: " + componentId));
+                .orElseThrow(() -> new NotFoundException("Extension not found with id: " + componentId));
 
         // Wenn CompanyName in Patch-Daten vorhanden ist und nicht mit der aktuellen
         // Company übereinstimmt
@@ -171,15 +162,16 @@ public class ExtensionService {
             // Entferne die Extension aus dem alten Inventar
             Inventory oldInventory = extension.getInventory();
             oldInventory.removeExtension(extension);
+            inventoryService.changeFullTextSearchString(oldInventory);
 
             // Finde das neue Inventar
             Inventory newInventory = inventoryRepository.findById(patchData.getInventoryId())
                     .orElseThrow(
-                            () -> new BadRequestException(
-                                    "Inventory not found with id: " + patchData.getInventoryId()));
+                            () -> new NotFoundException("Inventory not found with id: " + patchData.getInventoryId()));
 
             // Füge die Extension zum neuen Inventar hinzu
             newInventory.addExtension(extension);
+            inventoryService.changeFullTextSearchString(newInventory);
         }
 
         Extension updated = extensionRepository.save(extension);
@@ -194,10 +186,10 @@ public class ExtensionService {
      */
     public void deleteExtension(Integer id, Integer componentId) {
         Inventory inventory = inventoryRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Inventory not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Inventory not found with id: " + id));
 
         Extension extension = extensionRepository.findById(componentId)
-                .orElseThrow(() -> new BadRequestException("Extension not found with id: " + componentId));
+                .orElseThrow(() -> new NotFoundException("Extension not found with id: " + componentId));
 
         // Entferne die Extension aus dem Inventar
         inventory.removeExtension(extension);

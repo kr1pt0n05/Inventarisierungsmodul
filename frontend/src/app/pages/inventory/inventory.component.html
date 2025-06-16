@@ -26,8 +26,8 @@
     <app-accordion title="Inventarnummer">
       <div expansion-panel-content>
         <app-range-slider
-          [minValue]="0"
-          [maxValue]="28000"
+          [minValue]="minAndMaxId.minId"
+          [maxValue]="minAndMaxId.maxId"
           [controlMin]="$any(inventoryForm).get('minId')"
           [controlMax]="$any(inventoryForm).get('maxId')"
         /> <!-- $any needed to bypass Typescript type checking.  -->
@@ -60,8 +60,8 @@
     <app-accordion title="Preis">
       <div expansion-panel-content>
         <app-range-slider
-          [minValue]="0"
-          [maxValue]="2000"
+          [minValue]="minAndMaxPrice.minPrice"
+          [maxValue]="minAndMaxPrice.maxPrice"
           [controlMin]="$any(inventoryForm).get('minPrice')"
           [controlMax]="$any(inventoryForm).get('maxPrice')"
         /> <!-- $any needed to bypass Typescript type checking.  -->

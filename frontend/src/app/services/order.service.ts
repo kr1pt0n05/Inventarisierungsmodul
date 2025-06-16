@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Article, Order } from '../models/Order';
+import { Article } from "../models/Article";
+import { Order } from '../models/Order';
 
 @Injectable({
   providedIn: 'root'
@@ -40,5 +41,14 @@ export class OrderService {
 
   updateOrderArticle(orderId: number, articleId: number, article: Article): Observable<Article> {
     return this.http.patch<Article>(`${this.url}/${orderId}/articles/${articleId}`, article);
+  }
+
+  getOrderById(id: number): Observable<Order> {
+    return this.http.get<Order>(`${this.url}/${id}`);
+  }
+
+  // OrderId hardcoded, since it doesnt matter.
+  getArticleById(id: number): Observable<Article> {
+    return this.http.get<Article>(`${this.url}/1/items/${id}`);
   }
 }

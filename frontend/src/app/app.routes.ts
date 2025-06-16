@@ -12,6 +12,10 @@ import { CommentsResolver } from './resolver/comments.resolver';
 import { ExtensionsResolver } from './resolver/extensions.resolver';
 import { InventoryItemResolver } from './resolver/inventory-item.resolver';
 import { DefaultGuardService } from './services/default-guard.service';
+import {OrdersComponent} from './pages/orders/orders.component';
+import {OrderizationComponent} from './pages/orderization/orderization.component';
+import {OrderResolverService} from './resolver/order-resolver.service';
+
 
 export const routes: Routes = [
   {
@@ -49,6 +53,15 @@ export const routes: Routes = [
     component: OrdersComponent,
   },
   {
+    title: 'Inventarisierung der Bestellungen',
+    path: 'orderize/:id',
+    component: OrderizationComponent,
+    resolve: {
+      article: OrderResolverService,
+    },
+  },
+  {
+    title: 'Inventarisierung',
     title: 'Inventarisierung bearbeiten',
     path: 'edit/:id',
     component: InventorizationComponent,

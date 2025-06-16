@@ -27,6 +27,12 @@ export class OrdersComponent implements OnInit {
 
   // Orders
   orders: Order[] = [];
+  numberOfArticles = () => {
+    return this.orders.flatMap(order => order.articles).length;
+  }
+  checkedArticles = () => {
+    return this.orders.flatMap(order => order.articles).filter(article => article.checked);
+  }
 
   // get all active orders
   ngOnInit(): void {
