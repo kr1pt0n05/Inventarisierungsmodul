@@ -177,7 +177,6 @@ export class InventoryItemEditorComponent {
     }
     this.cache.getCostCenters().subscribe(costCenters => this.options.set('cost_center', costCenters));
     this.cache.getCompanies().subscribe(companies => this.options.set('company', companies));
-    this.cache.getSerialNumbers().subscribe(serialNumbers => this.options.set('serial_number', serialNumbers));
     this.cache.getLocations().subscribe(locations => this.options.set('location', locations));
     this.cache.getOrderers().subscribe(orderers => this.options.set('orderer', orderers));
 

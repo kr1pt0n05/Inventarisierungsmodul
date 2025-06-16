@@ -7,14 +7,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable, startWith } from 'rxjs';
 import { Extension, extensionDisplayNames } from '../../models/extension';
 import { inventoryItemDisplayNames } from '../../models/inventory-item';
 import { AuthenticationService } from '../../services/authentication.service';
 import { CacheInventoryService } from '../../services/cache-inventory.service';
-import { InventoriesService } from '../../services/inventories.service';
-import { OrderService } from '../../services/order.service';
 
 
 @Component({
@@ -87,10 +84,7 @@ export class ExtensionEditorComponent {
 
   constructor(
     private readonly cache: CacheInventoryService,
-    private readonly authService: AuthenticationService,
-    private readonly inventoriesService: InventoriesService,
-    private readonly orderService: OrderService,
-    private readonly router: Router, route: ActivatedRoute) { }
+    private readonly authService: AuthenticationService,) { }
 
   /**
    * Angular lifecycle hook.
@@ -185,8 +179,6 @@ export class ExtensionEditorComponent {
     }
     this.cache.getCostCenters().subscribe(costCenters => this.options.set('cost_center', costCenters));
     this.cache.getCompanies().subscribe(companies => this.options.set('company', companies));
-    this.cache.getSerialNumbers().subscribe(serialNumbers => this.options.set('serial_number', serialNumbers));
-    this.cache.getLocations().subscribe(locations => this.options.set('location', locations));
     this.cache.getOrderers().subscribe(orderers => this.options.set('orderer', orderers));
 
     for (const [key, control] of this.formControls.entries()) {
