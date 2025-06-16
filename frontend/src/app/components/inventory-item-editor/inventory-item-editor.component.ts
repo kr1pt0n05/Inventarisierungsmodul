@@ -107,6 +107,17 @@ export class InventoryItemEditorComponent {
     this._setupFormControls();
     this._setupAutocomplete();
 
+    this._updateValuesFromInput();
+
+  }
+
+  ngOnChanges() {
+    // Reset form controls when inventoryItem changes
+    this.initialValues = { ...this.inventoryItem() };
+    this._updateValuesFromInput();
+    this.formGroup.markAsPristine();
+    this.formGroup.markAsUntouched();
+
     for (const [key, control] of this.formControls.entries()) {
       if (this.disabledInputs().includes(key)) {
         control.disable();
@@ -122,12 +133,6 @@ export class InventoryItemEditorComponent {
    * @private
    */
   private _setupFormControls() {
-    if (this.inventoryItem()) {
-      for (const [key, control] of this.formControls.entries()) {
-        control.setValue(this.inventoryItem()![key as keyof InventoryItem] ?? '');
-      }
-    }
-
     this.formGroup.valueChanges.subscribe(value => {
       this.inventoryItem.update(item => {
         for (const [key, control] of this.formControls.entries()) {
@@ -138,14 +143,28 @@ export class InventoryItemEditorComponent {
 
       this.isValid.emit(this.formGroup.valid && this.requiredInputs().every(input => this.formControls.get(input)?.value));
     });
+  }
 
+  private _updateValuesFromInput() {
+    if (this.initialValues) {
+      for (const [key, control] of this.formControls.entries()) {
+        control.setValue(this.initialValues![key as keyof InventoryItem] ?? '');
+      }
+    }
     if (!this.inventoryItem().created_at) {
-      this.formControls.get('created_at')?.setValue(new Date().toISOString().split('T')[0]);
+      this.formControls.get('created_at')?.setValue(new Date().toLocaleString("de-De",
+        {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }).replace(',', ''));
     }
     if (!this.inventoryItem().orderer) {
-      this.formControls.get('orderer')?.setValue(this.authService.getUsername() ?? '-');
+      this.formControls.get('orderer')?.setValue(this.authService.getUsername());
     }
-
   }
 
   /**
@@ -182,9 +201,8 @@ export class InventoryItemEditorComponent {
    * @private
    */
   private _filter(value: string, id: string): string[] {
-    const filterValue = value.toLowerCase();
+    const filterValue = String(value).toLowerCase() ?? '';
     return this.options.get(id)?.filter(option => option.toLowerCase().includes(filterValue)) ?? [];
   }
-  // TODO: Implement validation and required fields
 
 }
