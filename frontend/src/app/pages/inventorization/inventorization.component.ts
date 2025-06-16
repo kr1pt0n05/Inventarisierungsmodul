@@ -13,7 +13,7 @@ import { CommentsEditorComponent } from "../../components/comments-editor/commen
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
 import { Comment } from '../../models/comment';
 import { InventoryItem, inventoryItemFromArticle } from '../../models/inventory-item';
-import { Article, ArticleId } from '../../models/Order';
+import { Article, ArticleId, fixSingleArticleString } from '../../models/Order';
 import { InventoriesService } from '../../services/inventories.service';
 import { OrderService } from '../../services/order.service';
 
@@ -21,64 +21,67 @@ import { OrderService } from '../../services/order.service';
 /**
  * InventorizationComponent
  *
- * This Angular component provides the main interface for viewing and editing an inventory item,
- * including its associated comments. It coordinates the editing of item details and the management
- * of comments (adding, deleting, and fetching).
+ * This Angular component provides an interface for creating or editing an inventory item,
+ * including management of associated comments and integration with order articles.
  *
- * Features:
+ * Main Features:
  * - Loads and displays an inventory item for editing, or provides an empty form for new items.
  * - Handles saving of inventory item changes and creation of new inventory items.
  * - Manages comments: fetches, adds, and deletes comments for the inventory item.
- * - Emits an event when inventorization is completed.
- * - Navigates to the detail page of the item after saving.
+ * - Handles navigation after saving, depending on the context (new item, extension, or order).
+ * - Supports pre-filling the form with article data for new items.
  *
- * Properties:
- * - isNewInventorization: Input signal indicating whether a new item is being inventorized.
- * - inventoryItem: Input signal for the inventory item to be edited (or unset for new items).
- * - editableInventoryItem: Signal holding a mutable copy of the inventory item for editing.
- * - savedComments: Signal holding the list of persisted comments.
- * - newComments: Signal holding the list of newly added (unsaved) comments.
- * - deletedComments: Signal holding the list of comments marked for deletion.
- * - onInventorization: Output event emitter, triggered when inventorization is saved.
+ * Inputs:
+ * - isNewInventorization: Indicates whether a new item is being inventorized (boolean).
+ * - inventoryItem: The inventory item to be edited (InventoryItem).
+ * - order_id, article_id: Optional IDs for order/article context.
+ *
+ * Outputs:
+ * - onInventorization: Emits the saved inventory item after saving.
+ *
+ * Signals:
+ * - editableInventoryItem: Mutable copy of the inventory item for editing.
+ * - savedComments: List of persisted comments.
+ * - newComments: List of newly added (unsaved) comments.
+ * - deletedComments: List of comments marked for deletion.
+ * - disabledInputs: Array of input field names that should be disabled.
+ * - itemArticles, extensionArticles: Lists of article identifiers for batch processing.
  *
  * Methods:
- * - ngOnInit(): Initializes the editable item and loads comments if an item is present.
+ * - ngOnChanges(): Initializes the editable item and loads comments if an item is present.
  * - saveInventorization(): Saves changes to the inventory item (creates or updates) and handles comment changes.
  * - handleCommentChanges(): Processes new and deleted comments for the current item.
- * - _fetchComments(): Loads comments for the current inventory item from the backend.
- * - _handleNewComments(): Persists new comments to the backend and updates local state.
- * - _handleDeletedComments(): Deletes marked comments from the backend and updates local state.
+ * - _fetchComments(id): Loads comments for the current inventory item from the backend.
+ * - _handleNewComments(id): Persists new comments to the backend and updates local state.
+ * - _handleDeletedComments(id): Deletes marked comments from the backend and updates local state.
  * - _saveNewInventorization(): Creates a new inventory item and saves comments.
  * - _saveExistingInventorization(): Updates an existing inventory item and saves comments.
- * - _onInventorization(): Updates local state and emits the onInventorization event after saving.
+ * - _onInventorization(item): Updates local state, emits the event, and navigates based on context.
+ * - _setArticleAsInventoryItem(articleStrings): Sets the current article as the inventory item based on provided article strings.
+ * - _resetComments(): Clears all comment signals.
+ * - _updateImportedArticle(): Updates the imported article after inventorization.
  * - _getItemChanges(): Computes and returns the changed fields of the inventory item.
  *
  * Usage Examples:
  * - New Inventorization with Empty Form:
- * ```
- * <app-inventorization
- *   [isNewInventorization]="true"
- *   (onInventorization)="handleInventorization($event)">
- * </app-inventorization>
- * ```
- * 
+ *   <app-inventorization
+ *     [isNewInventorization]="true"
+ *     (onInventorization)="handleInventorization($event)">
+ *   </app-inventorization>
+ *
  * - New Inventorization with Pre-filled Data:
- * ```
- * <app-inventorization
- *   [isNewInventorization]="true"
- *   [inventoryItem]="newItem"
- *   (onInventorization)="handleInventorization($event)">
- * </app-inventorization>
- * ```
- * 
+ *   <app-inventorization
+ *     [isNewInventorization]="true"
+ *     [inventoryItem]="newItem"
+ *     (onInventorization)="handleInventorization($event)">
+ *   </app-inventorization>
+ *
  * - Editing Existing Item:
- * ```
- * <app-inventorization
- *  [inventoryItem]="existingItem"
- *  (onInventorization)="handleInventorization($event)">
- * </app-inventorization>
- * ```
- * 
+ *   <app-inventorization
+ *     [inventoryItem]="existingItem"
+ *     (onInventorization)="handleInventorization($event)">
+ *   </app-inventorization>
+ *
  * Dependencies:
  * - Angular Material modules, ReactiveFormsModule.
  * - CommentsEditorComponent, InventoryItemEditorComponent, CardComponent.
@@ -104,65 +107,27 @@ import { OrderService } from '../../services/order.service';
   styleUrl: './inventorization.component.css'
 })
 export class InventorizationComponent {
-  constructor(private readonly inventoriesService: InventoriesService, private readonly orderService: OrderService, private readonly router: Router, route: ActivatedRoute) {
-    route.queryParams.subscribe(val => {
-      // put the code from ngOnInit here 
-      console.log('Query params:', val);
-
-
-      if (val['extensionArticles']) {
-        this.extensionArticles.set([...val['extensionArticles']]);
-      } else {
-        this.extensionArticles.set([]);
-      }
-
-      if (val['itemArticles']) {
-        this.itemArticles.set([...val['itemArticles']]);
-      } else {
-        this.itemArticles.set([]);
-      }
-
-      if (this.itemArticles().length > 0) {
-        this._setArticleAsInventoryItem(this.itemArticles);
-        this._resetComments();
-
-      } else {
-        console.log(this.editableInventoryItem());
-        this.currentArticleId = {} as ArticleId;
-        this.editableInventoryItem.set({} as InventoryItem);
-        if (this.extensionArticles().length > 0) {
-          //this._setArticleAsInventoryItem(this.extensionArticles);
-          console.log('Implementation for extension articles is not yet done.');
-        }
-      }
-
-    });
-  }
-
   /**
    * Input signal indicating whether a new inventory item is being inventorized.
    * Defaults to false, meaning the component is in edit mode for an existing item.
    */
   isNewInventorization = model<boolean>(false);
-
-  order_id = input<number | undefined>(undefined);
-  article_id = input<number | undefined>(undefined);
-  itemArticles = signal<string[]>([]);
-  extensionArticles = signal<string[]>([]);
-
-  currentArticleId: ArticleId = {} as ArticleId;
-
   /**
    * Input signal for the inventory item to be edited (or undefined for new items).
    */
   inventoryItem = input<InventoryItem>({} as InventoryItem);
 
   /**
+   * Output event emitter, triggered when inventorization is saved.
+   */
+  onInventorization = output<InventoryItem>();
+
+
+  /**
    * Signal holding a mutable copy of the inventory item for editing.
    */
   editableInventoryItem = signal<InventoryItem>({} as InventoryItem);
   isEditedValid = signal<boolean>(false);
-
   /**
    * Signal holding an array of input field names that should be disabled.
    */
@@ -172,32 +137,58 @@ export class InventorizationComponent {
    * Signal holding the list of comments that have been persisted (saved).
    */
   savedComments = signal([] as Comment[]);
-
   /**
    * Signal holding the list of newly added (unsaved) comments.
    */
   newComments = signal([] as Comment[]);
-
   /**
    * Signal holding the list of comments marked for deletion.
    */
   deletedComments = signal([] as Comment[]);
 
-  /**
-   * Output event emitter, triggered when inventorization is saved.
-   */
-  onInventorization = output<InventoryItem>();
+  itemArticles = signal<string[]>([]);
+  extensionArticles = signal<string[]>([]);
 
+  currentArticleId: ArticleId = {} as ArticleId;
+
+
+  constructor(private readonly inventoriesService: InventoriesService, private readonly orderService: OrderService, private readonly router: Router, route: ActivatedRoute) {
+    route.queryParams.subscribe(val => {
+      if (val['extensionArticles']) {
+        this.extensionArticles.set(fixSingleArticleString([...val['extensionArticles']]));
+      } else {
+        this.extensionArticles.set([]);
+      }
+
+      if (val['itemArticles']) {
+        this.itemArticles.set(fixSingleArticleString([...val['itemArticles']]));
+      } else {
+        this.itemArticles.set([]);
+      }
+
+      if (this.itemArticles().length > 0) {
+        this._setArticleAsInventoryItem(this.itemArticles);
+        this._resetComments();
+
+      } else {
+        this.currentArticleId = {} as ArticleId;
+        this.editableInventoryItem.set({} as InventoryItem);
+      }
+
+    });
+  }
 
   /**
    * Initializes the editable inventory item and loads comments if an item is present.
+   * - For editing: disables the 'id' field and loads comments for the item.
+   * - For new items: disables the 'created_at' field and resets all comment signals.
    */
   ngOnChanges() {
     this.editableInventoryItem.set({ ...this.inventoryItem() });
 
     if (!this.isNewInventorization()) {
       this.disabledInputs.set(['id']);
-      this._fetchComments(this.editableInventoryItem().id!);
+      this._fetchComments(this.editableInventoryItem().id);
     } else {
       this.disabledInputs.set(['created_at']);
       this._resetComments();
@@ -205,25 +196,28 @@ export class InventorizationComponent {
   }
 
   /**
-   * Saves changes to the inventory item and handles comment changes.
-   * Emits the onInventorization event after saving.
+   * Saves the inventory item and associated comments.
+   * - If creating a new item, attempts to create it and then handle comments.
+   * - If editing and changes exist, updates the item and handles comments.
+   * - If no changes, only processes comments and emits the event.
+   * Emits the onInventorization event after completion.
    */
   saveInventorization() {
     if (this.isNewInventorization()) {
       this._saveNewInventorization();
+    } else if (Object.keys(this._getItemChanges()).length > 0) {
+      this._saveExistingInventorization();
     } else {
-      if (Object.keys(this._getItemChanges()).length > 0) {
-        this._saveExistingInventorization();
-      } else {
-        console.warn('No changes detected, skipping save.');
-        this.handleCommentChanges();
-        this._onInventorization(this.editableInventoryItem());
-      }
+      console.warn('No changes detected, skipping save.');
+      this.handleCommentChanges();
+      this._onInventorization(this.editableInventoryItem());
     }
   }
 
   /**
    * Processes new and deleted comments for the current inventory item.
+   * Fetches the latest comments after all changes are processed.
+   * If the item does not exist, logs an error.
    */
   handleCommentChanges() {
     if (this.editableInventoryItem().id) {
@@ -241,34 +235,10 @@ export class InventorizationComponent {
     }
   }
 
-  private _resetComments() {
-    this.savedComments.set([]);
-    this.newComments.set([]);
-    this.deletedComments.set([]);
-  }
-
   /**
-   * Sets the current article as the inventory item based on the provided article strings.
-   * Updates the editableInventoryItem signal with the inventory item derived from the article.
-   * @param articleStrings Signal containing the article strings in the format "orderId,articleId".
-   * @private
-   */
-  private _setArticleAsInventoryItem(articleStrings: WritableSignal<string[]>) {
-    [this.currentArticleId.orderId, this.currentArticleId.articleId] = articleStrings()[0].split(',').map(Number);
-    this.orderService.getOrderArticleByIds(this.currentArticleId.orderId, this.currentArticleId.articleId).subscribe({
-      next: (article) => {
-        this.editableInventoryItem.set(inventoryItemFromArticle(article!));
-        articleStrings.update(articles => articles.slice(1)); // Remove the first article after setting it
-      },
-      error: (error) => {
-        console.error('Error fetching order article:', error);
-      }
-    });
-  }
-
-  /**
-   * Loads comments for the current inventory item from the backend.
-   * Updates the savedComments signal.
+   * Loads all comments for the given inventory item from the backend.
+   * Updates the savedComments signal with the fetched comments.
+   * @param id The inventory item's ID.
    * @private
    */
   private _fetchComments(id: number) {
@@ -279,8 +249,9 @@ export class InventorizationComponent {
   }
 
   /**
-   * Persists new comments to the backend and updates local state.
-   * Removes successfully saved comments from the newComments signal and adds them to savedComments.
+   * Adds all new (unsaved) comments to the backend for the given inventory item.
+   * On success, moves the comment from newComments to savedComments.
+   * @param id The inventory item's ID.
    * @private
    */
   private _handleNewComments(id: number) {
@@ -298,8 +269,9 @@ export class InventorizationComponent {
   }
 
   /**
-   * Deletes marked comments from the backend and updates local state.
-   * Removes successfully deleted comments from the deletedComments and savedComments signals.
+   * Deletes all comments marked for deletion from the backend for the given inventory item.
+   * On success, removes the comment from both deletedComments and savedComments.
+   * @param id The inventory item's ID.
    * @private
    */
   private _handleDeletedComments(id: number) {
@@ -319,12 +291,23 @@ export class InventorizationComponent {
   }
 
   /**
-   * Creates a new inventory item and saves comments.
+   * Resets all comment-related signals (saved, new, and deleted comments) to empty arrays.
+   * @private
+   */
+  private _resetComments() {
+    this.savedComments.set([]);
+    this.newComments.set([]);
+    this.deletedComments.set([]);
+  }
+
+  /**
+   * Attempts to create a new inventory item in the backend.
    * If the item already exists, logs an error.
+   * On success, handles comments and navigates accordingly.
    * @private
    */
   private _saveNewInventorization() {
-    this.inventoriesService.getInventoryById(this.editableInventoryItem()!.id).subscribe({
+    this.inventoriesService.getInventoryById(this.editableInventoryItem().id).subscribe({
       next: () => {
         console.error('Inventory item already exists, cannot create a new one.');
       },
@@ -348,15 +331,16 @@ export class InventorizationComponent {
   }
 
   /**
-   * Updates an existing inventory item and saves comments.
+   * Attempts to update an existing inventory item in the backend.
    * If the item does not exist, logs an error.
+   * On success, handles comments and navigates accordingly.
    * @private
    */
   private _saveExistingInventorization() {
-    this.inventoriesService.getInventoryById(this.editableInventoryItem()!.id).subscribe({
+    this.inventoriesService.getInventoryById(this.editableInventoryItem().id).subscribe({
       next: () => {
         this.handleCommentChanges();
-        this.inventoriesService.updateInventoryById(this.editableInventoryItem()!.id, this._getItemChanges()).subscribe({
+        this.inventoriesService.updateInventoryById(this.editableInventoryItem().id, this._getItemChanges()).subscribe({
           next: (updatedItem) => {
             this._onInventorization(updatedItem);
           },
@@ -373,25 +357,13 @@ export class InventorizationComponent {
     });
   }
 
-  private _updateImportedArticle() {
-    const articleUpdates = {
-      inventories_id: this.editableInventoryItem().id,
-      is_inventoried: true,
-      is_extension: false,
-    } as unknown as Article;
-    this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
-      next: (updatedArticle) => {
-        console.log('Article updated successfully:', updatedArticle);
-      },
-      error: (error) => {
-        console.error('Error updating article:', error);
-      }
-    });
-  }
-
   /**
    * Updates local state and emits the onInventorization event after saving.
-   * Navigates to the detail page of the saved inventory item.
+   * Navigates to the appropriate page depending on context:
+   * - If there are more item articles, navigates to '/new' for the next.
+   * - If there are extension articles, navigates to '/new-extension'.
+   * - If in order context, navigates to '/orders'.
+   * - Otherwise, navigates to the detail page of the saved inventory item.
    * @param inventoryItem The saved inventory item.
    * @private
    */
@@ -412,18 +384,60 @@ export class InventorizationComponent {
   }
 
   /**
+   * Sets the current article as the inventory item based on the provided article strings.
+   * - Parses the first string as "orderId,articleId".
+   * - Loads the article and sets it as the editable inventory item.
+   * - Removes the processed article from the list.
+   * @param articleStrings Signal containing the article strings in the format "orderId,articleId".
+   * @private
+   */
+  private _setArticleAsInventoryItem(articleStrings: WritableSignal<string[]>) {
+    [this.currentArticleId.orderId, this.currentArticleId.articleId] = articleStrings()[0].split(',').map(Number);
+    this.orderService.getOrderArticleByIds(this.currentArticleId.orderId, this.currentArticleId.articleId).subscribe({
+      next: (article) => {
+        this.editableInventoryItem.set(inventoryItemFromArticle(article!));
+        articleStrings.update(articles => articles.slice(1)); // Remove the first article after setting it
+      },
+      error: (error) => {
+        console.error('Error fetching order article:', error);
+      }
+    });
+  }
+
+  /**
+   * Updates the imported article in the backend after inventorization.
+   * Sets the article as inventoried and links it to the inventory item.
+   * @private
+   */
+  private _updateImportedArticle() {
+    const articleUpdates = {
+      inventories_id: this.editableInventoryItem().id,
+      is_inventoried: true,
+      is_extension: false,
+    } as unknown as Article;
+    this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
+      next: (updatedArticle) => {
+        console.log('Article updated successfully:', updatedArticle);
+      },
+      error: (error) => {
+        console.error('Error updating article:', error);
+      }
+    });
+  }
+
+  /**
    * Computes and returns the changed fields of the inventory item compared to the original.
+   * Only fields with changed values are included in the returned object.
    * @returns {InventoryItem} An object containing only the changed fields.
    * @private
    */
   private _getItemChanges(): InventoryItem {
     const changes: InventoryItem = {} as InventoryItem;
     for (const [key, value] of Object.entries(this.editableInventoryItem())) {
-      if (value !== this.inventoryItem()![key as keyof InventoryItem]) {
+      if (value !== this.inventoryItem()[key as keyof InventoryItem]) {
         changes[key as keyof InventoryItem] = value;
       }
     }
-    console.log('Changes detected:', changes);
     return changes;
   }
 }
