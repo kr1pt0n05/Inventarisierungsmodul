@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { ExtensionEditorComponent } from './components/extension-editor/extension-editor.component';
 import { DetailsComponent } from './pages/details/details.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { InventorizationComponent } from './pages/inventorization/inventorization.component';
@@ -63,6 +64,15 @@ export const routes: Routes = [
     resolve: {
       isNewInventorization: () => true,
     }
+  },
+  {
+    title: 'Neue Erweiterung',
+    path: 'new-extension',
+    component: ExtensionEditorComponent,
+    resolve: {
+      isNewExtension: () => true,
+    }
+
   },
   {
     title: '404 Not Found!',
