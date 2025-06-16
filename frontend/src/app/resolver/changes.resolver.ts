@@ -15,36 +15,34 @@ export class InventoryItemChangesResolver implements Resolve<Change[]> {
   constructor(private readonly invetoriesService: InventoriesService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Change[]> {
-    let changes: Observable<Change[]>;
-    if (false) { // Set to false to use mock data
-
+    const debug = false; // Set to true to use mock data
+    if (!debug) {
+      return this.invetoriesService.getChangesForId(parseInt(route.paramMap.get('id')!));
     } else {
       console.warn('Using mock data for changes resolver');
 
-      changes = of([
+      return of([
         {
           id: 1,
-          changedAt: '2023-10-01',
-          inventoryNumber: parseInt(route.paramMap.get('id')!),
+          createdAt: '2023-10-01T10:00:00Z',
           changedBy: 'Max Mustermann',
           changedTable: 'extensions',
           changedColumn: 'price',
-          oldValue: '100.00',
-          newValue: '120.00'
+          attributeChanged: 'price',
+          valueFrom: '100.00',
+          valueTo: '120.00'
         },
         {
           id: 2,
-          changedAt: '2023-10-02',
-          inventoryNumber: parseInt(route.paramMap.get('id')!),
+          createdAt: '2023-10-02T11:00:00Z',
           changedBy: 'Erika Musterfrau',
           changedTable: 'inventory_items',
           changedColumn: 'location',
-          oldValue: 'F1.312',
-          newValue: 'F1.313'
+          attributeChanged: 'location',
+          valueFrom: 'F1.312',
+          valueTo: 'F1.313'
         }
       ]);
     }
-
-    return changes;
   }
 }

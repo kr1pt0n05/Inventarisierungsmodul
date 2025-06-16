@@ -1,9 +1,10 @@
 export interface Change {
   id: number;
-  changedAt: string;
+  createdAt: string;
   changedBy: string;
   changedTable: string;
   changedColumn: string;
-  oldValue: string;
-  newValue: string;
+  attributeChanged: string;
+  valueFrom: string;
+  valueTo: string;
 }
