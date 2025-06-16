@@ -1,12 +1,12 @@
-import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
-import {CardComponent} from '../../components/card/card.component';
-import {AccordionComponent} from '../../components/accordion/accordion.component';
-import {MatButton} from '@angular/material/button';
-import {MatCheckbox} from '@angular/material/checkbox';
+import { NgClass } from '@angular/common';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
-import {NgClass} from '@angular/common';
-import {OrderService} from '../../services/order.service';
-import {Order} from '../../models/Order';
+import { AccordionComponent } from '../../components/accordion/accordion.component';
+import { CardComponent } from '../../components/card/card.component';
+import { Article, Order } from '../../models/Order';
+import { OrderService } from '../../services/order.service';
 
 @Component({
   selector: 'app-orders',
@@ -20,7 +20,7 @@ import {Order} from '../../models/Order';
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
 })
-export class OrdersComponent implements OnInit{
+export class OrdersComponent implements OnInit {
 
   constructor(private readonly router: Router, private readonly orderService: OrderService) {
   }
@@ -45,13 +45,13 @@ export class OrdersComponent implements OnInit{
   // Accordion
   @ViewChildren(AccordionComponent) accordions!: QueryList<AccordionComponent>;
 
-  openAllAccordion(){
+  openAllAccordion() {
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.openAll();
     })
   }
 
-  closeAllAccordions(){
+  closeAllAccordions() {
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.closeAll();
     })
@@ -99,14 +99,49 @@ export class OrdersComponent implements OnInit{
   }
 
 
-  // "Jetzt inventarisieren" Button
-  // Will redirect to Details Page for inventarizing selected articles
-  inventarize() {
-    const checkedOrders: any[] = this.orders.flatMap(order => order.articles).filter(article => article.checked);
-    if(checkedOrders.length === 1){
-      this.router.navigate(['/inventory/', checkedOrders[0].id]);
+  // "Jetzt inventarisieren" Button'
+  /**
+   * Inventarize the checked articles in the selected mode.
+   * - asItems: Inventarize all checked articles as items.
+   * - asExtensions: Inventarize all checked articles as extensions.
+   * - addToFirst: Inventarize the first checked article as an item and the rest as extensions of the first article.
+   * @param mode - The mode of inventorization: 'asItems', 'asExtensions', or 'addToFirst'.
+   */
+  inventarize(mode: string) {
+    const checkedOrders: Article[] = this.orders.flatMap(order => order.articles).filter(article => article.checked);
+    if (checkedOrders.length >= 1) {
+      const itemArticles: number[][] = [];
+      const extensionArticles: number[][] = [];
+      const route = ['/new']
+      console.log('Inventarize mode:', mode);
+      console.log('Checked Orders:', checkedOrders);
+      switch (mode) {
+        case 'asItems':
+          for (const article of checkedOrders) {
+            itemArticles.push([this.orders.find(order => order.articles.includes(article))!.id, article.article_id]);
+          }
+          break;
+        case 'asExtensions':
+          for (const article of checkedOrders) {
+            extensionArticles.push([this.orders.find(order => order.articles.includes(article))!.id, article.article_id]);
+          }
+          route[0] = '/new-extension';
+          break;
+        case 'addToFirst':
+          if (checkedOrders.length >= 2) {
+            itemArticles.push([this.orders.find(order => order.articles.includes(checkedOrders[0]))!.id, checkedOrders[0].article_id]);
+            for (let i = 1; i < checkedOrders.length; i++) {
+              extensionArticles.push([this.orders.find(order => order.articles.includes(checkedOrders[i]))!.id, checkedOrders[i].article_id]);
+            }
+          }
+          break;
+        default:
+          console.error('Unknown mode:', mode);
+      }
+
+      this.router.navigate(route, { queryParams: { itemArticles: itemArticles, extensionArticles: extensionArticles } });
+
     }
-    //this.router.navigate(['/inventory/']);
   }
 
 }
