@@ -11,9 +11,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CardComponent } from "../../components/card/card.component";
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
+import { Article } from '../../models/Article';
 import { Comment } from '../../models/comment';
 import { InventoryItem, inventoryItemFromArticle } from '../../models/inventory-item';
-import { Article, ArticleId, fixSingleArticleString } from '../../models/Order';
+import { ArticleId, fixSingleArticleString } from '../../models/Order';
 import { InventoriesService } from '../../services/inventories.service';
 import { OrderService } from '../../services/order.service';
 
@@ -395,7 +396,7 @@ export class InventorizationComponent {
     [this.currentArticleId.orderId, this.currentArticleId.articleId] = articleStrings()[0].split(',').map(Number);
     this.orderService.getOrderArticleByIds(this.currentArticleId.orderId, this.currentArticleId.articleId).subscribe({
       next: (article) => {
-        this.editableInventoryItem.set(inventoryItemFromArticle(article!));
+        this.editableInventoryItem.set(inventoryItemFromArticle(article));
         articleStrings.update(articles => articles.slice(1)); // Remove the first article after setting it
       },
       error: (error) => {

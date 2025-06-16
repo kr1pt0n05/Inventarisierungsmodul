@@ -5,7 +5,8 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 import { AccordionComponent } from '../../components/accordion/accordion.component';
 import { CardComponent } from '../../components/card/card.component';
-import { Article, Order } from '../../models/Order';
+import { Article } from '../../models/Article';
+import { Order } from '../../models/Order';
 import { OrderService } from '../../services/order.service';
 
 @Component({
@@ -106,6 +107,16 @@ export class OrdersComponent implements OnInit {
 
 
   // "Jetzt inventarisieren" Button'
+
+  private getArticleOrderId(article: Article): number {
+    const order = this.orders.find(order => order.articles.includes(article));
+    return order ? order.id : -1;
+  }
+
+  private collectArticles(articles: Article[]): number[][] {
+    return articles.map(article => [this.getArticleOrderId(article), article.article_id]);
+  }
+
   /**
    * Inventarize the checked articles in the selected mode.
    * - asItems: Inventarize all checked articles as items.
@@ -115,39 +126,35 @@ export class OrdersComponent implements OnInit {
    */
   inventarize(mode: string) {
     const checkedOrders: Article[] = this.orders.flatMap(order => order.articles).filter(article => article.checked);
-    if (checkedOrders.length >= 1) {
-      const itemArticles: number[][] = [];
-      const extensionArticles: number[][] = [];
-      const route = ['/new']
-      console.log('Inventarize mode:', mode);
-      console.log('Checked Orders:', checkedOrders);
-      switch (mode) {
-        case 'asItems':
-          for (const article of checkedOrders) {
-            itemArticles.push([this.orders.find(order => order.articles.includes(article))!.id, article.article_id]);
-          }
-          break;
-        case 'asExtensions':
-          for (const article of checkedOrders) {
-            extensionArticles.push([this.orders.find(order => order.articles.includes(article))!.id, article.article_id]);
-          }
-          route[0] = '/new-extension';
-          break;
-        case 'addToFirst':
-          if (checkedOrders.length >= 2) {
-            itemArticles.push([this.orders.find(order => order.articles.includes(checkedOrders[0]))!.id, checkedOrders[0].article_id]);
-            for (let i = 1; i < checkedOrders.length; i++) {
-              extensionArticles.push([this.orders.find(order => order.articles.includes(checkedOrders[i]))!.id, checkedOrders[i].article_id]);
-            }
-          }
-          break;
-        default:
-          console.error('Unknown mode:', mode);
-      }
-
-      this.router.navigate(route, { queryParams: { itemArticles: itemArticles, extensionArticles: extensionArticles } });
-
+    if (checkedOrders.length < 1) {
+      return;
     }
+
+    let itemArticles: number[][] = [];
+    let extensionArticles: number[][] = [];
+    let route: string[] = [];
+
+    switch (mode) {
+      case 'asItems':
+        itemArticles = this.collectArticles(checkedOrders);
+        route.push('/new');
+        break;
+      case 'asExtensions':
+        extensionArticles = this.collectArticles(checkedOrders);
+        route.push('/new-extension');
+        break;
+      case 'addToFirst':
+        if (checkedOrders.length >= 2) {
+          itemArticles = this.collectArticles([checkedOrders[0]]);
+          extensionArticles = this.collectArticles(checkedOrders.slice(1));
+        }
+        route.push('/new');
+        break;
+      default:
+        console.error('Unknown mode:', mode);
+    }
+
+    this.router.navigate(route, { queryParams: { itemArticles, extensionArticles } });
   }
 
 }
