@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
-import { Extension } from '../../models/extension';
+import { Extension, extensionDisplayNames } from '../../models/extension';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { Tag } from '../../models/tag';
 
@@ -56,7 +56,7 @@ import { Tag } from '../../models/tag';
 export class DetailsComponent {
   panelIdNameMap = new Map<string, string>([
     ['extensions', 'Erweiterungen'],
-    ['comments', 'Notizen'],
+    ['comments', 'Kommentare'],
     ['tags', 'Tags'],
     ['changes', 'Historie']
   ]);
@@ -83,15 +83,7 @@ export class DetailsComponent {
   // The keys are the internal names of the columns, the values are the display names
   inventoryItemColumns = inventoryItemDisplayNames;
 
-  extensionColumns = new Map<string, string>([
-    ['description', 'Erweiterungstyp'],
-    ['company', 'Bestellt bei'],
-    ['price', 'Preis in €'],
-    ['costCenter', 'Kostenstelle'],
-    ['serialNumber', 'Seriennummer'],
-    ['orderer', 'Hinzugefügt von'],
-    ['createdAt', 'Hinzugefügt am']
-  ]);
+  extensionColumns = extensionDisplayNames;
 
   commentsColumns = new Map<string, string>([
     ['description', 'Kommentar'],
@@ -115,9 +107,11 @@ export class DetailsComponent {
 
   constructor() {
     afterNextRender(() => {
-      this.panels.map((panel: MatExpansionPanel) => {
-        panel.open();
-      })
+      for (const panel of this.panels) {
+        if (!panel.id.includes('3')) {
+          panel.open();
+        }
+      }
     });
   }
 
@@ -153,7 +147,13 @@ const changesTableNames = new Map<string, string>([
 ]);
 const changesColumnNames = new Map<string, string>([
   ['location', 'Standort/Nutzer:in'],
-  ['price', 'Preis in €']
+  ['price', 'Preis in €'],
+  ['company', 'Firma'],
+  ['description', 'Beschreibung'],
+  ['serialNumber', 'Seriennummer'],
+  ['orderer', 'Besteller:in'],
+  ['costCenter', 'Kostenstelle'],
+  ['createdAt', 'Erstellungsdatum'],
 ]);
 
 /**
@@ -165,13 +165,13 @@ const changesColumnNames = new Map<string, string>([
 function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
   let changes = rawChanges.map((change: Change) => {
     const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable;
-    const changedColumnDisplayName = changesColumnNames.get(change.changedColumn) ?? change.changedColumn;
+    const changedColumnDisplayName = changesColumnNames.get(change.attributeChanged) ?? change.attributeChanged;
     return {
-      changedAt: change.changedAt,
+      changedAt: change.createdAt,
       changedBy: change.changedBy,
       change: `${changedTableDisplayName} - ${changedColumnDisplayName}`,
-      oldValue: change.oldValue,
-      newValue: change.newValue
+      oldValue: change.valueFrom,
+      newValue: change.valueTo
     };
   })
   return changes;
