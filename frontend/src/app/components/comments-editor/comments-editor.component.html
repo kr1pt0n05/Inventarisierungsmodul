@@ -12,7 +12,7 @@
                 [disabled]="newCommentFormControl.value === ''">Kommentieren</button>
         </div>
 
-        @if (displayedComments().data.length >= 0) {
+        @if (displayedComments().data.length > 0) {
         <table mat-table [dataSource]="displayedComments()" matSort>
 
             @for (id of getColumnIds(); track id) {
