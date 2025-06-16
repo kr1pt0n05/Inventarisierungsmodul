@@ -20,13 +20,13 @@ export interface ArticleId {
  * If the string contains only one comma, it is treated as a single article.
  * This is a workaround for the case where only one article is provided as a query parameter.
  *
- * @param articleSttrings - An array of article strings, which may contain a single article string.
+ * @param articleStrings - An array of article strings, which may contain a single article string.
  * @returns An array of article strings. If the input contains multiple articles, it returns the original array.
  */
-export function fixSingleArticleString(articleSttrings: string[]): string[] {
-  const singleArticleString = articleSttrings.join('');
+export function fixSingleArticleString(articleStrings: string[]): string[] {
+  const singleArticleString = articleStrings.join('');
   if (([...singleArticleString.matchAll(/,/g)]).length === 1) {
     return [singleArticleString];
   }
-  return articleSttrings;
+  return articleStrings;
 }
