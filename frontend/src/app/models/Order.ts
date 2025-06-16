@@ -8,7 +8,7 @@ export interface Order {
   articles: Article[],
 }
 
-interface Article {
+export interface Article {
   description: string,
   price: number,
   company: string,
@@ -19,4 +19,9 @@ interface Article {
   inventories_serial_number: string,
   is_extension: boolean,
   checked: boolean, // Needed for Orders page
+}
+
+export interface ArticleId {
+  orderId: number;
+  articleId: number;
 }
