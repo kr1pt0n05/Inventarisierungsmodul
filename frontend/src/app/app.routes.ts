@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { ExtensionEditorComponent } from './components/extension-editor/extension-editor.component';
 import { DetailsComponent } from './pages/details/details.component';
+import { ExtensionInventorizationComponent } from './pages/extension-inventorization/extension-inventorization.component';
 import { HomepageComponent } from './pages/homepage/homepage.component';
 import { InventorizationComponent } from './pages/inventorization/inventorization.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
@@ -68,7 +68,7 @@ export const routes: Routes = [
   {
     title: 'Neue Erweiterung',
     path: 'new-extension',
-    component: ExtensionEditorComponent,
+    component: ExtensionInventorizationComponent,
     resolve: {
       isNewExtension: () => true,
     }
