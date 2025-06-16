@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import {map, Observable} from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
@@ -81,16 +81,28 @@ export class InventoriesService {
     return this.http.get<InventoryItem>(`${this.url}/${id}`);
   }
 
-
-  addInventoryItem(item: InventoryItem) {
+  /**
+   * Adds a new inventory item to the backend.
+   * 
+   * @param item - The inventory item to add.
+   * @returns {Observable<InventoryItem>} - An observable containing the added inventory item.
+   *
+   */
+  addInventoryItem(item: InventoryItem): Observable<InventoryItem> {
     return this.http.post<InventoryItem>(this.url, item);
   }
 
-  updateInventoryById(id: number, item: InventoryItem) {
+  /**
+   * Updates an inventory items data by its ID.
+   *
+   * @param id - The ID of the inventory item to update.
+   * @returns {Observable<InventoryItem>} - An observable that completes when the update is successful.
+   */
+  updateInventoryById(id: number, item: InventoryItem): Observable<InventoryItem> {
     return this.http.patch<InventoryItem>(`${this.url}/${id}`, item);
   }
 
-    /**
+  /**
    * Fetches the comments associated with a specific inventory item by its ID.
    *
    * @param id - The ID of the inventory item for which to fetch comments.
@@ -109,14 +121,14 @@ export class InventoriesService {
   }
 
 
-   /**
-   * Fetches the extensions associated with a specific inventory item by its ID.
-   *
-   * @param id - The ID of the inventory item for which to fetch extensions.
-   * @returns {Observable<Extension[]>} - An observable containing an array of extensions.
-   */
+  /**
+  * Fetches the extensions associated with a specific inventory item by its ID.
+  *
+  * @param id - The ID of the inventory item for which to fetch extensions.
+  * @returns {Observable<Extension[]>} - An observable containing an array of extensions.
+  */
   getExtensionsForId(id: number): Observable<Extension[]> {
-    return this.http.get<any>(`${this.url}/${id}/extensions`);
+    return this.http.get<any>(`${this.url}/${id}/components`);
   }
 
   /**
@@ -126,7 +138,7 @@ export class InventoriesService {
    * @returns {Observable<any>} - An observable containing change data (could be a custom object).
    */
   getChangesForId(id: number): Observable<any> {
-    return this.http.get<any>(`${this.url}/${id}/changes`);
+    return this.http.get<any>(`${this.url}/${id}/history`);
   }
 
   /**
