@@ -121,7 +121,6 @@ export class InventoryItemEditorComponent {
     for (const [key, control] of this.formControls.entries()) {
       if (this.disabledInputs().includes(key)) {
         control.disable();
-        console.log(`Input ${key} is disabled.`);
       }
     }
   }
@@ -136,7 +135,7 @@ export class InventoryItemEditorComponent {
     this.formGroup.valueChanges.subscribe(value => {
       this.inventoryItem.update(item => {
         for (const [key, control] of this.formControls.entries()) {
-          item![key as keyof InventoryItem] = control.value;
+          item[key as keyof InventoryItem] = control.value;
         }
         return item;
       });
@@ -148,7 +147,7 @@ export class InventoryItemEditorComponent {
   private _updateValuesFromInput() {
     if (this.initialValues) {
       for (const [key, control] of this.formControls.entries()) {
-        control.setValue(this.initialValues![key as keyof InventoryItem] ?? '');
+        control.setValue(this.initialValues[key as keyof InventoryItem] ?? '');
       }
     }
     if (!this.inventoryItem().created_at) {
@@ -186,7 +185,7 @@ export class InventoryItemEditorComponent {
       this.filteredOptions.set(key, control.valueChanges
         .pipe(
           startWith(''),
-          map(value => this._filter(value || '', key))
+          map(value => this._filter(value ?? '', key))
         )
       );
     }
