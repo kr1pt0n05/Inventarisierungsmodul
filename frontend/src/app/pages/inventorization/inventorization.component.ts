@@ -1,4 +1,4 @@
-import { Component, input, model, output, signal, WritableSignal } from '@angular/core';
+import { Component, inject, input, model, output, signal, WritableSignal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -8,6 +8,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
@@ -162,6 +163,8 @@ export class InventorizationComponent {
 
 
 
+  private readonly _snackBar = inject(MatSnackBar);
+
   constructor(private readonly inventoriesService: InventoriesService,
     private readonly orderService: OrderService,
     private readonly tagsService: TagsService,
@@ -215,7 +218,7 @@ export class InventorizationComponent {
         this.availableTags.set([...tags.content]);
       },
       error: (error) => {
-        console.error('Error fetching available tags:', error);
+        this._notify('Error fetching available tags', 'error', error);
       }
     });
   }
@@ -233,7 +236,7 @@ export class InventorizationComponent {
     } else if (Object.keys(this._getItemChanges()).length > 0) {
       this._saveExistingInventorization();
     } else {
-      console.warn('No changes detected, skipping save.');
+      this._notify('No changes to save', 'info');
       this.handleCommentChanges();
       this._onInventorization(this.editableInventoryItem());
     }
@@ -257,10 +260,10 @@ export class InventorizationComponent {
         this.inventoriesService.deleteInventoryById(id).subscribe({
           next: () => {
             this.router.navigate(['/inventory']);
-            console.log('Inventory item deleted successfully:', id);
+            this._notify('Inventory item deleted successfully', 'success');
           },
           error: (error) => {
-            console.error('Error deinventorizing inventory item:', error);
+            this._notify('Error deinventorizing inventory item', 'error', error);
           }
         });
       }
@@ -286,10 +289,10 @@ export class InventorizationComponent {
           next: (item) => {
             this.handleCommentChanges();
             this.router.navigate(['/inventory/', id]);
-            console.log('Inventory item deinventorized successfully:', id);
+            this._notify('Inventory item deinventorized successfully', 'success');
           },
           error: (error) => {
-            console.error('Error deinventorizing inventory item:', error);
+            this._notify('Error deinventorizing inventory item', 'error', error);
           }
         });
       }
@@ -325,7 +328,7 @@ export class InventorizationComponent {
           this._fetchComments(id);
         },
         error: (error) => {
-          console.error('Inventory item not found:', error);
+          this._notify('Inventory item not found, cannot handle comments.', 'error', error);
         }
       });
     }
@@ -339,8 +342,12 @@ export class InventorizationComponent {
    */
   private _fetchComments(id: number) {
     this.inventoriesService.getCommentsForId(id).subscribe({
-      next: (comments) => { this.savedComments.update(() => comments) },
-      error: (error) => { console.error('Error fetching comments:', error); }
+      next: (comments) => {
+        this.savedComments.update(() => comments);
+      },
+      error: (error) => {
+        this._notify('Error fetching comments', 'error', error);
+      }
     });
   }
 
@@ -356,9 +363,10 @@ export class InventorizationComponent {
         next: (savedComment) => {
           this.savedComments.update(currentComments => [...currentComments, savedComment]);
           this.newComments.update(currentNewComments => currentNewComments.filter(c => c !== comment));
+          this._notify('Comment added successfully', 'success');
         },
         error: (error) => {
-          console.error('Error adding comment:', error);
+          this._notify('Error adding comment', 'error', error);
         }
       });
     }
@@ -377,9 +385,10 @@ export class InventorizationComponent {
           next: () => {
             this.savedComments.update(currentComments => currentComments.filter(c => c.id !== comment.id));
             this.deletedComments.update(currentDeletedComments => currentDeletedComments.filter(c => c !== comment));
+            this._notify('Comment deleted successfully', 'success');
           },
           error: (error) => {
-            console.error('Error deleting comment:', error);
+            this._notify('Error deleting comment', 'error', error);
           }
         });
       }
@@ -405,9 +414,8 @@ export class InventorizationComponent {
   private _saveNewInventorization() {
     this.inventoriesService.getInventoryById(this.editableInventoryItem().id).subscribe({
       next: () => {
-        console.error('Inventory item already exists, cannot create a new one.');
+        this._notify('Inventory item already exists, cannot create a new one.', 'error');
       },
-
       error: () => {
         this.inventoriesService.addInventoryItem(this.editableInventoryItem()).subscribe({
           next: (newItem) => {
@@ -415,11 +423,11 @@ export class InventorizationComponent {
             if (this.currentArticleId.orderId && this.currentArticleId.articleId) {
               this._updateImportedArticle();
             }
+            this._notify('Inventory item created successfully', 'success');
             this._onInventorization(newItem);
           },
-
           error: (error) => {
-            console.error('Error creating new inventory item:', error);
+            this._notify('Error creating new inventory item', 'error', error);
           }
         });
       }
@@ -438,17 +446,16 @@ export class InventorizationComponent {
         this.handleCommentChanges();
         this.inventoriesService.updateInventoryById(this.editableInventoryItem().id, this._getItemChanges()).subscribe({
           next: (updatedItem) => {
+            this._notify('Inventory item updated successfully', 'success');
             this._onInventorization(updatedItem);
           },
-
           error: (error) => {
-            console.error('Error updating inventory item:', error);
+            this._notify('Error updating inventory item', 'error', error);
           }
         });
       },
-
       error: () => {
-        console.error('Inventory item does not exist, cannot update.');
+        this._notify('Inventory item does not exist, cannot update.', 'error');
       }
     });
   }
@@ -468,7 +475,7 @@ export class InventorizationComponent {
     this.editableInventoryItem.set(inventoryItem);
     this.tags.set(inventoryItem.tags ?? []);
     this.onInventorization.emit(inventoryItem);
-    console.log('Inventorization completed:', inventoryItem);
+    this._notify('Inventorization completed successfully', 'success');
 
     if (this.itemArticles().length > 0) {
       this.router.navigate(['/new'], { queryParams: { itemArticles: [...this.itemArticles()], extensionArticles: this.extensionArticles() } });
@@ -498,13 +505,13 @@ export class InventorizationComponent {
         next: (savedTag) => {
           this.tags.update(currentTags => [...currentTags, savedTag]);
           this.newTags.update(currentNewTags => currentNewTags.filter(t => t !== tag));
-
+          this._notify('Tag created successfully', 'success');
           if (this.newTags().length === 0) {
             this._setTagsOfItem();
           }
         },
         error: (error) => {
-          console.error('Error saving tag:', error);
+          this._notify('Error saving tag', 'error', error);
         }
       });
     }
@@ -518,9 +525,10 @@ export class InventorizationComponent {
   private _setTagsOfItem() {
     this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
       next: (updatedItem) => {
+        this._notify('Tags updated successfully', 'success');
       },
       error: (error) => {
-        console.error('Error updating tags:', error);
+        this._notify('Error updating tags', 'error', error);
       }
     });
   }
@@ -542,7 +550,7 @@ export class InventorizationComponent {
         articleStrings.update(articles => articles.slice(1)); // Remove the first article after setting it
       },
       error: (error) => {
-        console.error('Error fetching order article:', error);
+        this._notify('Error fetching order article', 'error', error);
       }
     });
   }
@@ -560,10 +568,10 @@ export class InventorizationComponent {
     } as unknown as Article;
     this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
       next: (updatedArticle) => {
-        console.log('Article updated successfully:', updatedArticle);
+        this._notify('Article updated successfully', 'success');
       },
       error: (error) => {
-        console.error('Error updating article:', error);
+        this._notify('Error updating article', 'error', error);
       }
     });
   }
@@ -582,5 +590,23 @@ export class InventorizationComponent {
       }
     }
     return changes;
+  }
+
+  /**
+   * Shows a snackbar with a message and logs to the console.
+   * @param message The message to show in the snackbar.
+   * @param type 'success' or 'error' (affects styling).
+   * @param error Optional error object to log.
+   */
+  private _notify(message: string, type: 'success' | 'error' | 'info', error?: any) {
+    if (type === 'error') {
+      console.error(message, error);
+    } else {
+      console.log(message);
+    }
+    this._snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: [`${type}-snackbar`]
+    });
   }
 }

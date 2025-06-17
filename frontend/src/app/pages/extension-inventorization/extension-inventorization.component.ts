@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardComponent } from '../../components/card/card.component';
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
@@ -107,7 +108,9 @@ export class ExtensionInventorizationComponent {
     private readonly inventoriesService: InventoriesService,
     private readonly orderService: OrderService,
     private readonly router: Router, route: ActivatedRoute,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private readonly _snackBar: MatSnackBar // <--- Add MatSnackBar injection
+  ) {
     // Handles query params for extensionArticles and inventoryId, and triggers article loading if needed.
     route.queryParams.subscribe(val => {
       if (val['extensionArticles']) {
@@ -115,7 +118,6 @@ export class ExtensionInventorizationComponent {
       } else {
         this.extensionArticles.set([]);
       }
-      console.log(val);
 
       if (val['inventoryId']) {
         this.inventoryId.set(Number(val['inventoryId']));
@@ -202,28 +204,46 @@ export class ExtensionInventorizationComponent {
   onInventorization() {
     const currentId = this.inventoryId();
     if (currentId !== undefined && this.isValid()) {
-      console.log('Inventorization completed:', this.extension());
+      this._notify('Inventorization completed', 'success');
       if (this.isNewExtension()) {
         this._saveNewExtension(currentId);
       } else {
         this._saveExistingExtension();
       }
     } else {
-      console.warn('Inventorization is not valid or inventoryId is not set.');
+      this._notify('Inventorization is not valid or inventoryId is not set.', 'error');
     }
+  }
+
+  /**
+   * Shows a snackbar with a message and logs to the console.
+   * @param message The message to show in the snackbar.
+   * @param type 'success' or 'error' (affects styling).
+   * @param error Optional error object to log.
+   */
+  private _notify(message: string, type: 'success' | 'error', error?: any) {
+    if (type === 'error') {
+      console.error(message, error);
+    } else {
+      console.log(message);
+    }
+    this._snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: [`${type}-snackbar`]
+    });
   }
 
   private _saveNewExtension(currentId: number) {
     this.inventoriesService.addExtensionToId(currentId, this.extension()).subscribe({
       next: (extension) => {
-        console.log('Extension added successfully:', extension, 'Inventory ID:', this.inventoryId());
+        this._notify('Extension added successfully', 'success');
         if (this.currentArticleId.orderId !== undefined && this.currentArticleId.articleId !== undefined) {
           this._updateImportedArticle();
         }
         this._navigateOnInventorization();
       },
       error: (error) => {
-        console.error('Error adding extension:', error);
+        this._notify('Error adding extension', 'error', error);
       }
     });
   }
@@ -233,11 +253,11 @@ export class ExtensionInventorizationComponent {
       this.changes.set({ ...this.changes(), inventory_id: this.inventoryId() });
       this.inventoriesService.updateExtension(this.inventoryId()!, this.extension().id!, this.changes()).subscribe({
         next: (extension) => {
-          console.log('Extension updated successfully:', extension);
+          this._notify('Extension updated successfully', 'success');
           this._navigateOnInventorization();
         },
         error: (error) => {
-          console.error('Error updating extension:', error);
+          this._notify('Error updating extension', 'error', error);
         }
       });
     }
@@ -294,7 +314,7 @@ export class ExtensionInventorizationComponent {
       error: (error) => {
         this.inventoryItem = {} as InventoryItem;
         this.inventoryId.set(undefined);
-        console.error('Error fetching inventory item:', error);
+        this._notify('Error fetching inventory item', 'error', error);
       }
     });
   }
@@ -317,7 +337,7 @@ export class ExtensionInventorizationComponent {
         this._onChanges();
       },
       error: (error) => {
-        console.error('Error fetching order article:', error);
+        this._notify('Error fetching order article', 'error', error);
       }
     });
   }
@@ -335,10 +355,10 @@ export class ExtensionInventorizationComponent {
     } as unknown as Article;
     this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
       next: (updatedArticle) => {
-        console.log('Article updated successfully:', updatedArticle);
+        this._notify('Article updated successfully', 'success');
       },
       error: (error) => {
-        console.error('Error updating article:', error);
+        this._notify('Error updating article', 'error', error);
       }
     });
   }
@@ -362,10 +382,10 @@ export class ExtensionInventorizationComponent {
         this.inventoriesService.deleteExtensionFromId(id, extensionId).subscribe({
           next: () => {
             this.router.navigate(['/inventory', id]);
-            console.log('Extension deleted successfully');
+            this._notify('Extension deleted successfully', 'success');
           },
           error: (error) => {
-            console.error('Error deinventorizing inventory item:', error);
+            this._notify('Error deinventorizing inventory item', 'error', error);
           }
         });
       }
