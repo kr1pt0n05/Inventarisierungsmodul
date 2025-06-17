@@ -12,6 +12,7 @@ on:
     branches: ["main", "backend"]
     paths:
       - 'backend/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -27,23 +28,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push Backend to GitHub
+        name: Build and push Backend to Docker
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
           tags:  ${{ secrets.DOCKERHUB_USERNAME }}/inventarisierungsmodule:backend-1.0
-   
-      - name: Login to Github
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Backend to GitHub
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          push: true
-          tags: ghcr.io/kr1pt0n05/inventarisierungsmodul:backend-latest

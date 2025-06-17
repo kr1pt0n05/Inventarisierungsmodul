@@ -12,6 +12,7 @@ on:
     branches: ["main", "frontend"]
     paths:
       - 'frontend/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -33,17 +34,3 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/inventarisierungsmodule:frontend-1.0
-          
-      - name: Login to Github
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Frontend to GitHub
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          push: true
-          tags: ghcr.io/kr1pt0n05/inventarisierungsmodul:frontend-latest
