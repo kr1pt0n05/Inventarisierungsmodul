@@ -1,27 +1,28 @@
-import {CardComponent} from '../../components/card/card.component';
 import {
   Component, inject, OnInit,
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import {RangeSliderComponent} from '../../components/range-slider/range-slider.component';
-import {DatepickerComponent} from '../../components/datepicker/datepicker.component';
-import {InventoryListComponent} from '../../components/inventory-list/inventory-list.component';
-import {AccordionComponent} from '../../components/accordion/accordion.component';
-import {MatButton} from '@angular/material/button';
-import {FormControl, FormGroup} from '@angular/forms';
-import {ChipV2Component} from '../../components/chip-v2/chip-v2.component';
-import {ServerTableDataSourceService} from '../../services/server-table-data-source.service';
-import {CacheInventoryService} from '../../services/cache-inventory.service';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { Router } from '@angular/router';
+import { AccordionComponent } from '../../components/accordion/accordion.component';
+import { CardComponent } from '../../components/card/card.component';
+import { ChipV2Component } from '../../components/chip-v2/chip-v2.component';
+import { DatepickerComponent } from '../../components/datepicker/datepicker.component';
+import { InventoryListComponent } from '../../components/inventory-list/inventory-list.component';
+import { RangeSliderComponent } from '../../components/range-slider/range-slider.component';
+import { CacheInventoryService } from '../../services/cache-inventory.service';
+import { ServerTableDataSourceService } from '../../services/server-table-data-source.service';
 
 
 
-export interface minAndMaxId{
+export interface minAndMaxId {
   maxId: number,
   minId: number,
 }
 
-export interface minAndMaxPrice{
+export interface minAndMaxPrice {
   maxPrice: number,
   minPrice: number,
 }
@@ -89,6 +90,12 @@ export class InventoryComponent implements OnInit {
   cache = inject(CacheInventoryService);
 
   /**
+   * The Angular Router service used for navigation within the application.
+   * It allows the component to navigate to different routes, such as inventory item details.
+   */
+  router = inject(Router);
+
+  /**
    * A reference to the accordion components within the view.
    * This allows programmatic control to open or close all accordion sections.
    */
@@ -153,7 +160,7 @@ export class InventoryComponent implements OnInit {
    * Opens all sections of the accordion.
    * This method loops through all accordion components and triggers the `openAll()` method to expand all sections.
    */
-  openAllAccordion(){
+  openAllAccordion() {
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.openAll();
     })
@@ -163,10 +170,13 @@ export class InventoryComponent implements OnInit {
    * Closes all sections of the accordion.
    * This method loops through all accordion components and triggers the `closeAll()` method to collapse all sections.
    */
-  closeAllAccordions(){
+  closeAllAccordions() {
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.closeAll();
     })
   }
 
+  navigateToDetailpageOf(id: number) {
+    this.router.navigate(['/inventory', id]);
+  }
 }
