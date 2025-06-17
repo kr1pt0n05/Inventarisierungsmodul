@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d2c07a2-65a4-4799-95b0-9e8659a2ba31" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/prod.docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +49,15 @@
       <recent name="C:\Users\Sandr\Documents\GitHub\Inventarisierungsmodul\backend" />
     </key>
   </component>
+  <component name="RunManager">
+    <configuration name="InsyApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="insy" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.hs_esslingen.insy.InsyApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -68,7 +75,7 @@
       <option name="presentableId" value="Default" />
       <updated>1750149135880</updated>
       <workItem from="1750149138141" duration="3029000" />
-      <workItem from="1750161821261" duration="3658000" />
+      <workItem from="1750161821261" duration="4277000" />
     </task>
     <servers />
   </component>
