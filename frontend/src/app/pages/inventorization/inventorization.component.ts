@@ -496,7 +496,6 @@ export class InventorizationComponent {
     for (const tag of newTags) {
       this.tagsService.addTag({ name: tag } as Tag).subscribe({
         next: (savedTag) => {
-          console.log('Tag saved successfully:', savedTag);
           this.tags.update(currentTags => [...currentTags, savedTag]);
           this.newTags.update(currentNewTags => currentNewTags.filter(t => t !== tag));
 
@@ -519,7 +518,6 @@ export class InventorizationComponent {
   private _setTagsOfItem() {
     this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
       next: (updatedItem) => {
-        console.log('Tags updated successfully:', updatedItem.tags);
       },
       error: (error) => {
         console.error('Error updating tags:', error);

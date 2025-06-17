@@ -172,7 +172,6 @@ export class InventoriesService {
    * @returns {Observable<InventoryItem>} - An observable containing the updated inventory item.
    */
   updateTagsOfId(id: number, tags: Tag[]): Observable<InventoryItem> {
-    console.log(tags.map(tag => tag.id));
     return this.http.post<InventoryItem>(`${this.url}/${id}/tags`, tags.map(tag => tag.id));
   }
 
