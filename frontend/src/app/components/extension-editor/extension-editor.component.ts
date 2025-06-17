@@ -24,7 +24,6 @@ import { CacheInventoryService } from '../../services/cache-inventory.service';
     AsyncPipe,
     MatDividerModule,
     MatButtonModule,
-    MatInputModule,
   ],
   templateUrl: './extension-editor.component.html',
   styleUrl: './extension-editor.component.css'
