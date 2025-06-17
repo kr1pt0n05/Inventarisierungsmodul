@@ -46,7 +46,13 @@ export class OrdersComponent implements OnInit {
           checked: false
         }))
       }))
+
+      this.orders.forEach(order => {
+        order.articles = order.articles.filter(article => !article.is_inventoried);
+      });
+
     });
+
   }
 
   // Accordion
@@ -105,6 +111,9 @@ export class OrdersComponent implements OnInit {
     this.orders.forEach(order => {
       order.articles.forEach(article => {
         article.checked = this.allChecked;
+        if (article.checked && !this.checkedArticles.includes(article)) {
+          this.checkedArticles.push(article);
+        }
       })
     })
     this.checkedCount();

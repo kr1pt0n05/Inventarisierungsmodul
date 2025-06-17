@@ -180,10 +180,7 @@ export class ExtensionInventorizationComponent {
 
   /**
    * Called after inventorization is completed.
-   * Updates the imported article in the backend and navigates to the next step:
-   * - If there are more extension articles, navigates to '/new-extension'.
-   * - If an inventoryId is set, navigates to the inventory detail page.
-   * - Otherwise, navigates to the orders page.
+   * Updates the imported article in the backend and navigates to the next step.
    */
   onInventorization() {
     const currentId = this.inventoryId();
@@ -193,21 +190,32 @@ export class ExtensionInventorizationComponent {
         next: (extension) => {
           console.log('Extension added successfully:', extension, 'Inventory ID:', this.inventoryId());
           this._updateImportedArticle();
+          this._navigateOnInventorization();
         },
         error: (error) => {
           console.error('Error adding extension:', error);
         }
       });
 
-      if (this.extensionArticles().length > 0) {
-        this.router.navigate(['/new-extension'], { queryParams: { inventoryId: this.inventoryId(), extensionArticles: [...this.extensionArticles()] } });
-      } else if (this.inventoryId() !== undefined) {
-        this.router.navigate(['/inventory/', this.inventoryId()]);
-      } else {
-        this.router.navigate(['/orders'])
-      }
     } else {
       console.warn('Inventorization is not valid or inventoryId is not set.');
+    }
+  }
+
+  /**
+   * Navigates to the next step based on the current state:
+   * - If there are extension articles, navigates to '/new-extension' with query params.
+   * - If an inventoryId is set, navigates to the inventory detail page.
+   * - Otherwise, navigates to the orders page.
+   * @private
+   */
+  private _navigateOnInventorization() {
+    if (this.extensionArticles().length > 0) {
+      this.router.navigate(['/new-extension'], { queryParams: { inventoryId: this.inventoryId(), extensionArticles: [...this.extensionArticles()] } });
+    } else if (this.inventoryId() !== undefined) {
+      this.router.navigate(['/inventory/', this.inventoryId()]);
+    } else {
+      this.router.navigate(['/orders'])
     }
   }
 

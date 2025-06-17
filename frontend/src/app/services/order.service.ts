@@ -40,7 +40,7 @@ export class OrderService {
   }
 
   updateOrderArticle(orderId: number, articleId: number, article: Article): Observable<Article> {
-    return this.http.patch<Article>(`${this.url}/${orderId}/articles/${articleId}`, article);
+    return this.http.patch<Article>(`${this.url}/${orderId}/items/${articleId}`, article);
   }
 
   getOrderById(id: number): Observable<Order> {
