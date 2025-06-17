@@ -22,6 +22,11 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="cost_center">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Kostenstelle </th>
+      <td mat-cell *matCellDef="let element"> {{element.cost_center}} </td>
+    </ng-container>
+
     <!-- Produktbeschreibung Column -->
     <!-- Column displaying the product description -->
     <ng-container matColumnDef="description">

@@ -158,7 +158,6 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
    */
   set data(data: any[]) {
     data = Array.isArray(data) ? data : [];
-    console.log('Setting data:', data); // Add this
     this._data.next(data);
   }
 
@@ -196,7 +195,6 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set filter(filter: FormGroup) {
     this._filter = filter;
     this._filter.valueChanges.subscribe((filter: Filter) => {
-      console.log('Filter changed:', filter); // Add this
       this._queryParams.next({ ...this._queryParams.value, currentFilter: filter });
     });
   }
@@ -239,6 +237,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
           serialNumber: item.serial_number,
           location: item.location,
           orderer: item.orderer,
+          cost_center: item.cost_center,
         }));
       }
       // Update the total item count for paginator

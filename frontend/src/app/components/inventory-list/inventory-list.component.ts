@@ -84,7 +84,7 @@ export class InventoryListComponent implements AfterViewInit {
    * List of column identifiers that should be displayed in the table.
    * These correspond to the columns of the inventory items being displayed.
    */
-  displayedColumns = ['id', 'description', 'company', 'price', 'date', 'serialNumber', 'location', 'orderer'];
+  displayedColumns = ['id', 'cost_center', 'description', 'company', 'price', 'date', 'serialNumber', 'location', 'orderer'];
 
   /**
    * The data source service for managing inventory items in the table.
