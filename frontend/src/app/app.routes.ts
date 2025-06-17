@@ -74,6 +74,7 @@ export const routes: Routes = [
     component: InventorizationComponent,
     resolve: {
       isNewInventorization: () => true,
+      inventoryItem: () => ({}),
     }
   },
   {
