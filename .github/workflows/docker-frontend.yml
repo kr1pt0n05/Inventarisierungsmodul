@@ -12,6 +12,7 @@ on:
     branches: ["main", "frontend"]
     paths:
       - 'frontend/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
