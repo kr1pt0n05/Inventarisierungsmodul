@@ -37,6 +37,7 @@ export const routes: Routes = [
     title: 'Inventar',
     path: 'inventory/:id',
     component: DetailsComponent,
+    canActivate: [DefaultGuardService],
     resolve: {
       inventoryItem: InventoryItemResolver,
       extensions: ExtensionsResolver,
@@ -48,11 +49,13 @@ export const routes: Routes = [
     title: "Bestellungen",
     path: "orders",
     component: OrdersComponent,
+    canActivate: [DefaultGuardService],
   },
   {
     title: 'Inventarisierung bearbeiten',
     path: 'edit/:id',
     component: InventorizationComponent,
+    canActivate: [DefaultGuardService],
     resolve: {
       inventoryItem: InventoryItemResolver,
       isNewInventorization: () => false,
@@ -62,6 +65,7 @@ export const routes: Routes = [
     title: 'Neue Inventarisierung',
     path: 'new',
     component: InventorizationComponent,
+    canActivate: [DefaultGuardService],
     resolve: {
       isNewInventorization: () => true,
       inventoryItem: () => ({}),
@@ -71,6 +75,7 @@ export const routes: Routes = [
     title: 'Neue Erweiterung',
     path: 'new-extension',
     component: ExtensionInventorizationComponent,
+    canActivate: [DefaultGuardService],
     resolve: {
       isNewExtension: () => true,
     }
