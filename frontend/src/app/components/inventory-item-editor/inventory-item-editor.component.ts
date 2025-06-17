@@ -138,7 +138,7 @@ export class InventoryItemEditorComponent {
     this.formGroup.valueChanges.subscribe(value => {
       this.inventoryItem.update(item => {
         for (const [key, control] of this.formControls.entries()) {
-          item[key as keyof InventoryItem] = control.value;
+          item[key as keyof InventoryItem] = key === 'price' ? Number(control.value) : control.value;
         }
         return item;
       });

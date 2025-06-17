@@ -1,6 +1,6 @@
 
 import { AsyncPipe } from '@angular/common';
-import { Component, EventEmitter, model, Output } from '@angular/core';
+import { Component, model, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -47,8 +47,13 @@ export class ExtensionEditorComponent {
    * Event emitter that emits when the form validity changes.
    * Emits a boolean indicating the validity of the form.
    */
-  @Output() isValid = new EventEmitter<boolean>(false);
+  isValid = output<boolean>();
 
+  /**
+   * Event emitter that emits the current extension object when it changes.
+   * This is used to notify parent components of changes to the extension.
+   */
+  changes = output<Partial<Extension>>();
 
   /**
    * Stores the initial values of the extension for change detection.
@@ -98,7 +103,7 @@ export class ExtensionEditorComponent {
       this.disabledInputs.set(['created_at']);
     }
     if (this.requiredInputs() === undefined) {
-      this.requiredInputs.set(['cost_center', 'company', 'price', 'description']);
+      this.requiredInputs.set(['company', 'price', 'description']);
     }
 
     this._setupFormControls();
@@ -137,6 +142,8 @@ export class ExtensionEditorComponent {
       });
 
       this.isValid.emit(this.formGroup.valid && this.requiredInputs().every(input => this.formControls.get(input)?.value));
+
+      this.changes.emit(this._getChanges());
     });
   }
 
@@ -165,6 +172,16 @@ export class ExtensionEditorComponent {
     if (!this.initialValues.orderer) {
       this.formControls.get('orderer')?.setValue(this.authService.getUsername());
     }
+  }
+
+  private _getChanges(): Partial<Extension> {
+    const changes: Partial<Extension> = {};
+    for (const [key, control] of this.formControls.entries()) {
+      if (control.dirty && control.value !== this.initialValues[key as keyof Extension]) {
+        changes[key as keyof Extension] = control.value;
+      }
+    }
+    return changes;
   }
 
   /**

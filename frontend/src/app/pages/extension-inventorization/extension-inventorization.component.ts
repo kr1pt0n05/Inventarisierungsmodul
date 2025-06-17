@@ -1,4 +1,4 @@
-import { Component, model, signal, WritableSignal } from '@angular/core';
+import { Component, input, model, signal, WritableSignal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,6 +44,8 @@ export class ExtensionInventorizationComponent {
    * Holds the current extension being edited.
    */
   extension = signal<Extension>({} as Extension);
+  inputExtension = input<Extension | undefined>(undefined);
+  changes = signal<Partial<Extension>>({} as Partial<Extension>);
   /**
    * Holds the current inventoryId (if set).
    */
@@ -56,7 +58,7 @@ export class ExtensionInventorizationComponent {
   /**
    * List of required input field keys.
    */
-  requiredInputs = signal<string[]>(['cost_center', 'company', 'price', 'description']);
+  requiredInputs = signal<string[]>(['company', 'price', 'description']);
 
   /**
    * Holds the list of extension article string IDs to process (format: "orderId,articleId").
@@ -97,7 +99,6 @@ export class ExtensionInventorizationComponent {
   ));
 
 
-
   constructor(
     private readonly cache: CacheInventoryService,
     private readonly authService: AuthenticationService,
@@ -111,6 +112,7 @@ export class ExtensionInventorizationComponent {
       } else {
         this.extensionArticles.set([]);
       }
+      console.log(val);
 
       if (val['inventoryId']) {
         this.inventoryId.set(Number(val['inventoryId']));
@@ -136,11 +138,14 @@ export class ExtensionInventorizationComponent {
     if (!this.extension()) {
       this.extension.set({} as Extension);
     }
+    if (this.inputExtension() !== undefined) {
+      this.extension.set(this.inputExtension()!);
+    }
     if (this.disabledInputs() === undefined) {
       this.disabledInputs.set(this.isNewExtension() ? ['created_at'] : []);
     }
     if (this.requiredInputs() === undefined) {
-      this.requiredInputs.set(['cost_center', 'company', 'price', 'description']);
+      this.requiredInputs.set(['company', 'price', 'description']);
     }
   }
 
@@ -179,6 +184,15 @@ export class ExtensionInventorizationComponent {
   }
 
   /**
+   * Called when the user selects an article from the autocomplete.
+   * Sets the selected article as the extension and updates the form controls.
+   * @param articleStrings Signal containing the article strings in the format "orderId,articleId".
+   */
+  onExtensionChange(extension: Partial<Extension>) {
+    this.changes.set(extension);
+  }
+
+  /**
    * Called after inventorization is completed.
    * Updates the imported article in the backend and navigates to the next step.
    */
@@ -186,19 +200,43 @@ export class ExtensionInventorizationComponent {
     const currentId = this.inventoryId();
     if (currentId !== undefined && this.isValid()) {
       console.log('Inventorization completed:', this.extension());
-      this.inventoriesService.addExtensionToId(currentId, this.extension()).subscribe({
-        next: (extension) => {
-          console.log('Extension added successfully:', extension, 'Inventory ID:', this.inventoryId());
+      if (this.isNewExtension()) {
+        this._saveNewExtension(currentId);
+      } else {
+        this._saveExistingExtension();
+      }
+    } else {
+      console.warn('Inventorization is not valid or inventoryId is not set.');
+    }
+  }
+
+  private _saveNewExtension(currentId: number) {
+    this.inventoriesService.addExtensionToId(currentId, this.extension()).subscribe({
+      next: (extension) => {
+        console.log('Extension added successfully:', extension, 'Inventory ID:', this.inventoryId());
+        if (this.currentArticleId.orderId !== undefined && this.currentArticleId.articleId !== undefined) {
           this._updateImportedArticle();
+        }
+        this._navigateOnInventorization();
+      },
+      error: (error) => {
+        console.error('Error adding extension:', error);
+      }
+    });
+  }
+
+  private _saveExistingExtension() {
+    if (this.inventoryId() !== undefined) {
+      this.changes.set({ ...this.changes(), inventory_id: this.inventoryId() });
+      this.inventoriesService.updateExtension(this.inventoryId()!, this.extension().id!, this.changes()).subscribe({
+        next: (extension) => {
+          console.log('Extension updated successfully:', extension);
           this._navigateOnInventorization();
         },
         error: (error) => {
-          console.error('Error adding extension:', error);
+          console.error('Error updating extension:', error);
         }
       });
-
-    } else {
-      console.warn('Inventorization is not valid or inventoryId is not set.');
     }
   }
 

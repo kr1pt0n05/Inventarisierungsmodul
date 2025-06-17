@@ -102,7 +102,7 @@ export class InventoriesService {
    * @param id - The ID of the inventory item to update.
    * @returns {Observable<InventoryItem>} - An observable that completes when the update is successful.
    */
-  updateInventoryById(id: number, item: InventoryItem): Observable<InventoryItem> {
+  updateInventoryById(id: number, item: Partial<InventoryItem>): Observable<InventoryItem> {
     return this.http.patch<InventoryItem>(`${this.url}/${id}`, item);
   }
 
@@ -156,6 +156,10 @@ export class InventoriesService {
     return this.http.post<Extension>(`${this.url}/${id}/components`, extension);
   }
 
+  updateExtension(id: number, extensionId: number, changes: Partial<Extension>): Observable<Extension> {
+    return this.http.patch<Extension>(`${this.url}/${id}/components/${extensionId}`, changes);
+  }
+
   /**
   * Fetches the extensions associated with a specific inventory item by its ID.
   *
@@ -164,6 +168,10 @@ export class InventoriesService {
   */
   getExtensionsForId(id: number): Observable<Extension[]> {
     return this.http.get<any>(`${this.url}/${id}/components`);
+  }
+
+  getExtensionById(id: number, extensionId: number): Observable<Extension> {
+    return this.http.get<Extension>(`${this.url}/${id}/components/${extensionId}`);
   }
 
   /**

@@ -20,7 +20,7 @@ public class ExtensionCreateDTO {
 
     @JsonProperty("price")
     private BigDecimal price;
-    
-    @JsonProperty("company_name")
+
+    @JsonProperty("company")
     private String companyName;
 }

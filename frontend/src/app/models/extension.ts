@@ -10,6 +10,7 @@ export interface Extension {
   created_at: string,
   serial_number: string,
   orderer: string,
+  inventory_id?: number,
   [key: string]: any;
 }
 
@@ -17,9 +18,9 @@ export const extensionDisplayNames: Map<string, string> = new Map([
   ['description', 'Erweiterungstyp'],
   ['company', 'Bestellt bei'],
   ['price', 'Preis in €'],
-  ['cost_center', 'Kostenstelle'],
+  // ['cost_center', 'Kostenstelle'],
   ['serial_number', 'Seriennummer'],
-  ['orderer', 'Hinzugefügt von'],
+  // ['orderer', 'Hinzugefügt von'],
   ['created_at', 'Hinzugefügt am']
 ]);
 

@@ -18,7 +18,8 @@
 
             <!-- Form Section -->
             <app-extension-editor [(extension)]="extension" [(disabledInputs)]="disabledInputs"
-                [(requiredInputs)]="requiredInputs" (isValid)="onIsValidChange($event)">
+                [(requiredInputs)]="requiredInputs" (isValid)="onIsValidChange($event)"
+                (changes)="onExtensionChange($event)">
             </app-extension-editor>
 
             <!-- Inventory Item Section -->

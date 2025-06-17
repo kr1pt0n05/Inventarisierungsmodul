@@ -574,8 +574,8 @@ export class InventorizationComponent {
    * @returns {InventoryItem} An object containing only the changed fields.
    * @private
    */
-  private _getItemChanges(): InventoryItem {
-    const changes: InventoryItem = {} as InventoryItem;
+  private _getItemChanges(): Partial<InventoryItem> {
+    const changes: Partial<InventoryItem> = {} as InventoryItem;
     for (const [key, value] of Object.entries(this.editableInventoryItem())) {
       if (value !== this.inventoryItem()[key as keyof InventoryItem]) {
         changes[key as keyof InventoryItem] = value;
