@@ -1,5 +1,6 @@
 package com.hs_esslingen.insy.controller;
 
+import com.hs_esslingen.insy.dto.HistoryResponseDTO;
 import com.hs_esslingen.insy.model.History;
 import com.hs_esslingen.insy.service.HistoryService;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ public class HistoryController {
     private final HistoryService historyService;
 
     @GetMapping
-    public ResponseEntity<List<History>> getHistory(@PathVariable("id") Integer id) {
+    public ResponseEntity<List<HistoryResponseDTO>> getHistory(@PathVariable("id") Integer id) {
         return historyService.getHistory(id);
     }
 }

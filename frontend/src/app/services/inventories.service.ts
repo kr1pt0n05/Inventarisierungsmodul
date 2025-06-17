@@ -248,8 +248,8 @@ export class InventoriesService {
    * @returns {Observable<string[]>} - An observable containing a list of tags.
    */
   getAlltags(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/tags`).pipe(
-      map(response => response.tags)
+    return this.http.get<any>(`${environment.apiUrl}/tags`).pipe(
+      map(response => response.content.map((item: any) => item.name))
     );
   }
 
