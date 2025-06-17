@@ -9,8 +9,12 @@
             }
         </h1>
     </div>
-    <button mat-flat-button color="primary" (click)="saveInventorization()"
-        [disabled]="!isEditedValid()">Speichern</button>
+    <div class="flex gap-4">
+        <button mat-stroked-button color="warn" (click)="openDeinventorizationDialog()"
+            [disabled]="inventoryItem().is_deinventoried">Deinventarisieren</button>
+        <button mat-flat-button color="primary" (click)="saveInventorization()"
+            [disabled]="!isEditedValid()">Speichern</button>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 xl:grid-cols-2 p-4 gap-4">

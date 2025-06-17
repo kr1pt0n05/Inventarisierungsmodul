@@ -182,15 +182,28 @@ export class ExtensionInventorizationComponent {
    * - Otherwise, navigates to the orders page.
    */
   onInventorization() {
-    console.log('Inventorization completed:', this.extension());
-    this._updateImportedArticle();
+    const currentId = this.inventoryId();
+    if (currentId !== undefined && this.isValid()) {
+      console.log('Inventorization completed:', this.extension());
+      this.inventoriesService.addExtensionToId(currentId, this.extension()).subscribe({
+        next: (extension) => {
+          console.log('Extension added successfully:', extension, 'Inventory ID:', this.inventoryId());
+          this._updateImportedArticle();
+        },
+        error: (error) => {
+          console.error('Error adding extension:', error);
+        }
+      });
 
-    if (this.extensionArticles().length > 0) {
-      this.router.navigate(['/new-extension'], { queryParams: { inventoryId: this.inventoryId(), extensionArticles: [...this.extensionArticles()] } });
-    } else if (this.inventoryId() !== undefined) {
-      this.router.navigate(['/inventory/', this.inventoryId()]);
+      if (this.extensionArticles().length > 0) {
+        this.router.navigate(['/new-extension'], { queryParams: { inventoryId: this.inventoryId(), extensionArticles: [...this.extensionArticles()] } });
+      } else if (this.inventoryId() !== undefined) {
+        this.router.navigate(['/inventory/', this.inventoryId()]);
+      } else {
+        this.router.navigate(['/orders'])
+      }
     } else {
-      this.router.navigate(['/orders'])
+      console.warn('Inventorization is not valid or inventoryId is not set.');
     }
   }
 

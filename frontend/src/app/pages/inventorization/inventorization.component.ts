@@ -2,6 +2,7 @@ import { Component, input, model, output, signal, WritableSignal } from '@angula
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardComponent } from "../../components/card/card.component";
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
+import { DialogComponent } from '../../components/dialog/dialog.component';
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
 import { Article } from '../../models/Article';
 import { Comment } from '../../models/comment';
@@ -153,7 +155,11 @@ export class InventorizationComponent {
   currentArticleId: ArticleId = {} as ArticleId;
 
 
-  constructor(private readonly inventoriesService: InventoriesService, private readonly orderService: OrderService, private readonly router: Router, route: ActivatedRoute) {
+  constructor(private readonly inventoriesService: InventoriesService,
+    private readonly orderService: OrderService,
+    private readonly router: Router,
+    route: ActivatedRoute,
+    public dialog: MatDialog) {
     route.queryParams.subscribe(val => {
       if (val['extensionArticles']) {
         this.extensionArticles.set(fixSingleArticleString([...val['extensionArticles']]));
@@ -213,6 +219,28 @@ export class InventorizationComponent {
       this.handleCommentChanges();
       this._onInventorization(this.editableInventoryItem());
     }
+  }
+
+  openDeinventorizationDialog() {
+    const dialogRef = this.dialog.open(DialogComponent, { data: {} });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      console.log(result);
+      if (result) {
+        const id = this.editableInventoryItem().id;
+        this.inventoriesService.deinventorizeInventoryById(id).subscribe({
+          next: () => {
+            this.handleCommentChanges();
+            this.router.navigate(['/inventory/', id]);
+            console.log('Inventory item deinventorized successfully:', id);
+          },
+          error: (error) => {
+            console.error('Error deinventorizing inventory item:', error);
+          }
+        });
+      }
+    });
   }
 
   /**

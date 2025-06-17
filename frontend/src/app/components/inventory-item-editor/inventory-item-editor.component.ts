@@ -8,6 +8,7 @@ import { map, Observable, startWith } from 'rxjs';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { AuthenticationService } from '../../services/authentication.service';
 import { CacheInventoryService } from '../../services/cache-inventory.service';
+import { InventoriesService } from '../../services/inventories.service';
 import { CardComponent } from "../card/card.component";
 
 /**
@@ -62,7 +63,9 @@ import { CardComponent } from "../card/card.component";
   styleUrl: './inventory-item-editor.component.css'
 })
 export class InventoryItemEditorComponent {
-  constructor(private readonly cache: CacheInventoryService, private readonly authService: AuthenticationService) { }
+  constructor(private readonly cache: CacheInventoryService,
+    private readonly authService: AuthenticationService,
+    private readonly inventoriesService: InventoriesService) { }
   /**
    * Holds the current inventory item being edited.
    */
@@ -163,6 +166,16 @@ export class InventoryItemEditorComponent {
     }
     if (!this.inventoryItem().orderer) {
       this.formControls.get('orderer')?.setValue(this.authService.getUsername());
+    }
+    if (!this.initialValues.id) {
+      this.inventoriesService.getMinAndMaxId().subscribe({
+        next: (minAndMaxId) => {
+          this.formControls.get('id')?.setValue(minAndMaxId.maxId + 1)
+        },
+        error: (error) => {
+          console.error('Error fetching min and max ID:', error);
+        }
+      });
     }
   }
 

@@ -6,8 +6,8 @@ import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
+import { minAndMaxId, minAndMaxPrice } from '../pages/inventory/inventory.component';
 import { Filter } from './server-table-data-source.service';
-import {minAndMaxId, minAndMaxPrice} from '../pages/inventory/inventory.component';
 
 
 /**
@@ -84,7 +84,7 @@ export class InventoriesService {
 
   /**
    * Adds a new inventory item to the backend.
-   * 
+   *
    * @param item - The inventory item to add.
    * @returns {Observable<InventoryItem>} - An observable containing the added inventory item.
    *
@@ -104,6 +104,17 @@ export class InventoriesService {
   }
 
   /**
+   * Deinventorize an inventory item by its ID.
+   *
+   * @param id - The ID of the inventory item to deinventorize.
+   * @returns {Observable<void>} - An observable that completes when the deinventorization is successful.
+   */
+  deinventorizeInventoryById(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`);
+  }
+
+
+  /**
    * Fetches the comments associated with a specific inventory item by its ID.
    *
    * @param id - The ID of the inventory item for which to fetch comments.
@@ -121,6 +132,16 @@ export class InventoriesService {
     return this.http.delete<void>(`${this.url}/${id}/comments/${commentId}`);
   }
 
+  /**
+   * Adds an extension to a specific inventory item by its ID.
+   *
+   * @param id - The ID of the inventory item to which the extension will be added.
+   * @param extension - The extension data to add.
+   * @returns {Observable<Extension>} - An observable containing the added extension.
+   */
+  addExtensionToId(id: number, extension: Extension): Observable<Extension> {
+    return this.http.post<Extension>(`${this.url}/${id}/components`, extension);
+  }
 
   /**
   * Fetches the extensions associated with a specific inventory item by its ID.
@@ -131,6 +152,7 @@ export class InventoriesService {
   getExtensionsForId(id: number): Observable<Extension[]> {
     return this.http.get<any>(`${this.url}/${id}/components`);
   }
+
 
   /**
    * Fetches the changes associated with a specific inventory item by its ID.
@@ -208,12 +230,12 @@ export class InventoriesService {
     );
   }
 
-  getMinAndMaxId():Observable<minAndMaxId> {
+  getMinAndMaxId(): Observable<minAndMaxId> {
     return this.http.get<minAndMaxId>(`${this.url}/maxAndMinId`);
   }
 
-  getMinAndMaxPrice():Observable<minAndMaxPrice> {
-  return this.http.get<minAndMaxPrice>(`${this.url}/maxAndMinPrice`);
-}
+  getMinAndMaxPrice(): Observable<minAndMaxPrice> {
+    return this.http.get<minAndMaxPrice>(`${this.url}/maxAndMinPrice`);
+  }
 
 }

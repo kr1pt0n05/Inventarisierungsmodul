@@ -84,7 +84,7 @@ export class ExtensionEditorComponent {
 
   constructor(
     private readonly cache: CacheInventoryService,
-    private readonly authService: AuthenticationService,) { }
+    private readonly authService: AuthenticationService) { }
 
   /**
    * Angular lifecycle hook.

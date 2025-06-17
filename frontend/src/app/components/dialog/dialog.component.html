@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>Gegenstand wirklich Deinventarisieren?</h2>
+<mat-dialog-content>
+    <p>Der Gegenstand wird aus dem Inventar entfernt<br>
+        und kann nicht wiederhergestellt werden.</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-stroked-button color="primary" (click)="onNoClick()">Abbrechen</button>
+    <button mat-flat-button color="warn" [mat-dialog-close]="data" cdkFocusInitial>Deinventarisieren</button>
+</mat-dialog-actions>
