@@ -11,21 +11,21 @@
                 'opacity-50': this.checkedCount() < 1,
                 'hover:bg-he-lightblue': checkedCount() >= 1
                 }" (click)="inventarize('asItems')">
-          Artikel inventarisieren
+          Artikel einzeln inventarisieren
         </button>
 
         <button class="bg-he-darkblue text-white font-medium py-3 px-6 rounded-full w-full" [ngClass]="{
                 'opacity-50': this.checkedCount() < 1,
                 'hover:bg-he-lightblue': checkedCount() >= 1
                 }" (click)="inventarize('asExtensions')">
-          Erweiterungen inventarisieren
+          Als Erweiterungen inventarisieren
         </button>
 
         <button class="bg-he-darkblue text-white font-medium py-3 px-6 rounded-full w-full" [ngClass]="{
                 'opacity-50': this.checkedCount() <= 1,
                 'hover:bg-he-lightblue': checkedCount() > 1
                 }" (click)="inventarize('addToFirst')">
-          Artikel mit Erweiterungen inventarisieren
+          Artikel als ein Gegenstand inventarisieren
         </button>
 
       </div>
@@ -33,7 +33,7 @@
   </div>
 
 
-  <div class="w-2/3">
+  <div class="w-3/4">
     <app-card title="Zu inventarisierende Artikel ({{numberOfArticles()}})">
       <div card-content>
 
@@ -54,7 +54,8 @@
 
         @for (order of orders; track order.id) {
         @for (article of order.articles; track article.article_id) {
-        <app-accordion title="{{order.description}}: {{article.description}}, {{article.price}}€, {{article.company}}">
+        <app-accordion title="{{order.description}}: {{article.description}}, {{article.price}}€, {{article.company}}
+        {{checkedArticles.at(0)?.article_id === article.article_id ? '- Hauptartikel' : ''}}">
           <div expansion-panel-header>
             <mat-checkbox class="example-margin" (click)="checkBox($event, article)"
               [checked]="article.checked"></mat-checkbox>

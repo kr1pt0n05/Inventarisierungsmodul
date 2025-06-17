@@ -2,6 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { Router } from '@angular/router';
 import { AccordionComponent } from '../../components/accordion/accordion.component';
 import { CardComponent } from '../../components/card/card.component';
@@ -17,6 +18,7 @@ import { OrderService } from '../../services/order.service';
     MatButton,
     MatCheckbox,
     NgClass,
+    MatExpansionModule
   ],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
@@ -31,9 +33,7 @@ export class OrdersComponent implements OnInit {
   numberOfArticles = () => {
     return this.orders.flatMap(order => order.articles).length;
   }
-  checkedArticles = () => {
-    return this.orders.flatMap(order => order.articles).filter(article => article.checked);
-  }
+  checkedArticles: Article[] = [];
 
   // get all active orders
   ngOnInit(): void {
@@ -70,6 +70,11 @@ export class OrdersComponent implements OnInit {
     event.stopPropagation();
     article.checked = !article.checked;
     this.allChecked = this.isAllBoxesChecked();
+    if (article.checked) {
+      this.checkedArticles.push(article);
+    } else {
+      this.checkedArticles = this.checkedArticles.filter(a => a.article_id !== article.article_id);
+    }
   }
 
   // tracks how many articles are checked
@@ -125,8 +130,7 @@ export class OrdersComponent implements OnInit {
    * @param mode - The mode of inventorization: 'asItems', 'asExtensions', or 'addToFirst'.
    */
   inventarize(mode: string) {
-    const checkedOrders: Article[] = this.orders.flatMap(order => order.articles).filter(article => article.checked);
-    if (checkedOrders.length < 1) {
+    if (this.checkedArticles.length < 1) {
       return;
     }
 
@@ -136,17 +140,17 @@ export class OrdersComponent implements OnInit {
 
     switch (mode) {
       case 'asItems':
-        itemArticles = this.collectArticles(checkedOrders);
+        itemArticles = this.collectArticles(this.checkedArticles);
         route.push('/new');
         break;
       case 'asExtensions':
-        extensionArticles = this.collectArticles(checkedOrders);
+        extensionArticles = this.collectArticles(this.checkedArticles);
         route.push('/new-extension');
         break;
       case 'addToFirst':
-        if (checkedOrders.length >= 2) {
-          itemArticles = this.collectArticles([checkedOrders[0]]);
-          extensionArticles = this.collectArticles(checkedOrders.slice(1));
+        if (this.checkedArticles.length >= 2) {
+          itemArticles = this.collectArticles([this.checkedArticles[0]]);
+          extensionArticles = this.collectArticles(this.checkedArticles.slice(1));
         }
         route.push('/new');
         break;
