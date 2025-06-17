@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ComponentRef } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { DetailsComponent } from './details.component';
 
 describe('DetailsComponent', () => {
@@ -10,7 +11,10 @@ describe('DetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DetailsComponent]
+      imports: [
+        DetailsComponent,
+        RouterModule.forRoot([]),
+      ]
     })
       .compileComponents();
 
@@ -107,9 +111,9 @@ describe('DetailsComponent', () => {
         inventoryNumber: 1,
         changedBy: 'User',
         changedTable: 'inventory_items',
-        changedColumn: 'location',
-        oldValue: 'Alt',
-        newValue: 'Neu'
+        attributeChanged: 'location',
+        valueFrom: 'Alt',
+        valueTo: 'Neu'
       }
     ];
     componentRef.setInput('changes', changes);

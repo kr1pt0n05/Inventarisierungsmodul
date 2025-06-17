@@ -1,19 +1,33 @@
-import {CardComponent} from '../../components/card/card.component';
 import {
   Component, inject, OnInit,
   QueryList,
+  signal,
   ViewChildren,
 } from '@angular/core';
-import {RangeSliderComponent} from '../../components/range-slider/range-slider.component';
-import {DatepickerComponent} from '../../components/datepicker/datepicker.component';
-import {InventoryListComponent} from '../../components/inventory-list/inventory-list.component';
-import {AccordionComponent} from '../../components/accordion/accordion.component';
-import {MatButton} from '@angular/material/button';
-import {FormControl, FormGroup} from '@angular/forms';
-import {ChipV2Component} from '../../components/chip-v2/chip-v2.component';
-import {ServerTableDataSourceService} from '../../services/server-table-data-source.service';
-import {CacheInventoryService} from '../../services/cache-inventory.service';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Router } from '@angular/router';
+import { AccordionComponent } from '../../components/accordion/accordion.component';
+import { CardComponent } from '../../components/card/card.component';
+import { ChipV2Component } from '../../components/chip-v2/chip-v2.component';
+import { DatepickerComponent } from '../../components/datepicker/datepicker.component';
+import { InventoryListComponent } from '../../components/inventory-list/inventory-list.component';
+import { RangeSliderComponent } from '../../components/range-slider/range-slider.component';
+import { CacheInventoryService } from '../../services/cache-inventory.service';
+import { ServerTableDataSourceService } from '../../services/server-table-data-source.service';
 
+
+
+export interface minAndMaxId {
+  maxId: number,
+  minId: number,
+}
+
+export interface minAndMaxPrice {
+  maxPrice: number,
+  minPrice: number,
+}
 
 /**
  * InventoryComponent
@@ -59,6 +73,7 @@ import {CacheInventoryService} from '../../services/cache-inventory.service';
     AccordionComponent,
     MatButton,
     ChipV2Component,
+    MatCheckboxModule
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
@@ -76,6 +91,12 @@ export class InventoryComponent implements OnInit {
    * This helps in reducing redundant API calls and enhances performance.
    */
   cache = inject(CacheInventoryService);
+
+  /**
+   * The Angular Router service used for navigation within the application.
+   * It allows the component to navigate to different routes, such as inventory item details.
+   */
+  router = inject(Router);
 
   /**
    * A reference to the accordion components within the view.
@@ -99,6 +120,10 @@ export class InventoryComponent implements OnInit {
   locations: string[] = [];
   orderers: string[] = [];
   tags: string[] = [];
+  minAndMaxId: minAndMaxId = {} as minAndMaxId;
+  minAndMaxPrice: minAndMaxPrice = {} as minAndMaxPrice;
+
+  showDeinventoried = signal<boolean>(false);
 
   /**
    * Initializes the component and sets up the filter form and data fetching.
@@ -119,6 +144,7 @@ export class InventoryComponent implements OnInit {
       location: new FormControl([]),
       orderer: new FormControl([]),
       tags: new FormControl([]),
+      isDeinventoried: new FormControl(this.showDeinventoried()),
     })
 
     // Assigning the form group as the filter for the server data sourc
@@ -131,6 +157,8 @@ export class InventoryComponent implements OnInit {
     this.cache.getLocations().subscribe(locations => this.locations = locations);
     this.cache.getOrderers().subscribe(orderers => this.orderers = orderers);
     this.cache.getTags().subscribe(tags => this.tags = tags);
+    this.cache.getMinAndMaxPrice().subscribe(minAndMaxPrice => this.minAndMaxPrice = minAndMaxPrice);
+    this.cache.getMinAndMaxId().subscribe(minAndMaxId => this.minAndMaxId = minAndMaxId);
   }
 
 
@@ -138,7 +166,7 @@ export class InventoryComponent implements OnInit {
    * Opens all sections of the accordion.
    * This method loops through all accordion components and triggers the `openAll()` method to expand all sections.
    */
-  openAllAccordion(){
+  openAllAccordion() {
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.openAll();
     })
@@ -148,10 +176,21 @@ export class InventoryComponent implements OnInit {
    * Closes all sections of the accordion.
    * This method loops through all accordion components and triggers the `closeAll()` method to collapse all sections.
    */
-  closeAllAccordions(){
+  closeAllAccordions() {
     this.accordions.map((accordion: AccordionComponent) => {
       accordion.matAccordion.closeAll();
     })
   }
 
+  navigateToDetailpageOf(id: number) {
+    this.router.navigate(['/inventory', id]);
+  }
+
+  checkDeinventoriedBox(event?: KeyboardEvent) {
+    if (event && event.key !== 'Enter' && event.key !== ' ') {
+      return; // Only toggle on Enter or Space key
+    }
+    this.showDeinventoried.set(!this.showDeinventoried());
+    this.inventoryForm.get('isDeinventoried')?.setValue(this.showDeinventoried());
+  }
 }

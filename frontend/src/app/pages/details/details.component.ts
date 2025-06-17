@@ -1,26 +1,28 @@
 import { afterNextRender, Component, input, QueryList, ViewChildren } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
+import { RouterModule } from '@angular/router';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
-import { Extension } from '../../models/extension';
-import { InventoryItem } from '../../models/inventory-item';
+import { Extension, extensionDisplayNames } from '../../models/extension';
+import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { Tag } from '../../models/tag';
 
 /**
- * Component for displaying detailed information about an inventory item.
+ * DetailsComponent
  *
- * This component organizes and displays the main attributes of an inventory item as well as its related
- * extensions, comments, tags, and change history. The information is grouped into expandable panels using
- * Angular Material Expansion Panels. Each panel uses a dynamic list or chip set to present its data.
+ * This component displays detailed information about a specific inventory item, including its main attributes,
+ * related extensions, comments, tags, and change history. The information is organized into expandable panels
+ * using Angular Material Expansion Panels. Each panel presents its data using dynamic lists or chip sets.
  *
  * ## Inputs
- * - `inventoryItemInput`: The main inventory item to display (type: InventoryItem).
- * - `extensions`: Array of extension objects related to the inventory item (type: InventoryExtension[]).
- * - `comments`: Array of comments related to the inventory item (type: InventoryItemcomments[]).
- * - `changes`: Array of change history entries (type: InventoryItemChange[]) for the inventory item.
+ * - `inventoryItem`: The main inventory item to display (type: InventoryItem, required).
+ * - `extensions`: Array of extension objects related to the inventory item (type: Extension[]).
+ * - `comments`: Array of comments related to the inventory item (type: Comment[]).
+ * - `changes`: Array of change history entries (type: Change[]) for the inventory item.
  *
  * ## Features
  * - Displays item attributes in a two-column layout.
@@ -28,12 +30,13 @@ import { Tag } from '../../models/tag';
  * - Displays an items tags as chips.
  * - Automatically opens all expansion panels after rendering.
  * - Handles empty states for each panel.
+ * - Transforms change history entries to merge table and column names for display.
  *
  * @example
  * <app-details
- *   [inventoryItemInput]="item"
+ *   [inventoryItem]="item"
  *   [extensions]="itemExtensions"
- *   [comments]="itemcomments"
+ *   [comments]="itemComments"
  *   [changes]="itemChanges">
  * </app-details>
  */
@@ -43,7 +46,9 @@ import { Tag } from '../../models/tag';
     MatDividerModule,
     MatExpansionModule,
     MatChipsModule,
-    DynamicListComponent
+    DynamicListComponent,
+    RouterModule,
+    MatButtonModule,
   ],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css'
@@ -51,7 +56,7 @@ import { Tag } from '../../models/tag';
 export class DetailsComponent {
   panelIdNameMap = new Map<string, string>([
     ['extensions', 'Erweiterungen'],
-    ['comments', 'Notizen'],
+    ['comments', 'Kommentare'],
     ['tags', 'Tags'],
     ['changes', 'Historie']
   ]);
@@ -76,27 +81,9 @@ export class DetailsComponent {
 
   // Defines the column headers for the different panels
   // The keys are the internal names of the columns, the values are the display names
-  inventoryItemColumns = new Map<string, string>([
-    ['costCenter', 'Kostenstelle'],
-    ['id', 'Inventarnummer'],
-    ['description', 'Geräte-/Softwaretyp'],
-    ['company', 'Firma'],
-    ['price', 'Preis'],
-    ['date', 'Bestelldatum'],
-    ['serialNumber', 'Seriennummer'],
-    ['location', 'Standort/Nutzer:in'],
-    ['orderer', 'Bestellt von']
-  ]);
+  inventoryItemColumns = inventoryItemDisplayNames;
 
-  extensionColumns = new Map<string, string>([
-    ['description', 'Erweiterungstyp'],
-    ['company', 'Bestellt bei'],
-    ['price', 'Preis in €'],
-    ['costCenter', 'Kostenstelle'],
-    ['serialNumber', 'Seriennummer'],
-    ['orderer', 'Hinzugefügt von'],
-    ['createdAt', 'Hinzugefügt am']
-  ]);
+  extensionColumns = extensionDisplayNames;
 
   commentsColumns = new Map<string, string>([
     ['description', 'Kommentar'],
@@ -120,26 +107,29 @@ export class DetailsComponent {
 
   constructor() {
     afterNextRender(() => {
-      this.panels.map((panel: MatExpansionPanel) => {
-        panel.open();
-      })
+      for (const panel of this.panels) {
+        if (!panel.id.includes('3')) {
+          panel.open();
+        }
+      }
     });
   }
 
+  /**
+ * Lifecycle hook that is called when any data-bound property of a directive changes.
+ * Initializes the internal representation of the inventory item and its tags for display.
+ * If no inventory item is provided, sets default values for display.
+ */
   ngOnChanges() {
     if (this.inventoryItem() && JSON.stringify(this.inventoryItem()) !== '{}') {
-      this.inventoryItemInternal = new Map<string, string>([
-        ['description', this.inventoryItem().description ?? ''],
-        ['costCenter', this.inventoryItem().costCenter?.toString() ?? ''],
-        ['id', this.inventoryItem().id?.toString()],
-        ['company', this.inventoryItem().company ?? ''],
-        ['price', this.inventoryItem().price?.toString() ?? ''],
-        ['date', this.inventoryItem().createdAt ?? ''],
-        ['serialNumber', this.inventoryItem().serialNumber ?? ''],
-        ['location', this.inventoryItem().location ?? ''],
-        ['orderer', this.inventoryItem().orderer ?? '']
-      ]);
+      this.inventoryItemInternal = new Map<string, string>();
+
+      for (const key of this.inventoryItemColumns.keys()) {
+        const value = this.inventoryItem()[key as keyof InventoryItem];
+        this.inventoryItemInternal.set(key, value ? value.toString() : '');
+      }
       this.tags = this.inventoryItem().tags ?? [];
+
     } else {
       this.inventoryItemInternal = new Map<string, string>();
       for (let id of this.inventoryItemColumns.keys()) {
@@ -157,24 +147,31 @@ const changesTableNames = new Map<string, string>([
 ]);
 const changesColumnNames = new Map<string, string>([
   ['location', 'Standort/Nutzer:in'],
-  ['price', 'Preis in €']
+  ['price', 'Preis in €'],
+  ['company', 'Firma'],
+  ['description', 'Beschreibung'],
+  ['serialNumber', 'Seriennummer'],
+  ['orderer', 'Besteller:in'],
+  ['costCenter', 'Kostenstelle'],
+  ['createdAt', 'Erstellungsdatum'],
 ]);
 
 /**
  * Helper function to merge table and column names for change history entries.
+ * Used to transform raw change history data for display in the change history panel.
  * @param {Change[]} rawChanges - The raw change history entries.
- * @returns {any[]} The transformed change history entries.
+ * @returns {ChangeInternal[]} The transformed change history entries.
  */
 function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
   let changes = rawChanges.map((change: Change) => {
     const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable;
-    const changedColumnDisplayName = changesColumnNames.get(change.changedColumn) ?? change.changedColumn;
+    const changedColumnDisplayName = changesColumnNames.get(change.attributeChanged) ?? change.attributeChanged;
     return {
-      changedAt: change.changedAt,
+      changedAt: change.createdAt,
       changedBy: change.changedBy,
       change: `${changedTableDisplayName} - ${changedColumnDisplayName}`,
-      oldValue: change.oldValue,
-      newValue: change.newValue
+      oldValue: change.valueFrom,
+      newValue: change.valueTo
     };
   })
   return changes;

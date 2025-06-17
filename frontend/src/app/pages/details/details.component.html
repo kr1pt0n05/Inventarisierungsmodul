@@ -1,30 +1,28 @@
-<!-- Imported from Figma, needs reworking -->
-
-<div class="flex flex-col p-8 gap-12">
+<div class="flex flex-col pl-4 pr-4 gap-8 m-2">
     <!-- Header Section -->
     <div class="flex justify-between">
         <div class="flex flex-wrap items-center gap-4">
-            <button class="p-2 max-h-10 border-2 border-red-600 flex">zurück</button> <!-- Back Button placeholder -->
-            <h1 class="font-semibold text-2xl">{{inventoryItemInternal.get('description')}}</h1>
-            <h2>{{inventoryItemInternal.get('id')}}</h2>
+            <h1 class="font-semibold text-2xl">{{inventoryItem().description}}</h1>
+            <h2>{{inventoryItem().id}}</h2>
+            @if (inventoryItem().is_deinventoried) {
+            <span class="text-red-500">Deinventarisiert</span>
+            }
         </div>
-        <div class="p-2 max-h-10 bg-red-600">bearbeiten</div> <!-- Placeholder for edit button -->
+        <a mat-button color="primary" [routerLink]="['/edit', inventoryItem().id]">Bearbeiten</a>
     </div>
 
     <!-- Divider -->
     <mat-divider></mat-divider>
 
     <!-- Details Section -->
-    <div>
-        <div class="grid grid-cols-[max-content_1fr] gap-x-16">
-            @for (field of inventoryItemColumns.keys(); track field) {
-            <div class="p-2">{{inventoryItemColumns.get(field)}}</div>
-            <div class="p-2">{{inventoryItemInternal.get(field)}}
-                @if (field === 'price') {
-                <span>€</span> }
-            </div>
-            }
+    <div class="grid grid-cols-[max-content_1fr] gap-x-16">
+        @for (field of inventoryItemColumns.keys(); track field) {
+        <div class="p-2">{{inventoryItemColumns.get(field)}}</div>
+        <div class="p-2">{{inventoryItemInternal.get(field)}}
+            @if (field === 'price') {
+            <span>€</span> }
         </div>
+        }
     </div>
 
     <!-- Additional Data -->

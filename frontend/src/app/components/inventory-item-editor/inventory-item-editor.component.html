@@ -1,12 +1,20 @@
 <app-card title="Daten" class="">
     <div card-content class="grid grid-cols-1 gap-2 pt-4">
 
-        <form [formGroup]="formGroup" class="flex flex-col gap-4">
+        <form [formGroup]="formGroup" class="flex flex-col gap-2">
             @for (field of inventoryItemColumns.keys(); track field) {
             <mat-form-field>
                 <mat-label>{{inventoryItemColumns.get(field)}}</mat-label>
-                <input matInput formControlName="{{field}}" />
-            </mat-form-field> }
+                <input matInput formControlName="{{field}}" [matAutocomplete]="auto"
+                    [placeholder]="initialValues[field]" [required]="requiredInputs().includes(field)" />
+            </mat-form-field>
+
+            <mat-autocomplete #auto="matAutocomplete">
+                @for (option of filteredOptions.get(field) | async; track option) {
+                <mat-option [value]="option">{{option}}</mat-option>
+                }
+            </mat-autocomplete>
+            }
         </form>
 
 

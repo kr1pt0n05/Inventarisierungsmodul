@@ -1,0 +1,64 @@
+<!-- Header Section -->
+<div class="flex justify-between pl-4 pr-4 m-2">
+    <div class="flex flex-wrap items-center gap-4">
+        <h1 class="font-semibold text-2xl">
+            @if (isNewExtension()) {
+            Erweiterung anlegen
+            } @else {
+            Erweiterung bearbeiten
+            }
+        </h1>
+    </div>
+    <button mat-flat-button color="primary" (click)="onInventorization()" [disabled]="!isValid()">Speichern</button>
+</div>
+<div class="p-4 gap-4">
+    <app-card title="Erweiterung">
+        @if (inventoryId() !== undefined) {
+        <div card-content class="grid grid-cols-1 lg:grid-cols-2 gap-2 pt-4">
+
+            <!-- Form Section -->
+            <app-extension-editor [(extension)]="extension" [(disabledInputs)]="disabledInputs"
+                [(requiredInputs)]="requiredInputs" (isValid)="onIsValidChange($event)">
+            </app-extension-editor>
+
+            <!-- Inventory Item Section -->
+            <div class="flex flex-col pl-4 pr-4 gap-8 m-2">
+
+                <div class="flex justify-between">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <h1 class="font-semibold text-xl">{{inventoryItem['description']}}</h1>
+                        <h2>{{inventoryItem['id']}}</h2>
+                    </div>
+                    <button mat-stroked-button color="primary" (click)="resetSelectedInventory()"
+                        [disabled]="false">Ändern</button>
+                </div>
+
+                <mat-divider />
+
+                <div class="grid grid-cols-[max-content_1fr] gap-x-16">
+                    @for (field of inventoryItemColumns.keys(); track field) {
+                    <div class="p-2">{{inventoryItemColumns.get(field)}}</div>
+                    <div class="p-2">{{inventoryItem[field]}}
+                        @if (field === 'price') {
+                        <span>€</span> }
+                    </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+        } @else {
+        <!-- Inventory Selection Section -->
+        <div card-content class="grid grid-cols-1 gap-2 pt-4">
+            <div class="flex flex-wrap items-center gap-4">
+                <mat-form-field>
+                    <mat-label>Inventarisierung</mat-label>
+                    <input matInput [formControl]="inventoryIdControl" placeholder="Inventarisierung auswählen" />
+                    <button mat-button color="primary" (click)="onSelectInventory()">Auswählen</button>
+                </mat-form-field>
+            </div>
+            <app-inventory-list (onClickItem)="onSelectInventory($event)" />
+        </div>
+        }
+    </app-card>
+</div>

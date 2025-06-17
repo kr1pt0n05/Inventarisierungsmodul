@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {InventoriesService} from './inventories.service';
 import {Observable, of, tap} from 'rxjs';
+import {minAndMaxId, minAndMaxPrice} from '../pages/inventory/inventory.component';
 
 
 /**
@@ -128,6 +129,27 @@ export class CacheInventoryService {
       return this.inventoriesService.getAlltags().pipe(
         tap(data => this.cache.set('tags', data))
       );
+    }
+  }
+
+
+  getMinAndMaxId(): Observable<minAndMaxId> {
+    if (this.cache.has('minAndMaxIds')) {
+      return of(this.cache.get('minAndMaxIds') as minAndMaxId);
+    } else {
+      return this.inventoriesService.getMinAndMaxId().pipe(
+        tap(data => this.cache.set('minAndMaxIds', data))
+      )
+    }
+  }
+
+  getMinAndMaxPrice(): Observable<minAndMaxPrice> {
+    if (this.cache.has('minAndMaxPrice')) {
+      return of(this.cache.get('minAndMaxPrice') as minAndMaxPrice);
+    }else {
+      return this.inventoriesService.getMinAndMaxPrice().pipe(
+        tap(data => this.cache.set('minAndMaxPrice', data))
+      )
     }
   }
 

@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { Comment } from '../../models/comment';
+import { AuthenticationService } from '../../services/authentication.service';
 import { CardComponent } from "../card/card.component";
 
 /**
@@ -73,6 +74,7 @@ import { CardComponent } from "../card/card.component";
   styleUrl: './comments-editor.component.css'
 })
 export class CommentsEditorComponent {
+  constructor(private readonly authService: AuthenticationService) { }
 
   unchangedComments = model<Comment[]>([]);
   newComments = model<Comment[]>([]);
@@ -103,15 +105,17 @@ export class CommentsEditorComponent {
 
   /**
    * Adds a new comment to the newComments model and emits a change event.
-   * The comment's author is currently hardcoded and should be replaced with actual user data.
+   * The comment's author is set to the current user (from AuthenticationService).
+   * The creation date is set to the current date and time.
    * Resets the input form after adding.
    */
   addComment(): void {
     const description = this.newCommentFormControl.value;
     if (description) {
+      const username = this.authService.getUsername();
       const newComment: Comment = {
         description,
-        author: 'CURRENT_USER', // TODO: Replace with actual user data
+        author: username && username.trim() !== '' ? username : 'Unknown',
         createdAt: new Date().toLocaleString("de-De",
           {
             day: '2-digit',
