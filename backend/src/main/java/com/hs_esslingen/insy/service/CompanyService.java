@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.hs_esslingen.insy.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.hs_esslingen.insy.dto.CompanyDTO;
@@ -42,7 +43,7 @@ public class CompanyService {
     public Company resolveCompany(Object company) {
         if (company instanceof Integer companyId) {
             return companyRepository.findById(companyId)
-                    .orElseThrow(() -> new BadRequestException("Couldn't find company with id: " + companyId));
+                    .orElseThrow(() -> new NotFoundException("Company with id: " + companyId + " not found"));
         } else if (company instanceof String companyName) {
             return companyRepository.findByName(companyName)
                     .orElseGet(() -> companyRepository.save(new Company(companyName)));

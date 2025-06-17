@@ -46,4 +46,4 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: ghcr.io/kr1pt0n05/Inventarisierungsmodul:frontend-latest
+          tags: ghcr.io/kr1pt0n05/inventarisierungsmodul:frontend-latest

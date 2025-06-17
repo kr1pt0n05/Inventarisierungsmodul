@@ -35,7 +35,7 @@ public class InventoryController {
         this.inventoriesService = inventoriesService;
     }
 
-    // Alle Elemente der Inventarisierungsliste abrufen
+    // Get all elements from the inventory list
     @GetMapping
     public Page<InventoriesResponseDTO> getAllInventories(
             @RequestParam(name = "tags", required = false) List<Integer> tags,
@@ -61,26 +61,27 @@ public class InventoryController {
                 createdBefore, orderBy, direction, searchText, pageable);
     }
 
-    // Ein Element der Inventarisierungsliste abrufen
+    // Get one element from the inventory list
     @GetMapping("/{id}")
     public ResponseEntity<InventoriesResponseDTO> getInventoryById(@PathVariable("id") Integer id) {
 
         return inventoriesService.getInventoryById(id);
     }
 
-    // Ein Element der Inventarisierungsliste hinzufügen
+    // Add one element to the inventory list
     @PostMapping
     public ResponseEntity<InventoriesResponseDTO> addInventory(@RequestBody InventoryCreateRequestDTO requestDTO) {
         InventoriesResponseDTO responseDTO = inventoriesService.addInventory(requestDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
-    // Ein Element der Inventarisierungsliste löschen
+    // Delete one element from the inventory list
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInventory(@PathVariable Integer id) {
         return inventoriesService.deleteInventory(id);
     }
 
+    // Update one element in the inventory list
     @PatchMapping("/{id}")
     public ResponseEntity<InventoriesResponseDTO> updateInventory(@PathVariable Integer id,
             @RequestBody Map<String, Object> patchData) {

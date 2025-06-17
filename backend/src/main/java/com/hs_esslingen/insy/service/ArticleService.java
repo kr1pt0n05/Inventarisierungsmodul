@@ -3,6 +3,7 @@ package com.hs_esslingen.insy.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.hs_esslingen.insy.exception.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -37,12 +38,12 @@ public class ArticleService {
     public ResponseEntity<ArticleDTO> updateArticle(Integer id, ArticleDTO dto) {
         Optional<Article> optionalArticle = articleRepository.findById(id);
         if (optionalArticle.isEmpty()) {
-            throw new BadRequestException("Article with id " + id + " not found.");
+            throw new NotFoundException("Article with id " + id + " not found.");
         }
 
         Article article = optionalArticle.get();
 
-        // Patch-Felder aktualisieren
+        // Update patch fields
         if (dto.getInventoriesId() != null) {
             article.setInventoriesId(dto.getInventoriesId());
         }
@@ -78,9 +79,8 @@ public class ArticleService {
 
         Article saved = articleRepository.save(article);
 
-        // Nach dem Speichern prüfen, ob alle Artikel in der Bestellung inventarisiert
-        // sind
-        // und die Bestellung als bearbeitet markieren, wenn ja.
+        // After saving, check if all items in the order have been inventoried
+        // and mark the order as processed if they have.
         if (dto.getIsInventoried()) {
             Order order = saved.getOrder();
             boolean allInventoried = order.getArticles().stream()
@@ -107,7 +107,7 @@ public class ArticleService {
 
     public ResponseEntity<ArticleDTO> createArticle(Integer orderId, ArticleDTO articleDTO) {
         Order order = orderService.retrieveOrderById(orderId)
-                .orElseThrow(() -> new BadRequestException("Order with id " + orderId + " not found."));
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found."));
 
         Article article = articleMapper.toEntity(articleDTO);
         article.setOrder(order);
@@ -122,7 +122,7 @@ public class ArticleService {
             ArticleDTO dto = articleMapper.toDto(article.get());
             return ResponseEntity.ok(dto);
         } else {
-            throw new BadRequestException("Article with id " + articleId + " not found.");
+            throw new NotFoundException("Article with id " + articleId + " not found.");
         }
     }
 
@@ -132,7 +132,7 @@ public class ArticleService {
             articleRepository.delete(article.get());
             return ResponseEntity.noContent().build();
         } else {
-            throw new BadRequestException("Article with id " + articleId + " not found.");
+            throw new NotFoundException("Article with id " + articleId + " not found.");
         }
     }
 }

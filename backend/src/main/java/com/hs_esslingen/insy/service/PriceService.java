@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public class PriceService {
     private final InventoryRepository inventoryRepository;
 
+    // Get max and min price from repository
     public PriceDTO getMaxAndMinPrice() {
         BigDecimal maxPrice = inventoryRepository.findMaxPrice();
         Integer minPrice = inventoryRepository.findMinPrice();

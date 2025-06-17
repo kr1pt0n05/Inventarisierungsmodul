@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.hs_esslingen.insy.exception.NotFoundException;
 import org.javers.core.Javers;
 import org.javers.core.diff.Diff;
 import org.javers.core.diff.changetype.ValueChange;
@@ -109,19 +110,17 @@ public class InventoryService {
             String searchText,
             Pageable pageable) {
 
-        // Umwandlung der Query-Parameter von LocalDate in LocalDateTime
-        // Damit die Filterung auf die Datenbank funktioniert
+        // Convert LocalDate query parameters to LocalDateTime
+        // to make filtering work with the database
 
-        // Setzt den Startzeitpunkt auf 00:00 Uhr, um alle Einträge ab diesem Datum zu
-        // berücksichtigen
+        // Set start time to 00:00 to include all entries from this date
         LocalDateTime createdAfterTime = createdAfter != null ? createdAfter.atStartOfDay() : null;
-        // Setzt den Endzeipunkt auf 23:59:59, um alle Einträge bis zu diesem Datum zu
-        // berücksichtigen
+        // Set end time to 23:59:59 to include all entries until this date
         LocalDateTime createdBeforeTime = createdBefore != null ? createdBefore.plusDays(1).atStartOfDay().minusNanos(1)
                 : null;
 
         /*
-         * Erstellt SQL-Statement im Stil:
+         * Creates SQL-like query with the following form:
          * SELECT * FROM inventories
          * WHERE
          * tag_id IN (...)
@@ -142,31 +141,29 @@ public class InventoryService {
                 .and(InventorySpecification.createdBetween(createdAfterTime, createdBeforeTime))
                 .and(InventorySpecification.hasSearchText(searchText));
 
-        // Sortierung erstellen
+        // Create sorting
         if (orderBy != null && !orderBy.isEmpty()) {
-            // Überprüfen, ob das orderBy-Feld erlaubt ist
+            // Check if the orderBy field is allowed
             if (!OrderByUtils.ALLOWED_ORDER_BY_FIELDS.contains(orderBy)) {
                 throw new BadRequestException("Invalid orderBy-field: " + orderBy);
             }
 
-            // Standardmäßig auf aufsteigende Sortierung setzen
+            // Set the default sort direction to ascending
             Sort.Direction sortDirection = Sort.Direction.ASC;
-            // Wenn die Richtung "desc" ist, dann auf absteigende Sortierung setzen
+            // If direction is "desc", change to descending
             if ("desc".equalsIgnoreCase(direction)) {
                 sortDirection = Sort.Direction.DESC;
             }
 
-            // Überprüfen, ob das orderBy-Feld verschachtelt ist (z. B. "user.name")
-            // Wenn es verschachtelt ist, dann muss die Sortierung über eine angepasste
-            // Specification gemacht werden
+            // Check if orderBy is a nested field (e.g. "user.name")
+            // If it is nested the sorting needs to be adjusted via Specification
             if (OrderByUtils.FOREIGN_SET.contains(orderBy)) {
-                // Sortierung über verschachtelte Felder wird NICHT im Pageable gesetzt,
-                // sondern muss über eine angepasste Specification gemacht werden – siehe unten.
+                // Sorting via nested fields is NOT to be set in Pageable
+                // but via a customized Specification - see below
                 spec = spec.and(
                         InventorySpecification.sortByNestedField(orderBy, Sort.Direction.fromString(direction)));
 
-                // Wenn es nicht verschachtelt ist, dann kann die Sortierung direkt im Pageable
-                // gesetzt werden
+                // If it is not nested then it can be set directly in Pageable
             } else {
                 Sort sort = Sort.by(sortDirection, orderBy);
                 pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
@@ -183,31 +180,31 @@ public class InventoryService {
      *
      * @param dto the DTO containing the inventory item data
      * @return ResponseEntity containing the created inventory item
-     * @throws IllegalArgumentException if the inventory ID already exists
+     * @throws BadRequestException if the inventory ID already exists
      */
     public InventoriesResponseDTO addInventory(InventoryCreateRequestDTO dto) {
         Inventory inventory = new Inventory();
 
-        // Existiert ein Inventar mit der Inventarnummer bereits?
+        // Check if an inventory with this ID already exists
         if (inventoryRepository.existsById(dto.getInventoriesId())) {
-            // Wenn ja dann eine Exception werfen
+            // If it exists throw an exception
             throw new BadRequestException("Inventory with id " + dto.getInventoriesId() + " already exists");
         }
-        // ID setzen
+        // Set ID
         inventory.setId(dto.getInventoriesId());
 
-        // CostCenter holen oder erstellen
+        // Get or create the CostCenter
         CostCenter costCenter = costCenterService.resolveCostCenter(dto.getCostCenter());
         inventory.setCostCenter(costCenter);
 
-        // Company holen oder erstellen
+        // Get or create the Company
         Company company = companyService.resolveCompany(dto.getCompany());
         inventory.setCompany(company);
 
-        // User holen oder erstellen
+        // Get or create the User
         User user = userService.resolveUser(dto.getOrderer());
 
-        // Restliche Felder setzen
+        // Set remaining fields
         inventory.setDescription(dto.getDescription());
         inventory.setSerialNumber(dto.getSerialNumber());
         inventory.setPrice(dto.getPrice());
@@ -216,15 +213,14 @@ public class InventoryService {
 
         changeFullTextSearchString(inventory);
 
-        // saven um Tags auch das inventory hinzufügen zu können
+        // Save to allow adding tags to inventory
         inventoryRepository.save(inventory);
 
-        // 6. Tags verknüpfen
+        // 6. Link tags
 
         tagService.addTagsToInventory(inventory.getId(), dto.getTags());
 
-        // Muss nochmal gefetched werden, da die neu hinzugefügten Tags sonst nicht
-        // im DTO enthalten sind
+        // Needs to be fetched again because the newly added Tags are not in the DTO
         Inventory updatedInventory = inventoryRepository.findById(inventory.getId()).orElseThrow();
 
         return inventoriesMapper.toDto(updatedInventory);
@@ -244,7 +240,7 @@ public class InventoryService {
             inventoryRepository.delete(inventory.get());
             return ResponseEntity.noContent().build();
         } else {
-            throw new BadRequestException("Inventory with id " + id + " not found.");
+            throw new NotFoundException("Inventory with id " + id + " not found.");
         }
     }
 
@@ -371,7 +367,7 @@ public class InventoryService {
     /**
      * Maps an Inventory object to an InventoryCreateRequestDTO.
      * This method is used to convert an Inventory entity to a DTO for
-     * creating a update history entry.
+     * creating an update history entry.
      *
      * @param inventory the Inventory entity to map
      * @return the mapped InventoryCreateRequestDTO
@@ -398,7 +394,7 @@ public class InventoryService {
      *         by spaces, and lowercased
      */
     public void changeFullTextSearchString(Inventory inventory) {
-        // Felder des Inventory selbst
+        // Fields from the Inventory itself
         List<String> baseFields = Stream.of(
                 inventory.getDescription(),
                 inventory.getSerialNumber(),
@@ -410,7 +406,7 @@ public class InventoryService {
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
 
-        // Erweiterungen (Extensions) – Beschreibung + Company-Name
+        // Extension fields – description + company name
         List<String> extensionFields = inventory.getExtensions().stream()
                 .flatMap(ext -> Stream.of(
                         ext.getDescription(),
@@ -419,12 +415,12 @@ public class InventoryService {
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
 
-        // Alle zusammenfügen, getrennt durch Leerzeichen
+        // Combine all separated by spaces
         List<String> allFields = new ArrayList<>();
         allFields.addAll(baseFields);
         allFields.addAll(extensionFields);
 
-        // Setzen des Suchtextes für das Inventory
+        // Set the search text for the Inventory
         inventory.setSearchText(String.join(" ", allFields));
     }
 
