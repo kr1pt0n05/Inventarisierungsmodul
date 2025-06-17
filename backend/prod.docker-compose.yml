@@ -1,0 +1,41 @@
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      - POSTGRES_USER=insy
+      - POSTGRES_PASSWORD=YOUR_PASSWORD
+      - POSTGRES_DB=insy
+    networks:
+      - internal
+
+  backend:
+    container_name: springboot
+    image: kr1pt0n05/inventarisierungsmodule:backend-1.0
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/insy
+      - POSTGRES_USERNAME=insy
+      - POSTGRES_PASSWORD=YOUR_PASSWORD
+    ports:
+      - "0.0.0.0:8080:8080"
+    networks:
+      - springboot
+      - internal
+    depends_on:
+      - db
+
+
+networks:
+  springboot:
+    external: true
+  internal:
+    external: false
