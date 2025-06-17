@@ -57,7 +57,7 @@
                     <button mat-button color="primary" (click)="onSelectInventory()">Auswählen</button>
                 </mat-form-field>
             </div>
-            <app-inventory-list />
+            <app-inventory-list (onClickItem)="onSelectInventory($event)" />
         </div>
         }
     </app-card>

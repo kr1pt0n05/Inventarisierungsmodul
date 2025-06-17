@@ -156,8 +156,12 @@ export class ExtensionInventorizationComponent {
    * Called when the user selects an inventory item by ID.
    * Updates the inventoryId and reloads the inventory item.
    */
-  onSelectInventory() {
-    this.inventoryId.set(Number(this.inventoryIdControl.value));
+  onSelectInventory(id: number | undefined = undefined) {
+    if (id === undefined) {
+      this.inventoryId.set(Number(this.inventoryIdControl.value));
+    } else {
+      this.inventoryId.set(id);
+    }
     this._onChanges();
   }
 
