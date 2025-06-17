@@ -1,9 +1,8 @@
-<h2 mat-dialog-title>Gegenstand wirklich Deinventarisieren?</h2>
+<h2 mat-dialog-title>{{data.title}}</h2>
 <mat-dialog-content>
-    <p>Der Gegenstand wird aus dem Inventar entfernt<br>
-        und kann nicht wiederhergestellt werden.</p>
+    <p>{{data.description}}</p>
 </mat-dialog-content>
 <mat-dialog-actions>
-    <button mat-stroked-button color="primary" (click)="onNoClick()">Abbrechen</button>
-    <button mat-flat-button color="warn" [mat-dialog-close]="data" cdkFocusInitial>Deinventarisieren</button>
+    <button mat-stroked-button color="primary" (click)="onNoClick()">{{data.cancelButtonText}}</button>
+    <button mat-flat-button color="warn" [mat-dialog-close]="data" cdkFocusInitial>{{data.confirmButtonText}}</button>
 </mat-dialog-actions>
