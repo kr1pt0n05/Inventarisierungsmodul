@@ -9,16 +9,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CardComponent } from "../../components/card/card.component";
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
+import { TagsEditorComponent } from "../../components/tags-editor/tags-editor.component";
 import { Article } from '../../models/Article';
 import { Comment } from '../../models/comment';
 import { InventoryItem, inventoryItemFromArticle } from '../../models/inventory-item';
 import { ArticleId, fixSingleArticleString } from '../../models/Order';
+import { Tag } from '../../models/tag';
 import { InventoriesService } from '../../services/inventories.service';
 import { OrderService } from '../../services/order.service';
+import { TagsService } from '../../services/tags.service';
 
 
 /**
@@ -102,9 +104,9 @@ import { OrderService } from '../../services/order.service';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    CardComponent,
     CommentsEditorComponent,
     InventoryItemEditorComponent,
+    TagsEditorComponent,
   ],
   templateUrl: './inventorization.component.html',
   styleUrl: './inventorization.component.css'
@@ -149,14 +151,20 @@ export class InventorizationComponent {
    */
   deletedComments = signal([] as Comment[]);
 
+  tags = signal<Tag[]>([]); // Holds the tags for the inventory item
+  newTags = signal<string[]>([]); // Holds the new tags added by the user
+  availableTags = signal<Tag[]>([]); // Holds the available tags fetched from the backend
+
   itemArticles = signal<string[]>([]);
   extensionArticles = signal<string[]>([]);
 
   currentArticleId: ArticleId = {} as ArticleId;
 
 
+
   constructor(private readonly inventoriesService: InventoriesService,
     private readonly orderService: OrderService,
+    private readonly tagsService: TagsService,
     private readonly router: Router,
     route: ActivatedRoute,
     public dialog: MatDialog) {
@@ -192,6 +200,7 @@ export class InventorizationComponent {
    */
   ngOnChanges() {
     this.editableInventoryItem.set({ ...this.inventoryItem() });
+    this.tags.set(this.editableInventoryItem().tags ?? []);
 
     if (!this.isNewInventorization()) {
       this.disabledInputs.set(['id']);
@@ -200,6 +209,15 @@ export class InventorizationComponent {
       this.disabledInputs.set(['created_at']);
       this._resetComments();
     }
+
+    this.tagsService.getTags().subscribe({
+      next: (tags) => {
+        this.availableTags.set([...tags.content]);
+      },
+      error: (error) => {
+        console.error('Error fetching available tags:', error);
+      }
+    });
   }
 
   /**
@@ -269,7 +287,6 @@ export class InventorizationComponent {
             this.handleCommentChanges();
             this.router.navigate(['/inventory/', id]);
             console.log('Inventory item deinventorized successfully:', id);
-            console.log(item);
           },
           error: (error) => {
             console.error('Error deinventorizing inventory item:', error);
@@ -447,7 +464,9 @@ export class InventorizationComponent {
    * @private
    */
   private _onInventorization(inventoryItem: InventoryItem) {
+    this._createNewTags();
     this.editableInventoryItem.set(inventoryItem);
+    this.tags.set(inventoryItem.tags ?? []);
     this.onInventorization.emit(inventoryItem);
     console.log('Inventorization completed:', inventoryItem);
 
@@ -463,6 +482,50 @@ export class InventorizationComponent {
   }
 
   /**
+   * Creates new tags in the backend for each tag in the newTags signal.
+   * On success, updates the tags signal and removes the tag from newTags.
+   * Logs errors if any occur during the saving process.
+   */
+  private _createNewTags() {
+    const newTags = this.newTags();
+    if (newTags.length === 0) {
+      this._setTagsOfItem();
+      return;
+    }
+
+    for (const tag of newTags) {
+      this.tagsService.addTag({ name: tag } as Tag).subscribe({
+        next: (savedTag) => {
+          this.tags.update(currentTags => [...currentTags, savedTag]);
+          this.newTags.update(currentNewTags => currentNewTags.filter(t => t !== tag));
+
+          if (this.newTags().length === 0) {
+            this._setTagsOfItem();
+          }
+        },
+        error: (error) => {
+          console.error('Error saving tag:', error);
+        }
+      });
+    }
+  }
+
+  /**
+   * Adds new tags to the inventory item in the backend.
+   * If there are new tags, creates them first and then updates the item.
+   * Logs success or error messages based on the operation outcome.
+   */
+  private _setTagsOfItem() {
+    this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
+      next: (updatedItem) => {
+      },
+      error: (error) => {
+        console.error('Error updating tags:', error);
+      }
+    });
+  }
+
+  /**
    * Sets the current article as the inventory item based on the provided article strings.
    * - Parses the first string as "orderId,articleId".
    * - Loads the article and sets it as the editable inventory item.
@@ -475,6 +538,7 @@ export class InventorizationComponent {
     this.orderService.getOrderArticleByIds(this.currentArticleId.orderId, this.currentArticleId.articleId).subscribe({
       next: (article) => {
         this.editableInventoryItem.set(inventoryItemFromArticle(article));
+        this.tags.set(article.tags ?? []);
         articleStrings.update(articles => articles.slice(1)); // Remove the first article after setting it
       },
       error: (error) => {

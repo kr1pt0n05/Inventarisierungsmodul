@@ -1,0 +1,28 @@
+<app-card title="Tags">
+    <div card-content class="flex flex-col items-end pt-4">
+
+        <mat-form-field class="example-chip-list w-full">
+            <mat-label>Tags hinzufügen</mat-label>
+            <mat-chip-grid #chipGrid [formControl]="control()">
+                @for (element of control().value; track element) {
+                <mat-chip-row (removed)="remove(element)">
+                    {{element}}
+                    <button matChipRemove>
+                        <mat-icon matChipRemove>X</mat-icon>
+                    </button>
+                </mat-chip-row>
+                }
+            </mat-chip-grid>
+            <input matInput type="text" placeholder="z.B.: Laptop" [matChipInputFor]="chipGrid" [matAutocomplete]="auto"
+                [formControl]="userTextInput" />
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addTag($event)">
+                @for (option of selectedOptions().values(); track option) {
+                <mat-option [value]="option">{{option}}</mat-option>
+                }
+            </mat-autocomplete>
+        </mat-form-field>
+        <button mat-stroked-button color="primary" (click)="addTag($event)">Hinzufügen</button>
+
+
+    </div>
+</app-card>
