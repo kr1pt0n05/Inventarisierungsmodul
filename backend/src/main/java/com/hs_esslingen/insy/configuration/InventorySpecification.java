@@ -7,11 +7,13 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import com.hs_esslingen.insy.exception.BadRequestException;
 import com.hs_esslingen.insy.model.Inventory;
 import com.hs_esslingen.insy.model.Tag;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+
 // Class for implementing filter function for inventory items
 // Filter are passed as a Query-Parameter in the URL
 // and processed in the InventoriesController class
@@ -185,9 +187,22 @@ public class InventorySpecification {
             String joinProperty = orderBy; // z. B. "user"
 
             // Property to sort by
-            // name is the same field accessed by all nested fields
-            // therefore it is hardcoded. Needs to be adjusted when other fields need to be sorted
-            String sortField = "name";
+            // Set the sort field based on the joinProperty
+            // This is the field in the joined table that we want to sort by
+            String sortField;
+            switch (joinProperty) {
+                case "user":
+                    sortField = "name"; // Sort by user's name
+                    break;
+                case "company":
+                    sortField = "name"; // Sort by company's name
+                    break;
+                case "costCenter":
+                    sortField = "description"; // Sort by cost center's description
+                    break;
+                default:
+                    throw new BadRequestException("Invalid orderBy field: " + orderBy);
+            }
 
             // Join on the table of the nested field and sort by the specified field
             Join<Object, Object> join = root.join(joinProperty, JoinType.LEFT);
