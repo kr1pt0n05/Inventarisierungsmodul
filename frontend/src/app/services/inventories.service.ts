@@ -104,12 +104,22 @@ export class InventoriesService {
   }
 
   /**
-   * Deinventorize an inventory item by its ID.
+   * Marks an inventory item as deinventorized by its ID.
    *
    * @param id - The ID of the inventory item to deinventorize.
-   * @returns {Observable<void>} - An observable that completes when the deinventorization is successful.
+   * @returns {Observable<InventoryItem>} - An observable containing the updated inventory item.
    */
-  deinventorizeInventoryById(id: number): Observable<void> {
+  deinventorizeInventoryById(id: number): Observable<InventoryItem> {
+    return this.http.patch<InventoryItem>(`${this.url}/${id}`, { is_deinventoried: true });
+  }
+
+  /**
+   * Deletes an inventory item by its ID.
+   *
+   * @param id - The ID of the inventory item to delete.
+   * @returns {Observable<void>} - An observable that completes when the deletion is successful.
+   */
+  deleteInventoryById(id: number): Observable<void> {
     return this.http.delete<void>(`${this.url}/${id}`);
   }
 

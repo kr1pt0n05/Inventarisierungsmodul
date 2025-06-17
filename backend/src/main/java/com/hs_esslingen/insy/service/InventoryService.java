@@ -233,7 +233,7 @@ public class InventoryService {
     /**
      * Deletes an inventory item by its ID.
      * If the item does not exist, returns a 404 Not Found status.
-     * 
+     *
      * @param id
      * @return ResponseEntity with no content if the item was deleted,
      *         or a 404 Not Found status if the item does not exist.
@@ -252,7 +252,7 @@ public class InventoryService {
      * Updates an existing inventory item with the provided patch data.
      * The patch data is a map where the keys are field names and the values are the
      * new values for those fields.
-     * 
+     *
      * @param id
      * @param patchData
      * @return ResponseEntity of type InventoriesResponseDTO containing the updated
@@ -326,6 +326,11 @@ public class InventoryService {
                                 newUser != null ? newUser.getInventories() : null,
                                 inventory);
                         inventory.setUser(newUser);
+                    }
+                    break;
+                case "is_deinventoried":
+                    if (fieldValue != null) {
+                        inventory.setIsDeinventoried((Boolean) fieldValue);
                     }
                     break;
                 default:

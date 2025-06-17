@@ -1,10 +1,12 @@
 import {
   Component, inject, OnInit,
   QueryList,
+  signal,
   ViewChildren,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 import { AccordionComponent } from '../../components/accordion/accordion.component';
 import { CardComponent } from '../../components/card/card.component';
@@ -71,6 +73,7 @@ export interface minAndMaxPrice {
     AccordionComponent,
     MatButton,
     ChipV2Component,
+    MatCheckboxModule
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
@@ -120,6 +123,8 @@ export class InventoryComponent implements OnInit {
   minAndMaxId: minAndMaxId = {} as minAndMaxId;
   minAndMaxPrice: minAndMaxPrice = {} as minAndMaxPrice;
 
+  showDeinventoried = signal<boolean>(false);
+
   /**
    * Initializes the component and sets up the filter form and data fetching.
    * This method runs when the component is initialized (`ngOnInit` lifecycle hook).
@@ -139,6 +144,7 @@ export class InventoryComponent implements OnInit {
       location: new FormControl([]),
       orderer: new FormControl([]),
       tags: new FormControl([]),
+      isDeinventoried: new FormControl(this.showDeinventoried()),
     })
 
     // Assigning the form group as the filter for the server data sourc
@@ -178,5 +184,13 @@ export class InventoryComponent implements OnInit {
 
   navigateToDetailpageOf(id: number) {
     this.router.navigate(['/inventory', id]);
+  }
+
+  checkDeinventoriedBox(event?: KeyboardEvent) {
+    if (event && event.key !== 'Enter' && event.key !== ' ') {
+      return; // Only toggle on Enter or Space key
+    }
+    this.showDeinventoried.set(!this.showDeinventoried());
+    this.inventoryForm.get('isDeinventoried')?.setValue(this.showDeinventoried());
   }
 }

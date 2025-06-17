@@ -11,7 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardComponent } from "../../components/card/card.component";
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
-import { DialogComponent } from '../../components/dialog/dialog.component';
+import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
 import { Article } from '../../models/Article';
 import { Comment } from '../../models/comment';
@@ -221,25 +221,75 @@ export class InventorizationComponent {
     }
   }
 
-  openDeinventorizationDialog() {
-    const dialogRef = this.dialog.open(DialogComponent, { data: {} });
+  /**
+   * Opens a dialog to confirm deletion of the inventory item.
+   * If confirmed, deletes the item and navigates back to the inventory list.
+   */
+  openDeleteDialog() {
+    const data = {
+      title: 'Gegenstand wirklich löschen?',
+      description: 'Der Gegenstand wird aus dem Inventar entfernt und kann nicht wiederhergestellt werden.',
+      cancelButtonText: 'Abbrechen',
+      confirmButtonText: 'Löschen'
+    };
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      console.log(result);
+    this._handleDialog(data, (result) => {
       if (result) {
         const id = this.editableInventoryItem().id;
-        this.inventoriesService.deinventorizeInventoryById(id).subscribe({
+        this.inventoriesService.deleteInventoryById(id).subscribe({
           next: () => {
-            this.handleCommentChanges();
-            this.router.navigate(['/inventory/', id]);
-            console.log('Inventory item deinventorized successfully:', id);
+            this.router.navigate(['/inventory']);
+            console.log('Inventory item deleted successfully:', id);
           },
           error: (error) => {
             console.error('Error deinventorizing inventory item:', error);
           }
         });
       }
+    });
+  }
+
+  /**
+   * Opens a confirmation dialog for deinventorization.
+   * If confirmed, deinventorizes the inventory item and navigates to its detail page.
+   */
+  openDeinventorizationDialog() {
+    const data = {
+      title: 'Gegenstand wirklich deinventarisieren?',
+      description: 'Der Gegenstand wird archiviert und kann nicht wiederhergestellt werden.',
+      cancelButtonText: 'Abbrechen',
+      confirmButtonText: 'Deinventarisieren'
+    };
+
+    this._handleDialog(data, (result) => {
+      if (result) {
+        const id = this.editableInventoryItem().id;
+        this.inventoriesService.deinventorizeInventoryById(id).subscribe({
+          next: (item) => {
+            this.handleCommentChanges();
+            this.router.navigate(['/inventory/', id]);
+            console.log('Inventory item deinventorized successfully:', id);
+            console.log(item);
+          },
+          error: (error) => {
+            console.error('Error deinventorizing inventory item:', error);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Opens a dialog with the provided data and executes a callback with the result.
+   * This is used for confirmation dialogs like deletion or deinventorization.
+   * @param dialogData The data to be passed to the dialog.
+   * @param callback The function to call with the dialog result.
+   */
+  private _handleDialog(dialogData: DialogData, callback: (result: any) => void) {
+    const dialogRef = this.dialog.open(DialogComponent, { data: dialogData });
+
+    dialogRef.afterClosed().subscribe(result => {
+      callback(result);
     });
   }
 

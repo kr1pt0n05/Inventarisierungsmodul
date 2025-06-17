@@ -83,6 +83,16 @@
           [control]="$any(inventoryForm).get('tags')" />
       </div>
     </app-accordion>
+
+    <!-- Accordion for 'Deinventarisiert' -->
+    <app-accordion title="Deinventarisiert">
+      <div expansion-panel-content>
+        <mat-checkbox label="Deinventarisiert" (click)="checkDeinventoriedBox()"
+          (keydown)="checkDeinventoriedBox($event)" [checked]="showDeinventoried()">Deinventarisiertes
+          anzeigen</mat-checkbox>
+        <!-- $any needed to bypass Typescript type checking.  -->
+      </div>
+    </app-accordion>
   </div>
   <!--   Filter Section END   --->
 

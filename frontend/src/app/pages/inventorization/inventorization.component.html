@@ -10,8 +10,10 @@
         </h1>
     </div>
     <div class="flex gap-4">
+        <button mat-stroked-button color="warn" (click)="openDeleteDialog()"
+            [disabled]="isNewInventorization()">Löschen</button>
         <button mat-stroked-button color="warn" (click)="openDeinventorizationDialog()"
-            [disabled]="inventoryItem().is_deinventoried">Deinventarisieren</button>
+            [disabled]="isNewInventorization() || inventoryItem().is_deinventoried">Deinventarisieren</button>
         <button mat-flat-button color="primary" (click)="saveInventorization()"
             [disabled]="!isEditedValid()">Speichern</button>
     </div>

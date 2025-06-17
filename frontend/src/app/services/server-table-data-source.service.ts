@@ -92,7 +92,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   /**
    * The service used to fetch inventory data from the backend.
    */
-  private _service: InventoriesService = inject(InventoriesService);
+  private readonly _service: InventoriesService = inject(InventoriesService);
 
 
   /**
@@ -196,6 +196,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set filter(filter: FormGroup) {
     this._filter = filter;
     this._filter.valueChanges.subscribe((filter: Filter) => {
+      console.log('Filter changed:', filter); // Add this
       this._queryParams.next({ ...this._queryParams.value, currentFilter: filter });
     });
   }
