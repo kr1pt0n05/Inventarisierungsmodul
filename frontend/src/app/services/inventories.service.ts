@@ -34,6 +34,7 @@ import { Filter } from './server-table-data-source.service';
   providedIn: 'root'
 })
 export class InventoriesService {
+
   private readonly url = `${environment.apiUrl}/inventories`;
 
   /**
