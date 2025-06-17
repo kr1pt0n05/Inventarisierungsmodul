@@ -213,7 +213,6 @@ export class InventorizationComponent {
     this.tagsService.getTags().subscribe({
       next: (tags) => {
         this.availableTags.set([...tags.content]);
-        console.log('Available tags fetched successfully:', this.availableTags());
       },
       error: (error) => {
         console.error('Error fetching available tags:', error);
@@ -288,7 +287,6 @@ export class InventorizationComponent {
             this.handleCommentChanges();
             this.router.navigate(['/inventory/', id]);
             console.log('Inventory item deinventorized successfully:', id);
-            console.log(item);
           },
           error: (error) => {
             console.error('Error deinventorizing inventory item:', error);
@@ -490,19 +488,16 @@ export class InventorizationComponent {
    */
   private _createNewTags() {
     const newTags = this.newTags();
-    console.log('tags at start:', this.tags());
     if (newTags.length === 0) {
       this._setTagsOfItem();
       return;
     }
 
     for (const tag of newTags) {
-      console.log('Processing tag:', tag);
       this.tagsService.addTag({ name: tag } as Tag).subscribe({
         next: (savedTag) => {
           console.log('Tag saved successfully:', savedTag);
           this.tags.update(currentTags => [...currentTags, savedTag]);
-          console.log('Updated tags:', this.tags());
           this.newTags.update(currentNewTags => currentNewTags.filter(t => t !== tag));
 
           if (this.newTags().length === 0) {
@@ -522,7 +517,6 @@ export class InventorizationComponent {
    * Logs success or error messages based on the operation outcome.
    */
   private _setTagsOfItem() {
-    console.log('tags at saving', this.tags());
     this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
       next: (updatedItem) => {
         console.log('Tags updated successfully:', updatedItem.tags);
