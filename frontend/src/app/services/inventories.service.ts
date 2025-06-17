@@ -33,7 +33,7 @@ import { Filter } from './server-table-data-source.service';
   providedIn: 'root'
 })
 export class InventoriesService {
-  private readonly url = 'http://localhost:8080/inventories'
+  private readonly url = 'http://insy.hs-esslingen.com:8080/inventories'
 
   /**
    * Constructor that injects the HttpClient service for making HTTP requests.
