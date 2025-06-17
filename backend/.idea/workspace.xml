@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0d2c07a2-65a4-4799-95b0-9e8659a2ba31" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/app.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/environment.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/environment.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +40,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.InsyApplication.executor": "Run",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "main-new",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/Sandr/Documents/GitHub/Inventarisierungsmodul/backend",
     "node.js.detected.package.eslint": "true",
@@ -85,7 +82,7 @@
       <option name="presentableId" value="Default" />
       <updated>1750149135880</updated>
       <workItem from="1750149138141" duration="3029000" />
-      <workItem from="1750161821261" duration="19482000" />
+      <workItem from="1750161821261" duration="19627000" />
     </task>
     <servers />
   </component>
