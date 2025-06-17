@@ -1,4 +1,9 @@
-import {AfterViewInit, Component, inject, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, inject, output, ViewChild } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import {
   MatCell,
   MatCellDef,
@@ -8,11 +13,7 @@ import {
   MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
   MatTable,
 } from '@angular/material/table';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
-import {ServerTableDataSourceService} from '../../services/server-table-data-source.service';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import { ServerTableDataSourceService } from '../../services/server-table-data-source.service';
 
 
 
@@ -67,11 +68,17 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
     MatFormField,
     MatLabel,
     ReactiveFormsModule,
+    MatButtonModule
   ],
   templateUrl: './inventory-list.component.html',
   styleUrl: './inventory-list.component.css'
 })
-export class InventoryListComponent implements AfterViewInit{
+export class InventoryListComponent implements AfterViewInit {
+  /**
+   * Output event emitter that emits the ID of the clicked inventory item.
+   * This can be used to navigate to the details page or perform other actions.
+   */
+  onClickItem = output<number>();
 
   /**
    * List of column identifiers that should be displayed in the table.
@@ -115,6 +122,16 @@ export class InventoryListComponent implements AfterViewInit{
 
     // Bind the search bar to the data source
     this.inventoryItems.searchbar = this.searchText;
+  }
+
+  /**
+   * Handles the click event on an inventory item button.
+   * Emits the ID of the clicked item through the `onClickItem` output event emitter.
+   *
+   * @param element - The inventory item that was clicked.
+   */
+  onButtonClick(element: any) {
+    this.onClickItem.emit(element.id);
   }
 
 }
