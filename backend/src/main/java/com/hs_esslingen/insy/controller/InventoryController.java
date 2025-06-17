@@ -44,11 +44,11 @@ public class InventoryController {
             @RequestParam(name = "minPrice", required = false) Integer minPrice,
             @RequestParam(name = "maxPrice", required = false) Integer maxPrice,
             @RequestParam(name = "isDeinventoried", required = false) Boolean isDeinventoried,
-            @RequestParam(name = "orderer", required = false) String orderer,
-            @RequestParam(name = "company", required = false) String company,
-            @RequestParam(name = "location", required = false) String location,
-            @RequestParam(name = "costCenter", required = false) String costCenter,
-            @RequestParam(name = "serialNumber", required = false) String serialNumber,
+            @RequestParam(name = "orderer", required = false) List<String> orderers,
+            @RequestParam(name = "company", required = false) List<String> companies,
+            @RequestParam(name = "location", required = false) List<String> locations,
+            @RequestParam(name = "costCenter", required = false) List<String> costCenters,
+            @RequestParam(name = "serialNumber", required = false) List<String> serialNumbers,
             @RequestParam(name = "createdAfter", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdAfter,
             @RequestParam(name = "createdBefore", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdBefore,
             @RequestParam(name = "orderBy", required = false, defaultValue = "id") String orderBy,
@@ -57,7 +57,7 @@ public class InventoryController {
             @PageableDefault(size = 50) Pageable pageable) {
 
         return inventoriesService.getAllInventories(tags, minId, maxId, minPrice, maxPrice,
-                isDeinventoried, orderer, company, location, costCenter, serialNumber, createdAfter,
+                isDeinventoried, orderers, companies, locations, costCenters, serialNumbers, createdAfter,
                 createdBefore, orderBy, direction, searchText, pageable);
     }
 

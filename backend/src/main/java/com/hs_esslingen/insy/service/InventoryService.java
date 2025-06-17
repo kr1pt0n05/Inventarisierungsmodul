@@ -98,11 +98,11 @@ public class InventoryService {
             Integer minPrice,
             Integer maxPrice,
             Boolean isDeinventoried,
-            String orderer,
-            String company,
-            String location,
-            String costCenter,
-            String serialNumber,
+            List<String> orderers,
+            List<String> companies,
+            List<String> locations,
+            List<String> costCenters,
+            List<String> serialNumbers,
             LocalDate createdAfter,
             LocalDate createdBefore,
             String orderBy,
@@ -133,11 +133,11 @@ public class InventoryService {
                 .and(InventorySpecification.idBetween(minId, maxId))
                 .and(InventorySpecification.priceBetween(minPrice, maxPrice))
                 .and(InventorySpecification.isDeinventoried(isDeinventoried))
-                .and(InventorySpecification.hasOrderer(orderer))
-                .and(InventorySpecification.hasCompany(company))
-                .and(InventorySpecification.hasLocation(location))
-                .and(InventorySpecification.hasCostCenter(costCenter))
-                .and(InventorySpecification.hasSerialNumber(serialNumber))
+                .and(InventorySpecification.hasOrderers(orderers))
+                .and(InventorySpecification.hasCompanies(companies))
+                .and(InventorySpecification.hasLocations(locations))
+                .and(InventorySpecification.hasCostCenters(costCenters))
+                .and(InventorySpecification.hasSerialNumbers(serialNumbers))
                 .and(InventorySpecification.createdBetween(createdAfterTime, createdBeforeTime))
                 .and(InventorySpecification.hasSearchText(searchText));
 

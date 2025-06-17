@@ -80,6 +80,17 @@ public class InventorySpecification {
         };
     }
 
+
+    public static Specification<Inventory> hasOrderers(List<String> orderers) {
+        return (root, query, cb) -> {
+            if (orderers == null || orderers.isEmpty()) {
+                return cb.conjunction();
+            }
+            return root.get("user").get("name").in(orderers);
+        };
+    }
+
+
     public static Specification<Inventory> hasCompany(String company) {
         return (root, query, cb) -> {
             // If company is not set don't use any filter
@@ -87,6 +98,16 @@ public class InventorySpecification {
                 return cb.conjunction();
             }
             return cb.equal(root.get("company").get("name"), company);
+        };
+    }
+
+
+    public static Specification<Inventory> hasCompanies(List<String> companies) {
+        return (root, query, cb) -> {
+            if (companies == null || companies.isEmpty()) {
+                return cb.conjunction();
+            }
+            return root.get("company").get("name").in(companies);
         };
     }
 
@@ -100,6 +121,16 @@ public class InventorySpecification {
         };
     }
 
+
+    public static Specification<Inventory> hasLocations(List<String> locations) {
+        return (root, query, cb) -> {
+            if (locations == null || locations.isEmpty()) {
+                return cb.conjunction();
+            }
+            return root.get("location").in(locations);
+        };
+    }
+
     public static Specification<Inventory> hasCostCenter(String costCenter) {
         return (root, query, cb) -> {
             // If costCenter is not set don't use any filter
@@ -110,6 +141,16 @@ public class InventorySpecification {
         };
     }
 
+
+    public static Specification<Inventory> hasCostCenters(List<String> costCenters) {
+        return (root, query, cb) -> {
+            if (costCenters == null || costCenters.isEmpty()) {
+                return cb.conjunction();
+            }
+            return root.get("costCenter").get("description").in(costCenters);
+        };
+    }
+
     public static Specification<Inventory> hasSerialNumber(String serialNumber) {
         return (root, query, cb) -> {
             // If serialNumber ist not set don't use any filter
@@ -117,6 +158,16 @@ public class InventorySpecification {
                 return cb.conjunction();
             }
             return cb.equal(root.get("serialNumber"), serialNumber);
+        };
+    }
+
+
+    public static Specification<Inventory> hasSerialNumbers(List<String> serialNumbers) {
+        return (root, query, cb) -> {
+            if (serialNumbers == null || serialNumbers.isEmpty()) {
+                return cb.conjunction();
+            }
+            return root.get("serialNumber").in(serialNumbers);
         };
     }
 
