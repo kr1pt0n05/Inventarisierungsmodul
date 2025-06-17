@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environment';
 import { Tag } from '../models/tag';
 import { Tags } from '../models/tags';
 
@@ -8,7 +9,7 @@ import { Tags } from '../models/tags';
   providedIn: 'root'
 })
 export class TagsService {
-  private readonly url = 'http://localhost:8080/tags';
+  private readonly url = `${environment.apiUrl}/tags`;
 
   /**
    * Constructor that injects the HttpClient service for making HTTP requests.
