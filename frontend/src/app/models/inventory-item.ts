@@ -14,7 +14,6 @@ export interface InventoryItem {
   tags?: Tag[],
   is_deinventoried: boolean,
   created_at: string,
-  tags: Tag[],
   [key: string]: any
 }
 
