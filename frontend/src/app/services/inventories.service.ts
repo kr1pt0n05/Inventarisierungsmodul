@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { map, Observable } from 'rxjs';
+import { environment } from '../../environment';
 import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
@@ -33,7 +34,8 @@ import { Filter } from './server-table-data-source.service';
   providedIn: 'root'
 })
 export class InventoriesService {
-  private readonly url = 'http://insy.hs-esslingen.com:8080/inventories'
+
+  private readonly url = `${environment.apiUrl}/inventories`;
 
   /**
    * Constructor that injects the HttpClient service for making HTTP requests.
