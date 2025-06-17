@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import {map, Observable} from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
+import { minAndMaxId, minAndMaxPrice } from '../pages/inventory/inventory.component';
 import { Filter } from './server-table-data-source.service';
-import {minAndMaxId, minAndMaxPrice} from '../pages/inventory/inventory.component';
 
 
 /**
@@ -82,16 +82,49 @@ export class InventoriesService {
     return this.http.get<InventoryItem>(`${this.url}/${id}`);
   }
 
-
-  addInventoryItem(item: InventoryItem) {
+  /**
+   * Adds a new inventory item to the backend.
+   *
+   * @param item - The inventory item to add.
+   * @returns {Observable<InventoryItem>} - An observable containing the added inventory item.
+   *
+   */
+  addInventoryItem(item: InventoryItem): Observable<InventoryItem> {
     return this.http.post<InventoryItem>(this.url, item);
   }
 
-  updateInventoryById(id: number, item: InventoryItem) {
+  /**
+   * Updates an inventory items data by its ID.
+   *
+   * @param id - The ID of the inventory item to update.
+   * @returns {Observable<InventoryItem>} - An observable that completes when the update is successful.
+   */
+  updateInventoryById(id: number, item: InventoryItem): Observable<InventoryItem> {
     return this.http.patch<InventoryItem>(`${this.url}/${id}`, item);
   }
 
-    /**
+  /**
+   * Marks an inventory item as deinventorized by its ID.
+   *
+   * @param id - The ID of the inventory item to deinventorize.
+   * @returns {Observable<InventoryItem>} - An observable containing the updated inventory item.
+   */
+  deinventorizeInventoryById(id: number): Observable<InventoryItem> {
+    return this.http.patch<InventoryItem>(`${this.url}/${id}`, { is_deinventoried: true });
+  }
+
+  /**
+   * Deletes an inventory item by its ID.
+   *
+   * @param id - The ID of the inventory item to delete.
+   * @returns {Observable<void>} - An observable that completes when the deletion is successful.
+   */
+  deleteInventoryById(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`);
+  }
+
+
+  /**
    * Fetches the comments associated with a specific inventory item by its ID.
    *
    * @param id - The ID of the inventory item for which to fetch comments.
@@ -109,16 +142,27 @@ export class InventoriesService {
     return this.http.delete<void>(`${this.url}/${id}/comments/${commentId}`);
   }
 
-
-   /**
-   * Fetches the extensions associated with a specific inventory item by its ID.
+  /**
+   * Adds an extension to a specific inventory item by its ID.
    *
-   * @param id - The ID of the inventory item for which to fetch extensions.
-   * @returns {Observable<Extension[]>} - An observable containing an array of extensions.
+   * @param id - The ID of the inventory item to which the extension will be added.
+   * @param extension - The extension data to add.
+   * @returns {Observable<Extension>} - An observable containing the added extension.
    */
-  getExtensionsForId(id: number): Observable<Extension[]> {
-    return this.http.get<any>(`${this.url}/${id}/extensions`);
+  addExtensionToId(id: number, extension: Extension): Observable<Extension> {
+    return this.http.post<Extension>(`${this.url}/${id}/components`, extension);
   }
+
+  /**
+  * Fetches the extensions associated with a specific inventory item by its ID.
+  *
+  * @param id - The ID of the inventory item for which to fetch extensions.
+  * @returns {Observable<Extension[]>} - An observable containing an array of extensions.
+  */
+  getExtensionsForId(id: number): Observable<Extension[]> {
+    return this.http.get<any>(`${this.url}/${id}/components`);
+  }
+
 
   /**
    * Fetches the changes associated with a specific inventory item by its ID.
@@ -127,7 +171,7 @@ export class InventoriesService {
    * @returns {Observable<any>} - An observable containing change data (could be a custom object).
    */
   getChangesForId(id: number): Observable<any> {
-    return this.http.get<any>(`${this.url}/${id}/changes`);
+    return this.http.get<any>(`${this.url}/${id}/history`);
   }
 
   /**
@@ -196,12 +240,12 @@ export class InventoriesService {
     );
   }
 
-  getMinAndMaxId():Observable<minAndMaxId> {
+  getMinAndMaxId(): Observable<minAndMaxId> {
     return this.http.get<minAndMaxId>(`${this.url}/maxAndMinId`);
   }
 
-  getMinAndMaxPrice():Observable<minAndMaxPrice> {
-  return this.http.get<minAndMaxPrice>(`${this.url}/maxAndMinPrice`);
-}
+  getMinAndMaxPrice(): Observable<minAndMaxPrice> {
+    return this.http.get<minAndMaxPrice>(`${this.url}/maxAndMinPrice`);
+  }
 
 }

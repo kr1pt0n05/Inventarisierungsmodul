@@ -2,117 +2,95 @@
 
 
   <!-- Filter Section START -->
-  <div  class="w-1/5">
+  <div class="w-1/5">
     <!-- Filter Action Buttons: These buttons control the visibility of all accordion sections -->
     <div class="example-action-buttons">
       <button mat-button (click)="openAllAccordion()">Alles ausklappen</button> <!-- Button to expand all accordions -->
-      <button mat-button (click)="closeAllAccordions()">Alles einklappen</button> <!-- Button to collapse all accordions -->
+      <button mat-button (click)="closeAllAccordions()">Alles einklappen</button>
+      <!-- Button to collapse all accordions -->
     </div>
 
     <!-- Accordion for 'Kostenstelle' (Cost Center) -->
     <app-accordion title="Kostenstelle">
       <div expansion-panel-content>
-        <app-chip-v2
-          placeholder="Kostenstelle hinzufügen"
-          heading="Kostenstellen"
-          [options]="costCenters"
-          [control]="$any(inventoryForm).get('costCenter')"
-
-        />
+        <app-chip-v2 placeholder="Kostenstelle hinzufügen" heading="Kostenstellen" [options]="costCenters"
+          [control]="$any(inventoryForm).get('costCenter')" />
       </div>
     </app-accordion>
 
     <!-- Accordion for 'Inventarnummer' (Inventory ID) -->
     <app-accordion title="Inventarnummer">
       <div expansion-panel-content>
-        <app-range-slider
-          [minValue]="minAndMaxId.minId"
-          [maxValue]="minAndMaxId.maxId"
-          [controlMin]="$any(inventoryForm).get('minId')"
-          [controlMax]="$any(inventoryForm).get('maxId')"
-        /> <!-- $any needed to bypass Typescript type checking.  -->
+        <app-range-slider [minValue]="minAndMaxId.minId" [maxValue]="minAndMaxId.maxId"
+          [controlMin]="$any(inventoryForm).get('minId')" [controlMax]="$any(inventoryForm).get('maxId')" />
+        <!-- $any needed to bypass Typescript type checking.  -->
       </div>
     </app-accordion>
 
     <!-- Accordion for 'Zeitraum' (Time Period) -->
     <app-accordion title="Zeitraum">
       <div expansion-panel-content>
-        <app-datepicker
-          [controlMin]="$any(inventoryForm).get('dateStart')"
-          [controlMax]="$any(inventoryForm).get('dateEnd')"
-        />
+        <app-datepicker [controlMin]="$any(inventoryForm).get('dateStart')"
+          [controlMax]="$any(inventoryForm).get('dateEnd')" />
       </div>
     </app-accordion>
 
     <!-- Accordion for 'Firma' (Company) -->
     <app-accordion title="Firma">
       <div expansion-panel-content>
-        <app-chip-v2
-          placeholder="Firma hinzufügen"
-          heading="Firma"
-          [options]="companies"
-          [control]="$any(inventoryForm).get('company')"
-        />
+        <app-chip-v2 placeholder="Firma hinzufügen" heading="Firma" [options]="companies"
+          [control]="$any(inventoryForm).get('company')" />
       </div>
     </app-accordion>
 
     <!-- Accordion for 'Preis' (Price) -->
     <app-accordion title="Preis">
       <div expansion-panel-content>
-        <app-range-slider
-          [minValue]="minAndMaxPrice.minPrice"
-          [maxValue]="minAndMaxPrice.maxPrice"
-          [controlMin]="$any(inventoryForm).get('minPrice')"
-          [controlMax]="$any(inventoryForm).get('maxPrice')"
-        /> <!-- $any needed to bypass Typescript type checking.  -->
+        <app-range-slider [minValue]="minAndMaxPrice.minPrice" [maxValue]="minAndMaxPrice.maxPrice"
+          [controlMin]="$any(inventoryForm).get('minPrice')" [controlMax]="$any(inventoryForm).get('maxPrice')" />
+        <!-- $any needed to bypass Typescript type checking.  -->
       </div>
     </app-accordion>
 
     <!-- Accordion for 'Seriennummer' (Serial Number) -->
     <app-accordion title="Seriennummer">
       <div expansion-panel-content>
-        <app-chip-v2
-          placeholder="Seriennummer hinzufügen"
-          heading="Seriennummer"
-          [options]="serialNumbers"
-          [control]="$any(inventoryForm).get('serialNumber')"
-        />
+        <app-chip-v2 placeholder="Seriennummer hinzufügen" heading="Seriennummer" [options]="serialNumbers"
+          [control]="$any(inventoryForm).get('serialNumber')" />
       </div>
     </app-accordion>
 
     <!-- Accordion for 'Standort/Nutzer' (Location/User) -->
     <app-accordion title="Standort/Nutzer">
       <div expansion-panel-content>
-        <app-chip-v2
-          placeholder="Standort oder Nutzer hinzufügen"
-          heading="Standort/Nutzer"
-          [options]="locations"
-          [control]="$any(inventoryForm).get('location')"
-        />
+        <app-chip-v2 placeholder="Standort oder Nutzer hinzufügen" heading="Standort/Nutzer" [options]="locations"
+          [control]="$any(inventoryForm).get('location')" />
       </div>
     </app-accordion>
 
     <!-- Accordion for 'Bestellt von' (Ordered by) -->
     <app-accordion title="Bestellt von">
       <div expansion-panel-content>
-        <app-chip-v2
-          placeholder="Besteller hinzufügen"
-          heading="Besteller"
-          [options]="orderers"
-          [control]="$any(inventoryForm).get('orderer')"
-        />
+        <app-chip-v2 placeholder="Besteller hinzufügen" heading="Besteller" [options]="orderers"
+          [control]="$any(inventoryForm).get('orderer')" />
       </div>
     </app-accordion>
 
     <!-- Accordion for 'Tags' -->
     <app-accordion title="Tags">
       <div expansion-panel-content>
-        <app-chip-v2
-          placeholder="Tags hinzufügen"
-          heading="Tags"
-          [options]="tags"
-          [control]="$any(inventoryForm).get('tags')"
-        />
+        <app-chip-v2 placeholder="Tags hinzufügen" heading="Tags" [options]="tags"
+          [control]="$any(inventoryForm).get('tags')" />
+      </div>
+    </app-accordion>
+
+    <!-- Accordion for 'Deinventarisiert' -->
+    <app-accordion title="Deinventarisiert">
+      <div expansion-panel-content>
+        <mat-checkbox label="Deinventarisiert" (click)="checkDeinventoriedBox()"
+          (keydown)="checkDeinventoriedBox($event)" [checked]="showDeinventoried()">Deinventarisiertes
+          anzeigen</mat-checkbox>
+        <!-- $any needed to bypass Typescript type checking.  -->
       </div>
     </app-accordion>
   </div>
@@ -124,8 +102,7 @@
     <!-- Card Component to display the inventory list -->
     <app-card title="Inventargegenstände">
       <div card-content>
-        <app-inventory-list
-        />
+        <app-inventory-list (onClickItem)="navigateToDetailpageOf($event)" />
       </div>
     </app-card>
   </div>

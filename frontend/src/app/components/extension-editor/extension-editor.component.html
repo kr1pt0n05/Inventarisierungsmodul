@@ -1,0 +1,15 @@
+<form [formGroup]="formGroup" class="flex flex-col gap-2">
+    @for (field of extensionColumns.keys(); track field) {
+    <mat-form-field>
+        <mat-label>{{extensionColumns.get(field)}}</mat-label>
+        <input matInput formControlName="{{field}}" [matAutocomplete]="auto" [placeholder]="initialValues[field]"
+            [required]="requiredInputs().includes(field)" />
+    </mat-form-field>
+
+    <mat-autocomplete #auto="matAutocomplete">
+        @for (option of filteredOptions.get(field) | async; track option) {
+        <mat-option [value]="option">{{option}}</mat-option>
+        }
+    </mat-autocomplete>
+    }
+</form>

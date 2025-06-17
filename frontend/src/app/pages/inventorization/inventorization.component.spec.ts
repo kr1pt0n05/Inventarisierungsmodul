@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentRef } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { InventorizationComponent } from './inventorization.component';
 
 describe('InventorizationComponent', () => {
@@ -12,7 +13,10 @@ describe('InventorizationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InventorizationComponent],
+      imports: [
+        InventorizationComponent,
+        RouterModule.forRoot([]),
+      ],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting()

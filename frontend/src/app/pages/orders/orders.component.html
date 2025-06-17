@@ -7,30 +7,33 @@
       <div card-content class="space-y-4">
 
         <button class="bg-he-darkblue hover:bg-he-lightblue text-white font-medium py-3 px-6 rounded-full w-full"
-                [ngClass]="{
-                'opacity-50': this.checkedCount() != 1,
-                'hover:bg-he-lightblue': checkedCount() === 1
-                }"
-               (click)="inventarizeSingleArticle()"
-        >
-          Artikel inventarisieren
-        </button>
-
-        <button class="bg-he-darkblue text-white font-medium py-3 px-6 rounded-full w-full"
-                [ngClass]="{
+          [ngClass]="{
                 'opacity-50': this.checkedCount() < 1,
                 'hover:bg-he-lightblue': checkedCount() >= 1
-                }"
-                (click)="inventarizeSingleArticle()"
-        >
-          Erweiterungen inventarisieren
+                }" (click)="inventarize('asItems')">
+          Artikel einzeln inventarisieren
         </button>
+
+        <button class="bg-he-darkblue text-white font-medium py-3 px-6 rounded-full w-full" [ngClass]="{
+                'opacity-50': this.checkedCount() < 1,
+                'hover:bg-he-lightblue': checkedCount() >= 1
+                }" (click)="inventarize('asExtensions')">
+          Als Erweiterungen inventarisieren
+        </button>
+
+        <button class="bg-he-darkblue text-white font-medium py-3 px-6 rounded-full w-full" [ngClass]="{
+                'opacity-50': this.checkedCount() <= 1,
+                'hover:bg-he-lightblue': checkedCount() > 1
+                }" (click)="inventarize('addToFirst')">
+          Artikel als ein Gegenstand inventarisieren
+        </button>
+
       </div>
     </app-card>
   </div>
 
 
-  <div class="w-2/3">
+  <div class="w-3/4">
     <app-card title="Zu inventarisierende Artikel ({{numberOfArticles()}})">
       <div card-content>
 
@@ -38,7 +41,8 @@
           <!-- Checkbox aligned to the left -->
 
           <div class="px-2 py-2">
-            <mat-checkbox class="example-margin" [checked]="allChecked" (change)="checkAll()">Alle auswählen</mat-checkbox>
+            <mat-checkbox class="example-margin" [checked]="allChecked" (change)="checkAll()">Alle
+              auswählen</mat-checkbox>
           </div>
 
           <!-- Buttons aligned to the right -->
@@ -49,16 +53,18 @@
         </div>
 
         @for (order of orders; track order.id) {
-          @for (article of order.articles; track article.article_id) {
-            <app-accordion title="{{order.description}}: {{article.description}}, {{article.price}}€, {{article.company}}">
-              <div expansion-panel-header>
-                <mat-checkbox class="example-margin" (click)="checkBox($event, article)" [checked]="article.checked"></mat-checkbox>
-              </div>
-              <div expansion-panel-content>
-                <p>dadada</p>
-              </div>
-            </app-accordion>
-          }
+        @for (article of order.articles; track article.article_id) {
+        <app-accordion title="{{order.description}}: {{article.description}}, {{article.price}}€, {{article.company}}
+        {{checkedArticles.at(0)?.article_id === article.article_id ? '- Hauptartikel' : ''}}">
+          <div expansion-panel-header>
+            <mat-checkbox class="example-margin" (click)="checkBox($event, article)"
+              [checked]="article.checked"></mat-checkbox>
+          </div>
+          <div expansion-panel-content>
+            <p>dadada</p>
+          </div>
+        </app-accordion>
+        }
         }
       </div>
     </app-card>

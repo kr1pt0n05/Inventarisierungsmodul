@@ -8,5 +8,6 @@ export interface Article {
   inventories_id: number,
   inventories_serial_number: string,
   is_extension: boolean,
+  is_inventoried: boolean,
   checked: boolean, // Needed for Orders page
 }

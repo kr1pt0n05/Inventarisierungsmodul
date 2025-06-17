@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, model } from '@angular/core';
+import { Component, EventEmitter, model, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,6 +8,7 @@ import { map, Observable, startWith } from 'rxjs';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { AuthenticationService } from '../../services/authentication.service';
 import { CacheInventoryService } from '../../services/cache-inventory.service';
+import { InventoriesService } from '../../services/inventories.service';
 import { CardComponent } from "../card/card.component";
 
 /**
@@ -62,12 +63,22 @@ import { CardComponent } from "../card/card.component";
   styleUrl: './inventory-item-editor.component.css'
 })
 export class InventoryItemEditorComponent {
-  constructor(private readonly cache: CacheInventoryService, private readonly authService: AuthenticationService) { }
+  constructor(private readonly cache: CacheInventoryService,
+    private readonly authService: AuthenticationService,
+    private readonly inventoriesService: InventoriesService) { }
   /**
    * Holds the current inventory item being edited.
    */
   inventoryItem = model<InventoryItem>({} as InventoryItem);
-  disabledInputs = model<Map<string, boolean>>(new Map<string, boolean>());
+  disabledInputs = model<string[]>([]);
+  requiredInputs = model<string[]>(['id', 'cost_center', 'company', 'orderer']);
+  initialValues!: InventoryItem;
+
+  /**
+   * Event emitter that emits when the form is valid or invalid.
+   * Emits a boolean indicating the validity of the form.
+   */
+  @Output() isValid = new EventEmitter<boolean>(false);
 
   /**
    * Defines the fields to display in the editor and their labels.
@@ -94,46 +105,78 @@ export class InventoryItemEditorComponent {
    * Initializes form controls, sets up autocomplete, and disables fields as specified.
    */
   ngOnInit() {
+    this.initialValues = { ...this.inventoryItem() };
+
     this._setupFormControls();
     this._setupAutocomplete();
 
+    this._updateValuesFromInput();
+
+  }
+
+  ngOnChanges() {
+    // Reset form controls when inventoryItem changes
+    this.initialValues = { ...this.inventoryItem() };
+    this._updateValuesFromInput();
+    this.formGroup.markAsPristine();
+    this.formGroup.markAsUntouched();
+
     for (const [key, control] of this.formControls.entries()) {
-      if (this.disabledInputs().get(key)) {
+      if (this.disabledInputs().includes(key)) {
         control.disable();
-        console.log(`Input ${key} is disabled.`);
       }
     }
   }
 
   /**
    * Sets up form controls with initial values from the inventory item,
-   * synchronizes form changes with the model, and fills default values for
-   * 'created_at' and 'orderer' if not already set.
+   * synchronizes form changes with the model, checks if the data is valid and
+   * fills default values for 'created_at' and 'orderer' if not already set.
    * @private
    */
   private _setupFormControls() {
-    if (this.inventoryItem()) {
-      for (const [key, control] of this.formControls.entries()) {
-        control.setValue(this.inventoryItem()![key as keyof InventoryItem] ?? '');
-      }
-    }
-
     this.formGroup.valueChanges.subscribe(value => {
       this.inventoryItem.update(item => {
         for (const [key, control] of this.formControls.entries()) {
-          item![key as keyof InventoryItem] = control.value;
+          item[key as keyof InventoryItem] = control.value;
         }
         return item;
       });
-    });
 
+      this.isValid.emit(this.formGroup.valid && this.requiredInputs().every(input => this.formControls.get(input)?.value));
+    });
+  }
+
+  private _updateValuesFromInput() {
+    if (this.initialValues) {
+      for (const [key, control] of this.formControls.entries()) {
+        control.setValue(this.initialValues[key as keyof InventoryItem] ?? '');
+      }
+    }
     if (!this.inventoryItem().created_at) {
-      this.formControls.get('created_at')?.setValue(new Date().toISOString().split('T')[0]);
+      this.formControls.get('created_at')?.setValue(new Date().toLocaleString("de-De",
+        {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        }).replace(',', ''));
     }
     if (!this.inventoryItem().orderer) {
-      this.formControls.get('orderer')?.setValue(this.authService.getUsername() ?? '-');
+      this.formControls.get('orderer')?.setValue(this.authService.getUsername());
     }
-
+    if (!this.initialValues.id) {
+      this.inventoriesService.getMinAndMaxId().subscribe({
+        next: (minAndMaxId) => {
+          this.formControls.get('id')?.setValue(minAndMaxId.maxId + 1)
+        },
+        error: (error) => {
+          console.error('Error fetching min and max ID:', error);
+        }
+      });
+    }
   }
 
   /**
@@ -147,7 +190,6 @@ export class InventoryItemEditorComponent {
     }
     this.cache.getCostCenters().subscribe(costCenters => this.options.set('cost_center', costCenters));
     this.cache.getCompanies().subscribe(companies => this.options.set('company', companies));
-    this.cache.getSerialNumbers().subscribe(serialNumbers => this.options.set('serial_number', serialNumbers));
     this.cache.getLocations().subscribe(locations => this.options.set('location', locations));
     this.cache.getOrderers().subscribe(orderers => this.options.set('orderer', orderers));
 
@@ -155,7 +197,7 @@ export class InventoryItemEditorComponent {
       this.filteredOptions.set(key, control.valueChanges
         .pipe(
           startWith(''),
-          map(value => this._filter(value || '', key))
+          map(value => this._filter(value ?? '', key))
         )
       );
     }
@@ -170,9 +212,8 @@ export class InventoryItemEditorComponent {
    * @private
    */
   private _filter(value: string, id: string): string[] {
-    const filterValue = value.toLowerCase();
+    const filterValue = String(value).toLowerCase() ?? '';
     return this.options.get(id)?.filter(option => option.toLowerCase().includes(filterValue)) ?? [];
   }
-  // TODO: Implement validation and required fields
 
 }
