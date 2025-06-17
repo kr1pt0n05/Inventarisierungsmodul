@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, input, output, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import {
@@ -43,6 +44,7 @@ import {
     MatHeaderRowDef,
     MatPaginatorModule,
     MatSortModule,
+    MatButtonModule
   ],
   templateUrl: './dynamic-list.component.html',
   styleUrl: './dynamic-list.component.css'
@@ -54,6 +56,10 @@ export class DynamicListComponent implements AfterViewInit {
 
   // Map with attribute names as keys and column display names as values.
   columns = input.required<Map<string, string>>();
+
+  buttonText = input<string>('Action');
+
+  buttonClicked = output<Object>();
 
   items!: MatTableDataSource<object>;
   @ViewChild(MatSort) sort!: MatSort;
@@ -72,6 +78,10 @@ export class DynamicListComponent implements AfterViewInit {
    */
   getColumnIds(): string[] {
     return Array.from(this.columns().keys());
+  }
+
+  handleClick(element: object): void {
+    this.buttonClicked.emit(element);
   }
 
 }

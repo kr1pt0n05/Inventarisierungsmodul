@@ -174,6 +174,10 @@ export class InventoriesService {
     return this.http.get<Extension>(`${this.url}/${id}/components/${extensionId}`);
   }
 
+  deleteExtensionFromId(id: number, extensionId: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}/components/${extensionId}`);
+  }
+
   /**
    * Updates the tags of a specific inventory item by its ID.
    *

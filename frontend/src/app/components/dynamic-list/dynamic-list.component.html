@@ -4,7 +4,15 @@
     @for (id of getColumnIds(); track id) {
     <ng-container matColumnDef="{{id}}">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> {{columns().get(id)}} </th>
-      <td mat-cell *matCellDef="let element"> {{element[id]}} </td>
+      <td mat-cell *matCellDef="let element">
+        @if (id !== 'actions') {
+        {{element[id]}}
+        } @else {
+        <button mat-stroked-button color="primary" (click)="handleClick(element)">
+          {{buttonText()}}
+        </button>
+        }
+      </td>
     </ng-container>
     }
 

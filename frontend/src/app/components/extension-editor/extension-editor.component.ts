@@ -41,7 +41,7 @@ export class ExtensionEditorComponent {
   /**
    * List of required input field keys.
    */
-  requiredInputs = model<string[]>(['cost_center', 'company', 'price', 'description']);
+  requiredInputs = model<string[]>(['company', 'price', 'description']);
 
   /**
    * Event emitter that emits when the form validity changes.
@@ -108,6 +108,8 @@ export class ExtensionEditorComponent {
 
     this._setupFormControls();
     this._setupAutocomplete();
+
+    this.isValid.emit(this.formGroup.valid && this.requiredInputs().every(input => this.formControls.get(input)?.value));
   }
 
   /**
@@ -193,7 +195,6 @@ export class ExtensionEditorComponent {
     for (const key of inventoryItemDisplayNames.keys()) {
       this.options.set(key, [] as string[]);
     }
-    this.cache.getCostCenters().subscribe(costCenters => this.options.set('cost_center', costCenters));
     this.cache.getCompanies().subscribe(companies => this.options.set('company', companies));
     this.cache.getOrderers().subscribe(orderers => this.options.set('orderer', orderers));
 

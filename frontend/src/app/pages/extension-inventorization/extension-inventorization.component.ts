@@ -2,11 +2,13 @@ import { Component, input, model, signal, WritableSignal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardComponent } from '../../components/card/card.component';
+import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
 import { ExtensionEditorComponent } from "../../components/extension-editor/extension-editor.component";
 import { InventoryListComponent } from '../../components/inventory-list/inventory-list.component';
 import { Article } from '../../models/Article';
@@ -104,7 +106,8 @@ export class ExtensionInventorizationComponent {
     private readonly authService: AuthenticationService,
     private readonly inventoriesService: InventoriesService,
     private readonly orderService: OrderService,
-    private readonly router: Router, route: ActivatedRoute) {
+    private readonly router: Router, route: ActivatedRoute,
+    public dialog: MatDialog) {
     // Handles query params for extensionArticles and inventoryId, and triggers article loading if needed.
     route.queryParams.subscribe(val => {
       if (val['extensionArticles']) {
@@ -337,6 +340,49 @@ export class ExtensionInventorizationComponent {
       error: (error) => {
         console.error('Error updating article:', error);
       }
+    });
+  }
+
+  /**
+ * Opens a dialog to confirm deletion of the inventory item.
+ * If confirmed, deletes the item and navigates back to the inventory list.
+ */
+  openDeleteDialog() {
+    const data = {
+      title: 'Erweiterung wirklich löschen?',
+      description: 'Die Erweiterung wird aus dem Inventar entfernt und kann nicht wiederhergestellt werden.',
+      cancelButtonText: 'Abbrechen',
+      confirmButtonText: 'Löschen'
+    };
+
+    this._handleDialog(data, (result) => {
+      if (result) {
+        const id = this.inventoryId()!;
+        const extensionId = this.extension().id!;
+        this.inventoriesService.deleteExtensionFromId(id, extensionId).subscribe({
+          next: () => {
+            this.router.navigate(['/inventory', id]);
+            console.log('Extension deleted successfully');
+          },
+          error: (error) => {
+            console.error('Error deinventorizing inventory item:', error);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Opens a dialog with the provided data and executes a callback with the result.
+   * This is used for confirmation dialogs like deletion or deinventorization.
+   * @param dialogData The data to be passed to the dialog.
+   * @param callback The function to call with the dialog result.
+   */
+  private _handleDialog(dialogData: DialogData, callback: (result: any) => void) {
+    const dialogRef = this.dialog.open(DialogComponent, { data: dialogData });
+
+    dialogRef.afterClosed().subscribe(result => {
+      callback(result);
     });
   }
 

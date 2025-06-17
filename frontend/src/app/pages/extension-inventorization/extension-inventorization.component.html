@@ -9,7 +9,14 @@
             }
         </h1>
     </div>
-    <button mat-flat-button color="primary" (click)="onInventorization()" [disabled]="!isValid()">Speichern</button>
+
+    <div class="flex gap-4">
+        @if (!isNewExtension()) {
+        <button mat-stroked-button color="warn" (click)="openDeleteDialog()"
+            [disabled]="isNewExtension()">Löschen</button>
+        }
+        <button mat-flat-button color="primary" (click)="onInventorization()" [disabled]="!isValid()">Speichern</button>
+    </div>
 </div>
 <div class="p-4 gap-4">
     <app-card title="Erweiterung">

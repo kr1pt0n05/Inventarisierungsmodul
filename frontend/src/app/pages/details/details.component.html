@@ -34,8 +34,12 @@
 
         <!-- Panel content -->
         @if (panelContent.has(id) && panelContent.get(id)()!.length > 0) {
-        <app-dynamic-list [tableContent]="panelContent.get(id)()" [columns]="panelColumnMaps.get(id)!">
-        </app-dynamic-list>
+        @if (id === 'extensions') {
+        <app-dynamic-list [tableContent]="panelContent.get(id)()" [columns]="panelColumnMaps.get(id)!"
+            buttonText="Bearbeiten" (buttonClicked)="onClickExtension($event)" />
+        } @else {
+        <app-dynamic-list [tableContent]="panelContent.get(id)()" [columns]="panelColumnMaps.get(id)!" />
+        }
 
         } @else if (id === 'tags' && tags.length > 0) {
         <mat-chip-set>

@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
@@ -83,7 +83,7 @@ export class DetailsComponent {
   // The keys are the internal names of the columns, the values are the display names
   inventoryItemColumns = inventoryItemDisplayNames;
 
-  extensionColumns = extensionDisplayNames;
+  extensionColumns = new Map(extensionDisplayNames);
 
   commentsColumns = new Map<string, string>([
     ['description', 'Kommentar'],
@@ -105,7 +105,8 @@ export class DetailsComponent {
     ['changes', this.changesColumns]
   ]);
 
-  constructor() {
+  constructor(private readonly router: Router) {
+    this.extensionColumns.set('actions', '');
     afterNextRender(() => {
       for (const panel of this.panels) {
         if (!panel.id.includes('3')) {
@@ -136,6 +137,11 @@ export class DetailsComponent {
         this.inventoryItemInternal.set(id, id.toLocaleUpperCase());
       }
     }
+  }
+
+  onClickExtension(extension: object): void {
+    const ext = extension as Extension;
+    this.router.navigate(['/edit', this.inventoryItem().id, 'extension', ext.id]);
   }
 
 }
