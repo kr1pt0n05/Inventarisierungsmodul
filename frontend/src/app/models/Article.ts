@@ -1,3 +1,5 @@
+import { Tag } from "./tag";
+
 export interface Article {
   description: string,
   price: number,
@@ -9,5 +11,6 @@ export interface Article {
   inventories_serial_number: string,
   is_extension: boolean,
   is_inventoried: boolean,
+  tags: Tag[],
   checked: boolean, // Needed for Orders page
 }
