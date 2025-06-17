@@ -6,6 +6,7 @@ import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
+import { Tag } from '../models/tag';
 import { minAndMaxId, minAndMaxPrice } from '../pages/inventory/inventory.component';
 import { Filter } from './server-table-data-source.service';
 
@@ -163,6 +164,17 @@ export class InventoriesService {
     return this.http.get<any>(`${this.url}/${id}/components`);
   }
 
+  /**
+   * Updates the tags of a specific inventory item by its ID.
+   *
+   * @param id - The ID of the inventory item to update.
+   * @param tags - An array of Tag objects to set as the new tags for the inventory item.
+   * @returns {Observable<InventoryItem>} - An observable containing the updated inventory item.
+   */
+  updateTagsOfId(id: number, tags: Tag[]): Observable<InventoryItem> {
+    console.log(tags.map(tag => tag.id));
+    return this.http.post<InventoryItem>(`${this.url}/${id}/tags`, tags.map(tag => tag.id));
+  }
 
   /**
    * Fetches the changes associated with a specific inventory item by its ID.

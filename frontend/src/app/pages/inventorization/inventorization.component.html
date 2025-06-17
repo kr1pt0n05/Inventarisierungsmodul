@@ -10,10 +10,12 @@
         </h1>
     </div>
     <div class="flex gap-4">
+        @if (!isNewInventorization()) {
         <button mat-stroked-button color="warn" (click)="openDeleteDialog()"
             [disabled]="isNewInventorization()">Löschen</button>
         <button mat-stroked-button color="warn" (click)="openDeinventorizationDialog()"
             [disabled]="isNewInventorization() || inventoryItem().is_deinventoried">Deinventarisieren</button>
+        }
         <button mat-flat-button color="primary" (click)="saveInventorization()"
             [disabled]="!isEditedValid()">Speichern</button>
     </div>
@@ -27,10 +29,7 @@
         <app-comments-editor [(unchangedComments)]="savedComments" [(newComments)]="newComments"
             [(deletedComments)]="deletedComments" />
 
-        <app-card title="Tags">
-            <!-- <app-chip-v2 placeholder="Tags hinzufügen" heading="Tags"              Change to reactive form control instead of tmeplate driven
-            [options]="['Netzteil', 'Mobil', 'Zubehör', 'Laptop Bedarf', 'ASUS']" [control]="$any(inventoryForm).get('tags')" /> -->
-        </app-card>
+        <app-tags-editor [(tags)]="tags" [(newTags)]="newTags" [availableTags]="availableTags()" />
 
     </div>
 
