@@ -31,7 +31,7 @@ public class InventoryCreateRequestDTO {
     private String location;
 
     @JsonProperty("orderer")
-    private Object orderer; // weil "orderer" int **oder** String sein kann
+    private Object orderer; // "orderer" needs to be int **or** String
 
     @JsonProperty("tags")
     private List<Integer> tags;

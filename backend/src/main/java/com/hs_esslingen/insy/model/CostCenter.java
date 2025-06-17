@@ -41,7 +41,7 @@ public class CostCenter {
     @JsonManagedReference
     private List<Inventory> inventories = new ArrayList<>();
 
-    // Konstruktor
+    // Constructor
 
     @Builder
     public CostCenter(String description) {
@@ -57,7 +57,7 @@ public class CostCenter {
         this.inventories = new ArrayList<>();
     }
 
-    // Getter und Setter
+    // Getter and Setter
     public void addInventory(Inventory inventory) {
         this.inventories.add(inventory);
         inventory.setCostCenter(this);

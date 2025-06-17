@@ -45,7 +45,7 @@ public class History {
     @Column(nullable = false)
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
-    // Konstruktor
+    // Constructor
     @Builder
     public History(User users, String attributeChanged, String from, String to) {
         this.author = users;

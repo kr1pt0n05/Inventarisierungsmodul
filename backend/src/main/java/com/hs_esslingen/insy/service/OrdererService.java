@@ -3,6 +3,7 @@ package com.hs_esslingen.insy.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hs_esslingen.insy.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.hs_esslingen.insy.dto.OrdererDTO;
@@ -33,7 +34,7 @@ public class OrdererService {
     public User resolveUser(Object orderer) {
         if (orderer instanceof Integer userId) {
             return userRepository.findById(userId)
-                    .orElseThrow(() -> new BadRequestException("Couldn't find orderer with id: " + userId));
+                    .orElseThrow(() -> new NotFoundException("Orderer with id: " + userId + " not found"));
         } else if (orderer instanceof String userName) {
             return userRepository.findByName(userName)
                     .orElseGet(() -> userRepository.save(new User(userName)));

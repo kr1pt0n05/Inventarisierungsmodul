@@ -59,8 +59,7 @@ public class Inventory {
 
     @Column(name = "is_deinventoried", nullable = false)
     @Builder.Default
-    private Boolean isDeinventoried = false; // umwandeln in boolean, da es nur zwei Zustände gibt, das Objekt schließt
-                                             // aber null nicht aus
+    private Boolean isDeinventoried = false;
 
     @Column(nullable = true)
     private BigDecimal price;
@@ -94,7 +93,7 @@ public class Inventory {
     @Builder.Default
     private List<History> histories = new ArrayList<>();
 
-    // Konstruktor
+    // Constructor
     @Builder
     public Inventory(Integer id, CostCenter costCenters, User user, Company company, String description,
             String serialNumber, BigDecimal price, String location) {
@@ -112,7 +111,7 @@ public class Inventory {
         this.tags = new HashSet<>();
     }
 
-    // Getter und Setter
+    // Getter and Setter
 
     public void addComment(Comment comment) {
         if (!this.comments.contains(comment)) {

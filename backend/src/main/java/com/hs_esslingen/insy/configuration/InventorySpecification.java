@@ -12,23 +12,22 @@ import com.hs_esslingen.insy.model.Tag;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-
-// Klasse zur Implementierung von Filterfunktionen für die Inventargegnstände
-// Filter werden als Query-Parameter in der URL übergeben
-// und in der InventoriesController-Klasse verarbeitet
+// Class for implementing filter function for inventory items
+// Filter are passed as a Query-Parameter in the URL
+// and processed in the InventoriesController class
 public class InventorySpecification {
 
     private InventorySpecification() {
-        // Privater Konstruktor, um Instanziierung zu verhindern
+        // Private Constructor to prevent instantiation
     }
 
-    // Filter Inventargegenstände nach ihrer Tag-ID
+    // Filter inventory items by their Tag-ID
     public static Specification<Inventory> hasTagId(List<Integer> tagIds) {
         return (root, query, cb) -> {
             if (tagIds == null || tagIds.isEmpty()) {
                 return cb.conjunction();
             }
-            // Direkt auf das ManyToMany Set "tags" joinen
+            // Join directly to the ManyToMany set "tags"
             Join<Inventory, Tag> tagJoin = root.join("tags", JoinType.LEFT);
             return tagJoin.get("id").in(tagIds);
         };
@@ -36,7 +35,7 @@ public class InventorySpecification {
 
     public static Specification<Inventory> idBetween(Integer minId, Integer maxId) {
         return (root, query, cb) -> {
-            // Wenn keine ID gesetzt ist keinen Filter anwenden
+            // If the ID is not set don't use any filter
             if (minId == null && maxId == null) {
                 return cb.conjunction();
             } else if (minId != null && maxId != null) {
@@ -52,7 +51,7 @@ public class InventorySpecification {
 
     public static Specification<Inventory> priceBetween(Integer minPrice, Integer maxPrice) {
         return (root, query, cb) -> {
-            // Wenn keine Query-Parameter gesetzt sind keinen Filter anwenden
+            // If Query-Parameters are not set don't use any filter
             if (minPrice == null && maxPrice == null) {
                 return cb.conjunction();
             } else if (minPrice != null && maxPrice != null) {
@@ -73,7 +72,7 @@ public class InventorySpecification {
 
     public static Specification<Inventory> hasOrderer(String orderer) {
         return (root, query, cb) -> {
-            // Wenn kein Orderer gesetzt ist keinen Filter anwenden
+            // If orderer is not set don't use any filter
             if (orderer == null || orderer.isEmpty()) {
                 return cb.conjunction();
             }
@@ -83,7 +82,7 @@ public class InventorySpecification {
 
     public static Specification<Inventory> hasCompany(String company) {
         return (root, query, cb) -> {
-            // Wenn kein Unternehmen gesetzt ist keinen Filter anwenden
+            // If company is not set don't use any filter
             if (company == null || company.isEmpty()) {
                 return cb.conjunction();
             }
@@ -93,7 +92,7 @@ public class InventorySpecification {
 
     public static Specification<Inventory> hasLocation(String location) {
         return (root, query, cb) -> {
-            // Wenn kein Standort gesetzt ist keinen Filter anwenden
+            // If location is not set don't use any filter
             if (location == null || location.isEmpty()) {
                 return cb.conjunction();
             }
@@ -103,7 +102,7 @@ public class InventorySpecification {
 
     public static Specification<Inventory> hasCostCenter(String costCenter) {
         return (root, query, cb) -> {
-            // Wenn kein Kostenstelle gesetzt ist keinen Filter anwenden
+            // If costCenter is not set don't use any filter
             if (costCenter == null || costCenter.isEmpty()) {
                 return cb.conjunction();
             }
@@ -113,7 +112,7 @@ public class InventorySpecification {
 
     public static Specification<Inventory> hasSerialNumber(String serialNumber) {
         return (root, query, cb) -> {
-            // Wenn keine Seriennummer gesetzt ist keinen Filter anwenden
+            // If serialNumber ist not set don't use any filter
             if (serialNumber == null || serialNumber.isEmpty()) {
                 return cb.conjunction();
             }
@@ -121,40 +120,35 @@ public class InventorySpecification {
         };
     }
 
-    // Sortierung nach einem verschachtelten Feld
-    // Beispiel: "user.name" sortiert nach dem Namen des Benutzers
+    // Sort by nested field (e.g. "user.name" sorts by user's name)
     public static Specification<Inventory> sortByNestedField(String orderBy, Sort.Direction direction) {
         return (root, query, cb) -> {
 
-            // Wenn kein verschachteltes Feld angegeben ist, keine Sortierung anwenden
-            // Eigentlich schon überprüft in InventoriesSerivice,
-            // aber hier nochmal für Sicherheit
+            // If no nested field is specified, do not apply sorting
+            // It's already checked in InventoriesService but here again for security
             if (orderBy == null) {
-                return cb.conjunction(); // keine Sortierung
+                return cb.conjunction(); // no sorting
             }
 
-            // Tabellenname
+            // Table name
             String joinProperty = orderBy; // z. B. "user"
 
-            // Property, nach dem sortiert werden soll
-            // name ist für alle verschachtelten Felder das gleiche Feld auf das zugefriffen
-            // wird,
-            // deswegen ist es hardcodiert. Muss angepasst werden, wenn andere Felder
-            // sortiert werden sollen
+            // Property to sort by
+            // name is the same field accessed by all nested fields
+            // therefore it is hardcoded. Needs to be adjusted when other fields need to be sorted
             String sortField = "name";
 
-            // Join auf die Tabelle des verschachtelten Feldes
-            // und Sortierung nach dem angegebenen Feld
+            // Join on the table of the nested field and sort by the specified field
             Join<Object, Object> join = root.join(joinProperty, JoinType.LEFT);
             query.orderBy(direction == Sort.Direction.ASC
                     ? cb.asc(join.get(sortField))
                     : cb.desc(join.get(sortField)));
 
-            return cb.conjunction(); // nur OrderBy hinzufügen, keine Filterbedingung
+            return cb.conjunction(); // Add only OrderBy, no filters
         };
     }
 
-    // Filter nach dem Erstellungsdatum
+    // Filter by creation date
     public static Specification<Inventory> createdBetween(LocalDateTime createdAfter, LocalDateTime createdBefore) {
         return (root, query, cb) -> {
             if (createdAfter == null && createdBefore == null) {
@@ -169,7 +163,7 @@ public class InventorySpecification {
         };
     }
 
-    // Filter nach einem Suchtext, der in verschiedenen Feldern vorkommen kann
+    // Filter by search text that can appear in multiple fields
     public static Specification<Inventory> hasSearchText(String searchText) {
         return (root, query, cb) -> {
             if (searchText != null && !searchText.isBlank()) {

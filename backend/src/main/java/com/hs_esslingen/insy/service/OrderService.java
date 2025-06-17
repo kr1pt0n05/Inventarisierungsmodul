@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.hs_esslingen.insy.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import com.hs_esslingen.insy.dto.ItemCreateDTO;
 import com.hs_esslingen.insy.dto.OrderCreateDTO;
 import com.hs_esslingen.insy.dto.OrderResponseDTO;
-import com.hs_esslingen.insy.exception.BadRequestException;
 import com.hs_esslingen.insy.mapper.OrderMapper;
 import com.hs_esslingen.insy.model.Article;
 import com.hs_esslingen.insy.model.Order;
@@ -58,7 +58,7 @@ public class OrderService {
             orderRepository.save(order.get());
             return ResponseEntity.noContent().build();
         } else {
-            throw new BadRequestException("Order with id " + id + " not found.");
+            throw new NotFoundException("Order with id " + id + " not found.");
         }
     }
 
@@ -117,7 +117,7 @@ public class OrderService {
             OrderResponseDTO dto = orderMapper.toDto(order.get());
             return ResponseEntity.ok(dto);
         } else {
-            throw new BadRequestException("Order with id " + id + " not found.");
+            throw new NotFoundException("Order with id " + id + " not found.");
         }
     }
 
@@ -129,7 +129,7 @@ public class OrderService {
      */
     public List<Article> getArticlesByOrder(Integer orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BadRequestException("Order with id " + orderId + " not found."));
+                .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found."));
         return order.getArticles();
     }
 

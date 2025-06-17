@@ -30,7 +30,7 @@ public interface InventoryMapper {
     @Mapping(target = "tags", source = "tags")
     InventoriesResponseDTO toDto(Inventory entity);
 
-    // Hilfsmethoden mit @Named, damit MapStruct sie gezielt nutzen kann
+    // Helper methods with @Named so that MapStruct can use them specifically
     @Named("mapCompanyFromName")
     default Company mapCompany(String companyName) {
         if (companyName == null)
@@ -65,7 +65,7 @@ public interface InventoryMapper {
         return createdAt;
     }
 
-    // Mapping der Tag-IDs zu Tag-Entitäten
+    // Map the Tag-IDs to Tag-Entities
     default Set<Tag> mapTags(List<Integer> tagIds) {
         if (tagIds == null)
             return Collections.emptySet();

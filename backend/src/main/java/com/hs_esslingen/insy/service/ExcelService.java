@@ -107,12 +107,12 @@ public class ExcelService {
 
     public void importExcel(MultipartFile file) throws IOException {
         // Check file is not empty
-        if(file.isEmpty()) throw new BadRequestException("Datei darf nicht leer sein!");
+        if(file.isEmpty()) throw new BadRequestException("File must not be empty!");
 
         // Check file extension. Must be .xls or .xlsx
         String fileName = file.getOriginalFilename();
         if(fileName == null || !(fileName.endsWith(".xls") || fileName.endsWith(".xlsx"))
-        ) throw new BadRequestException("Datei muss mit .xls oder .xlsx enden!");
+        ) throw new BadRequestException("File must end with .xls or .xlsx!");
 
         // Creates appropriate Workbook (HSSFWorkbook for .xls and XSSFWorkbook for .xls)
         Workbook wb = WorkbookFactory.create(file.getInputStream());

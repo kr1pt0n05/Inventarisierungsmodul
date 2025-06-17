@@ -51,7 +51,7 @@ public class Company {
         this.extensions = new ArrayList<>();
     }
 
-    // Getter und Setter
+    // Getter and Setter
     public void addInventory(Inventory inventory) {
         this.inventories.add(inventory);
         inventory.setCompany(this);

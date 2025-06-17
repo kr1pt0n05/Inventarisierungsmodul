@@ -3,6 +3,7 @@ package com.hs_esslingen.insy.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hs_esslingen.insy.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.hs_esslingen.insy.dto.CostCenterDTO;
@@ -21,7 +22,7 @@ public class CostCenterService {
     public CostCenter resolveCostCenter(Object costCenter) {
         if (costCenter instanceof Integer costCenterId) {
             return costCenterRepository.findById(costCenterId)
-                    .orElseThrow(() -> new BadRequestException("Couldn't find costCenter with id: " + costCenterId));
+                    .orElseThrow(() -> new NotFoundException("costCenter with id: " + costCenterId + " not found"));
         } else if (costCenter instanceof String costCenterName) {
             return costCenterRepository.findByName(costCenterName)
                     .orElseGet(() -> costCenterRepository.save(new CostCenter(costCenterName)));

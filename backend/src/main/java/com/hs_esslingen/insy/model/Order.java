@@ -60,7 +60,7 @@ public class Order {
     @JsonManagedReference
     private List<Article> articles = new ArrayList<>();
 
-    // Konstruktor
+    // Constructor
     @Builder
     public Order(String description, BigDecimal price, String company, LocalDateTime createdAt,
             String user, Integer besyId) {
@@ -74,7 +74,7 @@ public class Order {
         this.articles = new ArrayList<>();
     }
 
-    // Getter und Setter
+    // Getter and Setter
     public void addArticle(Article article) {
         this.articles.add(article); // Add the article to the list of articles
         article.setOrder(this); // Set the order for the article

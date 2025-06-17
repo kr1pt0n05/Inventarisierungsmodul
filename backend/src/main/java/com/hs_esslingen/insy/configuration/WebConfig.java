@@ -4,9 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-// Klasse zur Konfiguration von CORS (Cross-Origin Resource Sharing)
-// Setzt die erlaubten Ursprünge, Methoden und Header für CORS-Anfragen
+// Class for configuring CORS (Cross-Origin Resource Sharing)
+// Sets the allowed origins, methods and headers for CORS requests
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     @Override
