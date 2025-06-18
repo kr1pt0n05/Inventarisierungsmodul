@@ -185,6 +185,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._sorter.sortChange.subscribe((sort: Sort) => {
       if(sort.active === 'orderer') sort.active = 'user'; // since backend returns 'orderer' but wants it back as 'user' ???
       if(sort.active === 'date') sort.active = 'createdAt'; // this is my mistake =D
+      if(sort.active === 'cost_center') sort.active = 'costCenter'; // this is my mistake =D
       this._queryParams.next({ ...this._queryParams.value, currentSort: sort });
     })
   }
