@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d2c07a2-65a4-4799-95b0-9e8659a2ba31" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prod.docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/prod.docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/prod.docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/prod.docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/app.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/services/server-table-data-source.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/services/server-table-data-source.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/environment.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/environment.ts" afterDir="false" />
-    </list>
+    <list default="true" id="0d2c07a2-65a4-4799-95b0-9e8659a2ba31" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -89,7 +81,7 @@
       <updated>1750149135880</updated>
       <workItem from="1750149138141" duration="3029000" />
       <workItem from="1750161821261" duration="21241000" />
-      <workItem from="1750256979756" duration="1310000" />
+      <workItem from="1750256979756" duration="1922000" />
     </task>
     <servers />
   </component>
