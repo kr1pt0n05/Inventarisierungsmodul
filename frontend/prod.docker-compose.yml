@@ -1,6 +1,19 @@
 services:
-  nginx:
+  traefi-nginx:
     container_name: nginx-frontend
     image: kr1pt0n05/inventarisierungsmodule:frontend-1.0
     ports:
       - "80:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.$APP_NAME.entrypoints=websecure"
+      - "traefik.http.routers.$APP_NAME.rule=Host($APP_URL)"
+      - "traefik.http.routers.$APP_NAME.tls.certresolver=letsencrypt"
+      - "traefik.http.services.$APP_NAME.loadbalancer.server.port=$APP_PORT"
+    networks:
+      - traefik
+
+
+networks:
+  traefik:
+    external: true

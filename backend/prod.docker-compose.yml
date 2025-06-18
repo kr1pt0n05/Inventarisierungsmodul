@@ -25,17 +25,21 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/insy
       - POSTGRES_USERNAME=insy
       - POSTGRES_PASSWORD=YOUR_PASSWORD
-    ports:
-      - "0.0.0.0:8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.$APP_NAME.entrypoints=websecure"
+      - "traefik.http.routers.$APP_NAME.rule=Host($APP_URL)"
+      - "traefik.http.routers.$APP_NAME.tls.certresolver=letsencrypt"
+      - "traefik.http.services.$APP_NAME.loadbalancer.server.port=$APP_PORT"
     networks:
-      - springboot
+      - traefik
       - internal
     depends_on:
       - db
 
 
 networks:
-  springboot:
+  traefik:
     external: true
   internal:
     external: false
