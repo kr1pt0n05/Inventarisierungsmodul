@@ -2,8 +2,6 @@ services:
   traefi-nginx:
     container_name: nginx-frontend
     image: kr1pt0n05/inventarisierungsmodule:frontend-1.0
-    ports:
-      - "80:80"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.$APP_NAME.entrypoints=websecure"
