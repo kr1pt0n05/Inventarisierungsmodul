@@ -12,7 +12,7 @@ import { CommentsResolver } from './resolver/comments.resolver';
 import { ExtensionResolver } from './resolver/extension.resolver';
 import { ExtensionsResolver } from './resolver/extensions.resolver';
 import { InventoryItemResolver } from './resolver/inventory-item.resolver';
-import { } from './services/default-guard.service';
+import { DefaultGuardService } from './services/default-guard.service';
 
 
 export const routes: Routes = [
@@ -26,19 +26,19 @@ export const routes: Routes = [
     title: 'Home',
     path: 'homepage',
     component: HomepageComponent,
-    canActivate: [],
+    canActivate: [DefaultGuardService],
   },
   {
     title: 'Inventarliste',
     path: 'inventory',
     component: InventoryComponent,
-    canActivate: [],
+    canActivate: [DefaultGuardService],
   },
   {
     title: 'Inventar',
     path: 'inventory/:id',
     component: DetailsComponent,
-    canActivate: [],
+    canActivate: [DefaultGuardService],
     resolve: {
       inventoryItem: InventoryItemResolver,
       extensions: ExtensionsResolver,
@@ -50,12 +50,13 @@ export const routes: Routes = [
     title: "Bestellungen",
     path: "orders",
     component: OrdersComponent,
-    canActivate: [],
+    canActivate: [DefaultGuardService],
   },
   {
     title: 'Erweiterung bearbeiten',
     path: 'edit/:inventoryId/extension/:extensionId',
     component: ExtensionInventorizationComponent,
+    canActivate: [DefaultGuardService],
     resolve: {
       isNewExtension: () => false,
       inputExtension: ExtensionResolver
@@ -65,7 +66,7 @@ export const routes: Routes = [
     title: 'Inventarisierung bearbeiten',
     path: 'edit/:id',
     component: InventorizationComponent,
-    canActivate: [],
+    canActivate: [DefaultGuardService],
     resolve: {
       inventoryItem: InventoryItemResolver,
       isNewInventorization: () => false,
@@ -75,7 +76,7 @@ export const routes: Routes = [
     title: 'Neue Inventarisierung',
     path: 'new',
     component: InventorizationComponent,
-    canActivate: [],
+    canActivate: [DefaultGuardService],
     resolve: {
       isNewInventorization: () => true,
       inventoryItem: () => ({}),
@@ -85,7 +86,7 @@ export const routes: Routes = [
     title: 'Neue Erweiterung',
     path: 'new-extension',
     component: ExtensionInventorizationComponent,
-    canActivate: [],
+    canActivate: [DefaultGuardService],
     resolve: {
       isNewExtension: () => true,
     }
