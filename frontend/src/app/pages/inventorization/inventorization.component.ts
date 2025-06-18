@@ -236,7 +236,6 @@ export class InventorizationComponent {
     } else if (Object.keys(this._getItemChanges()).length > 0) {
       this._saveExistingInventorization();
     } else {
-      this._notify('No changes to save', 'info');
       this.handleCommentChanges();
       this._onInventorization(this.editableInventoryItem());
     }
@@ -259,8 +258,8 @@ export class InventorizationComponent {
         const id = this.editableInventoryItem().id;
         this.inventoriesService.deleteInventoryById(id).subscribe({
           next: () => {
-            this.router.navigate(['/inventory']);
             this._notify('Inventory item deleted successfully', 'success');
+            this.router.navigate(['/inventory']);
           },
           error: (error) => {
             this._notify('Error deinventorizing inventory item', 'error', error);
@@ -288,8 +287,8 @@ export class InventorizationComponent {
         this.inventoriesService.deinventorizeInventoryById(id).subscribe({
           next: (item) => {
             this.handleCommentChanges();
-            this.router.navigate(['/inventory/', id]);
             this._notify('Inventory item deinventorized successfully', 'success');
+            this.router.navigate(['/inventory/', id]);
           },
           error: (error) => {
             this._notify('Error deinventorizing inventory item', 'error', error);
@@ -363,7 +362,6 @@ export class InventorizationComponent {
         next: (savedComment) => {
           this.savedComments.update(currentComments => [...currentComments, savedComment]);
           this.newComments.update(currentNewComments => currentNewComments.filter(c => c !== comment));
-          this._notify('Comment added successfully', 'success');
         },
         error: (error) => {
           this._notify('Error adding comment', 'error', error);
@@ -385,7 +383,6 @@ export class InventorizationComponent {
           next: () => {
             this.savedComments.update(currentComments => currentComments.filter(c => c.id !== comment.id));
             this.deletedComments.update(currentDeletedComments => currentDeletedComments.filter(c => c !== comment));
-            this._notify('Comment deleted successfully', 'success');
           },
           error: (error) => {
             this._notify('Error deleting comment', 'error', error);
@@ -475,7 +472,6 @@ export class InventorizationComponent {
     this.editableInventoryItem.set(inventoryItem);
     this.tags.set(inventoryItem.tags ?? []);
     this.onInventorization.emit(inventoryItem);
-    this._notify('Inventorization completed successfully', 'success');
 
     if (this.itemArticles().length > 0) {
       this.router.navigate(['/new'], { queryParams: { itemArticles: [...this.itemArticles()], extensionArticles: this.extensionArticles() } });
@@ -505,7 +501,6 @@ export class InventorizationComponent {
         next: (savedTag) => {
           this.tags.update(currentTags => [...currentTags, savedTag]);
           this.newTags.update(currentNewTags => currentNewTags.filter(t => t !== tag));
-          this._notify('Tag created successfully', 'success');
           if (this.newTags().length === 0) {
             this._setTagsOfItem();
           }
@@ -525,7 +520,6 @@ export class InventorizationComponent {
   private _setTagsOfItem() {
     this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
       next: (updatedItem) => {
-        this._notify('Tags updated successfully', 'success');
       },
       error: (error) => {
         this._notify('Error updating tags', 'error', error);
@@ -568,7 +562,6 @@ export class InventorizationComponent {
     } as unknown as Article;
     this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
       next: (updatedArticle) => {
-        this._notify('Article updated successfully', 'success');
       },
       error: (error) => {
         this._notify('Error updating article', 'error', error);
