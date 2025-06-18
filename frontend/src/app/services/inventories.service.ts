@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { map, Observable } from 'rxjs';
+import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { environment } from '../../environment';
 import { Comment } from '../models/comment';
 import { Extension } from '../models/extension';
@@ -178,6 +178,10 @@ export class InventoriesService {
     return this.http.delete<void>(`${this.url}/${id}/components/${extensionId}`);
   }
 
+  getTagsForId(id: number): Observable<Tag[]> {
+    return this.http.get<any>(`${this.url}/${id}/tags`);
+  }
+
   /**
    * Updates the tags of a specific inventory item by its ID.
    *
@@ -187,6 +191,20 @@ export class InventoriesService {
    */
   updateTagsOfId(id: number, tags: Tag[]): Observable<InventoryItem> {
     return this.http.post<InventoryItem>(`${this.url}/${id}/tags`, tags.map(tag => tag.id));
+  }
+
+  /**
+   * Deletes all tags from a specific inventory item by its ID.
+   *
+   * @param id - The ID of the inventory item from which to delete tags.
+   * @returns {Observable<void>} - An observable that completes when the deletion is successful.
+   */
+  deleteTagsFromId(id: number): Observable<void> {
+    return this.getTagsForId(id).pipe(
+      map((tags) => tags.map((tag: Tag) => this.http.delete<void>(`${this.url}/${id}/tags/${tag.id}`))),
+      switchMap((deleteRequests) => deleteRequests.length ? forkJoin(deleteRequests) : of([])),
+      map(() => undefined)
+    );
   }
 
   /**
