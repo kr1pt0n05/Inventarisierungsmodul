@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.hs_esslingen.insy.exception.NotFoundException;
 import org.javers.core.Javers;
 import org.javers.core.diff.Diff;
 import org.javers.core.diff.changetype.ValueChange;
@@ -28,6 +27,7 @@ import com.hs_esslingen.insy.configuration.InventorySpecification;
 import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
 import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
 import com.hs_esslingen.insy.exception.BadRequestException;
+import com.hs_esslingen.insy.exception.NotFoundException;
 import com.hs_esslingen.insy.mapper.InventoryMapper;
 import com.hs_esslingen.insy.model.Company;
 import com.hs_esslingen.insy.model.CostCenter;
