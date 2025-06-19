@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { afterNextRender, Component, input, QueryList, ViewChildren } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -9,7 +10,7 @@ import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
 import { Extension, extensionDisplayNames } from '../../models/extension';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
-import { Tag } from '../../models/tag';
+import { getTagColor, Tag } from '../../models/tag';
 
 /**
  * DetailsComponent
@@ -49,6 +50,7 @@ import { Tag } from '../../models/tag';
     DynamicListComponent,
     RouterModule,
     MatButtonModule,
+    CommonModule
   ],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css'
@@ -57,7 +59,6 @@ export class DetailsComponent {
   panelIdNameMap = new Map<string, string>([
     ['extensions', 'Erweiterungen'],
     ['comments', 'Kommentare'],
-    ['tags', 'Tags'],
     ['changes', 'Historie']
   ]);
 
@@ -67,6 +68,7 @@ export class DetailsComponent {
   extensions = input<Extension[]>([]);
   comments = input<Comment[]>([]);
   tags: Tag[] = [];
+  tagColors: Map<string, string> = new Map<string, string>();
   // The transform merges table and column names for change history entries to display them in a single column
   changes = input([], { transform: mergeChangeLocation });
 
@@ -131,6 +133,7 @@ export class DetailsComponent {
       }
       this.tags = this.inventoryItem().tags ?? [];
 
+      this._setupTagColors();
     } else {
       this.inventoryItemInternal = new Map<string, string>();
       for (let id of this.inventoryItemColumns.keys()) {
@@ -142,6 +145,14 @@ export class DetailsComponent {
   onClickExtension(extension: object): void {
     const ext = extension as Extension;
     this.router.navigate(['/edit', this.inventoryItem().id, 'extension', ext.id]);
+  }
+
+  private _setupTagColors(): void {
+    this.tags.forEach((tag: Tag) => {
+      if (!this.tagColors.has(tag.name)) {
+        this.tagColors.set(tag.name, getTagColor(tag.name));
+      }
+    });
   }
 
 }
