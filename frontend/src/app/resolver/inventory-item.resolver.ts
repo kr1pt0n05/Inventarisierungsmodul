@@ -5,7 +5,7 @@ import {
   Router,
   RouterStateSnapshot
 } from '@angular/router';
-import { catchError, map, Observable } from 'rxjs';
+import { catchError, EMPTY, map, Observable } from 'rxjs';
 import { InventoryItem } from '../models/inventory-item';
 import { InventoriesService } from '../services/inventories.service';
 
