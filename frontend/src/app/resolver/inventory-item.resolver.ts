@@ -23,7 +23,7 @@ export class InventoryItemResolver implements Resolve<InventoryItem> {
       map(inventoryItem => inventoryItem),
       catchError(error => {
         this.router.navigate(['/404'], { skipLocationChange: true });
-        return {} as Observable<InventoryItem>;
+        return EMPTY;
       })
     );
   }
