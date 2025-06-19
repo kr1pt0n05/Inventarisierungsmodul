@@ -1,3 +1,4 @@
+import { localizePrize } from "../app.component";
 import { Article } from "./Article";
 
 
@@ -31,7 +32,7 @@ interface ExtensionInternal {
 export const extensionDisplayNames: Map<string, string> = new Map([
   ['description', 'Erweiterungstyp'],
   ['company', 'Bestellt bei'],
-  ['price', 'Preis in €'],
+  ['price', 'Preis'],
   // ['cost_center', 'Kostenstelle'],
   ['serial_number', 'Seriennummer'],
   // ['orderer', 'Hinzugefügt von'],
@@ -53,7 +54,7 @@ export function extensionLocalizePrice(extensions: Extension[]): ExtensionIntern
   return extensions.map((ext: Extension) => {
     return {
       ...ext,
-      price: ext.price ? String(ext.price).replace('.', ',') : '',
+      price: ext.price ? localizePrize(ext.price) : '',
     } as ExtensionInternal;
   });
 }

@@ -29,8 +29,8 @@
 
     <!-- Accordion for 'Zeitraum' (Time Period) -->
     <app-accordion title="Zeitraum">
-      <div expansion-panel-content>
-        <app-datepicker [controlMin]="$any(inventoryForm).get('dateStart')"
+      <div class="min-h-fit" expansion-panel-content>
+        <app-datepicker class="min-h-fit" [controlMin]="$any(inventoryForm).get('dateStart')"
           [controlMax]="$any(inventoryForm).get('dateEnd')" />
       </div>
     </app-accordion>

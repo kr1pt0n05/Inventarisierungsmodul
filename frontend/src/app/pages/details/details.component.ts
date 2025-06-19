@@ -5,6 +5,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { Router, RouterModule } from '@angular/router';
+import { localizePrize } from '../../app.component';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
@@ -130,7 +131,7 @@ export class DetailsComponent {
         const value = this.inventoryItem()[key as keyof InventoryItem];
         this.inventoryItemInternal.set(key, value ? value.toString() : '');
       }
-      this.inventoryItemInternal.set('price', this.inventoryItemInternal.get('price')!.replace('.', ','));
+      this.inventoryItemInternal.set('price', localizePrize(this.inventoryItemInternal.get('price')!));
 
       this.tags = this.inventoryItem().tags ?? [];
     } else {
@@ -159,7 +160,7 @@ const changesTableNames = new Map<string, string>([
 ]);
 const changesColumnNames = new Map<string, string>([
   ['location', 'Standort/Nutzer:in'],
-  ['price', 'Preis in €'],
+  ['price', 'Preis'],
   ['company', 'Firma'],
   ['description', 'Beschreibung'],
   ['serialNumber', 'Seriennummer'],
@@ -188,8 +189,8 @@ function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
     };
 
     if (change.attributeChanged === 'price') {
-      internalChange.oldValue = change.valueFrom ? change.valueFrom.replace('.', ',') : '';
-      internalChange.newValue = change.valueTo ? change.valueTo.replace('.', ',') : '';
+      internalChange.oldValue = change.valueFrom ? localizePrize(change.valueFrom) : '';
+      internalChange.newValue = change.valueTo ? localizePrize(change.valueTo) : '';
     }
     return internalChange;
 
