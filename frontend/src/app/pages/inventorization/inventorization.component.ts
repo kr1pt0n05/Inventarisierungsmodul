@@ -523,7 +523,7 @@ export class InventorizationComponent {
    * Logs success or error messages based on the operation outcome.
    */
   private _setTagsOfItem() {
-    if (this.tags.length > 0) {
+    if (this.tags().length > 0) {
       this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
         next: (updatedItem) => {
           this._notify('Tags updated successfully', 'success');
