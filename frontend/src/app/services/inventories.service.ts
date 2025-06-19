@@ -179,7 +179,7 @@ export class InventoriesService {
   }
 
   getTagsForId(id: number): Observable<Tag[]> {
-    return this.http.get<any>(`${this.url}/${id}/tags`);
+    return this.http.get<Tag[]>(`${this.url}/${id}/tags`);
   }
 
   /**
