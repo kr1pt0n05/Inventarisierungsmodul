@@ -80,7 +80,7 @@
     <app-accordion title="Tags">
       <div expansion-panel-content>
         <app-chip-v2 placeholder="Tags hinzufügen" heading="Tags" [options]="tags"
-          [control]="$any(inventoryForm).get('tags')" />
+          [control]="$any(inventoryForm).get('tags')" [useTagColors]="true" />
       </div>
     </app-accordion>
 

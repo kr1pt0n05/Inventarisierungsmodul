@@ -1,19 +1,20 @@
-import {Component, computed, input, signal} from '@angular/core';
-import {
-  MatChipGrid, MatChipInput,
-  MatChipRemove,
-  MatChipRow,
-} from '@angular/material/chips';
-import {MatFormField} from '@angular/material/form-field';
-import {MatLabel} from '@angular/material/input';
-import {MatIcon} from '@angular/material/icon';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { Component, computed, input, signal } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
   MatAutocompleteTrigger,
   MatOption
 } from '@angular/material/autocomplete';
+import {
+  MatChipGrid, MatChipInput,
+  MatChipRemove,
+  MatChipRow,
+} from '@angular/material/chips';
+import { MatFormField } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatLabel } from '@angular/material/input';
+import { getTagColor } from '../../models/tag';
 
 
 /**
@@ -75,6 +76,12 @@ export class ChipV2Component {
    */
   control = input.required<FormControl<string[]>>(); // Tracks elements currently selected
 
+  /**
+   * Signal that indicates whether to use tag colors for the chips.
+   * If true, the chips will be styled with colors based on the chips value.
+   */
+  useTagColors = input(false);
+
 
   /**
    * Tracks the user’s input in the autocomplete text field.
@@ -100,7 +107,7 @@ export class ChipV2Component {
    * @param element - The option to remove from the selected chips.
    */
   remove(element: string): void {
-    this.control().setValue(this.control().value!.filter(v => v !== element));
+    this.control().setValue(this.control().value.filter(v => v !== element));
   }
 
   /**
@@ -116,17 +123,24 @@ export class ChipV2Component {
     let isSelectedValuePresent = this.control().value.includes(selectedValue); // Check if the option is already selected
 
     // If the value is already selected, remove it from the list
-    if(isSelectedValuePresent) {
+    if (isSelectedValuePresent) {
       // remove element from list
       this.remove(selectedValue);
 
-    }else{
+    } else {
       // If the value is not selected, add it to the list of selected values
-      this.control().setValue([...this.control().value!, event.option.value]);
+      this.control().setValue([...this.control().value, event.option.value]);
     }
 
     // Reset the autocomplete input to show the full list again
     this.userTextInput.set("");
+  }
+
+  getTagColor(element: string): string {
+    if (this.useTagColors()) {
+      return getTagColor(element);
+    }
+    return '';
   }
 
 }
