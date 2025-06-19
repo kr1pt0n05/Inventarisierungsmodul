@@ -183,9 +183,9 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set sorter(sorter: MatSort) {
     this._sorter = sorter;
     this._sorter.sortChange.subscribe((sort: Sort) => {
-      if(sort.active === 'orderer') sort.active = 'user'; // since backend returns 'orderer' but wants it back as 'user' ???
-      if(sort.active === 'date') sort.active = 'createdAt'; // this is my mistake =D
-      if(sort.active === 'cost_center') sort.active = 'costCenter'; // this is my mistake =D
+      if (sort.active === 'orderer') sort.active = 'user'; // since backend returns 'orderer' but wants it back as 'user' ???
+      if (sort.active === 'date') sort.active = 'createdAt'; // this is my mistake =D
+      if (sort.active === 'cost_center') sort.active = 'costCenter'; // this is my mistake =D
       console.log(sort.active);
       this._queryParams.next({ ...this._queryParams.value, currentSort: sort });
     })
@@ -199,7 +199,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set filter(filter: FormGroup) {
     this._filter = filter;
     this._filter.valueChanges.subscribe((filter: Filter) => {
-      this._queryParams.next({ ...this._queryParams.value, currentFilter: filter});
+      this._queryParams.next({ ...this._queryParams.value, currentFilter: filter });
     });
   }
 
@@ -236,7 +236,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
           id: item.id,
           description: item.description,
           company: item.company,
-          price: item.price,
+          price: item.price.toString().replace('.', ','),
           createdAt: item.created_at,
           serialNumber: item.serial_number,
           location: item.location,
