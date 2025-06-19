@@ -68,7 +68,6 @@ export class DetailsComponent {
   extensions = input<Extension[]>([]);
   comments = input<Comment[]>([]);
   tags: Tag[] = [];
-  tagColors: Map<string, string> = new Map<string, string>();
   // The transform merges table and column names for change history entries to display them in a single column
   changes = input([], { transform: mergeChangeLocation });
 
@@ -132,8 +131,6 @@ export class DetailsComponent {
         this.inventoryItemInternal.set(key, value ? value.toString() : '');
       }
       this.tags = this.inventoryItem().tags ?? [];
-
-      this._setupTagColors();
     } else {
       this.inventoryItemInternal = new Map<string, string>();
       for (let id of this.inventoryItemColumns.keys()) {
@@ -147,12 +144,8 @@ export class DetailsComponent {
     this.router.navigate(['/edit', this.inventoryItem().id, 'extension', ext.id]);
   }
 
-  private _setupTagColors(): void {
-    this.tags.forEach((tag: Tag) => {
-      if (!this.tagColors.has(tag.name)) {
-        this.tagColors.set(tag.name, getTagColor(tag.name));
-      }
-    });
+  getTagColor(tagName: string): string {
+    return getTagColor(tagName);
   }
 
 }

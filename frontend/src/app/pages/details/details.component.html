@@ -9,7 +9,7 @@
                 @if (tags.length > 0) {
                 <div class="flex flex-wrap gap-2">
                     @for (tag of tags; track tag) {
-                    <div [style]="tagColors.get(tag.name)" class="rounded-full pt-0.5 pb-1 pl-4 pr-4">{{tag.name}}</div>
+                    <div [style]="getTagColor(tag.name)" class="rounded-full pt-0.5 pb-1 pl-4 pr-4">{{tag.name}}</div>
                     }
                 </div>
                 }
