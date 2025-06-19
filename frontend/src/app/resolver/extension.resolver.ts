@@ -21,7 +21,7 @@ export class ExtensionResolver implements Resolve<Extension> {
       map(extension => extension),
       catchError(error => {
         this.router.navigate(['/404'], { skipLocationChange: true });
-        return {} as Observable<Extension>;
+        return EMPTY;
       })
     );
   }
