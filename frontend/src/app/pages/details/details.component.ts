@@ -8,7 +8,7 @@ import { Router, RouterModule } from '@angular/router';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
-import { Extension, extensionDisplayNames } from '../../models/extension';
+import { Extension, extensionDisplayNames, extensionLocalizePrice } from '../../models/extension';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { getTagColor, Tag } from '../../models/tag';
 
@@ -65,7 +65,7 @@ export class DetailsComponent {
   @ViewChildren('Panels') panels!: QueryList<MatExpansionPanel>;
 
   inventoryItem = input.required<InventoryItem>();
-  extensions = input<Extension[]>([]);
+  extensions = input([], { transform: extensionLocalizePrice });
   comments = input<Comment[]>([]);
   tags: Tag[] = [];
   // The transform merges table and column names for change history entries to display them in a single column
@@ -130,6 +130,8 @@ export class DetailsComponent {
         const value = this.inventoryItem()[key as keyof InventoryItem];
         this.inventoryItemInternal.set(key, value ? value.toString() : '');
       }
+      this.inventoryItemInternal.set('price', this.inventoryItemInternal.get('price')!.replace('.', ','));
+
       this.tags = this.inventoryItem().tags ?? [];
     } else {
       this.inventoryItemInternal = new Map<string, string>();
@@ -174,15 +176,23 @@ const changesColumnNames = new Map<string, string>([
  */
 function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
   let changes = rawChanges.map((change: Change) => {
-    const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable;
+    // const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable; Disabled as only the inventory_item table is tracked for now
     const changedColumnDisplayName = changesColumnNames.get(change.attributeChanged) ?? change.attributeChanged;
-    return {
+
+    const internalChange: ChangeInternal = {
       changedAt: change.createdAt,
       changedBy: change.changedBy,
-      change: `${changedTableDisplayName} - ${changedColumnDisplayName}`,
+      change: changedColumnDisplayName, // `${changedTableDisplayName} - ${changedColumnDisplayName}`,
       oldValue: change.valueFrom,
       newValue: change.valueTo
     };
+
+    if (change.attributeChanged === 'price') {
+      internalChange.oldValue = change.valueFrom ? change.valueFrom.replace('.', ',') : '';
+      internalChange.newValue = change.valueTo ? change.valueTo.replace('.', ',') : '';
+    }
+    return internalChange;
+
   })
   return changes;
 }

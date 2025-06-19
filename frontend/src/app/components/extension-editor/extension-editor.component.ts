@@ -174,13 +174,16 @@ export class ExtensionEditorComponent {
     if (!this.initialValues.orderer) {
       this.formControls.get('orderer')?.setValue(this.authService.getUsername());
     }
+    this.formControls.get('price')?.setValue(
+      this.formControls.get('price')?.value ? String(this.formControls.get('price')?.value).replace('.', ',') : '');
   }
 
   private _getChanges(): Partial<Extension> {
     const changes: Partial<Extension> = {};
     for (const [key, control] of this.formControls.entries()) {
       if (control.dirty && control.value !== this.initialValues[key as keyof Extension]) {
-        changes[key as keyof Extension] = control.value;
+        changes[key as keyof Extension] = key !== 'price' ? control.value :
+          Number(String(control.value).replace(',', '.'));
       }
     }
     return changes;

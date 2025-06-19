@@ -138,7 +138,7 @@ export class InventoryItemEditorComponent {
     this.formGroup.valueChanges.subscribe(value => {
       this.inventoryItem.update(item => {
         for (const [key, control] of this.formControls.entries()) {
-          item[key as keyof InventoryItem] = key === 'price' ? Number(control.value) : control.value;
+          item[key as keyof InventoryItem] = key === 'price' ? Number(String(control.value).replace(',', '.')) : control.value;
         }
         return item;
       });
@@ -177,6 +177,8 @@ export class InventoryItemEditorComponent {
         }
       });
     }
+    this.formControls.get('price')?.setValue(
+      this.formControls.get('price')?.value ? String(this.formControls.get('price')?.value).replace('.', ',') : '');
   }
 
   /**
