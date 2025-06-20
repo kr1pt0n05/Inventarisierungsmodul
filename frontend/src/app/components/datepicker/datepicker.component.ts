@@ -7,7 +7,6 @@ import {
 } from '@angular/material/datepicker';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {MatHint, MatLabel} from '@angular/material/input';
-import {provideNativeDateAdapter} from '@angular/material/core';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
@@ -33,4 +32,5 @@ export class DatepickerComponent {
 
   controlMin = input.required<FormControl>();
   controlMax = input.required<FormControl>();
+
 }

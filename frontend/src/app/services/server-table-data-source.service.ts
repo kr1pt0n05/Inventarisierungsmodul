@@ -9,7 +9,7 @@ import { localizePrice } from '../app.component';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
 import { InventoriesService } from './inventories.service';
-
+import { DateTime } from 'luxon';
 
 // Interface for Pagination details (pageIndex and pageSize)
 interface Page {
@@ -30,6 +30,8 @@ export interface Filter {
   location?: string[],
   costCenter?: string[],
   serialNumber?: string[],
+  createdAfter?: string,
+  createdBefore?: string,
 }
 
 // Interface for query parameters used for API request
@@ -200,6 +202,15 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   set filter(filter: FormGroup) {
     this._filter = filter;
     this._filter.valueChanges.subscribe((filter: Filter) => {
+
+      if (filter.createdAfter != null) {
+        console.log(DateTime.fromISO(filter.createdAfter, {zone: 'Europe/Berlin'}).toISO());
+      }
+      if (filter.createdAfter && filter.createdBefore) {
+        filter.createdAfter = DateTime.fromJSDate(new Date(filter.createdAfter)).setZone('Europe/Berlin').startOf('day').toUTC().toISO() ?? undefined;
+        filter.createdBefore = DateTime.fromJSDate(new Date(filter.createdBefore)).setZone('Europe/Berlin').endOf('day').toUTC().toISO() ?? undefined;
+      }
+
       this._queryParams.next({ ...this._queryParams.value, currentFilter: filter });
     });
   }
