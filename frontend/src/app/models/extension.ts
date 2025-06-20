@@ -1,3 +1,4 @@
+import { localizePrice } from "../app.component";
 import { Article } from "./Article";
 
 
@@ -14,10 +15,24 @@ export interface Extension {
   [key: string]: any;
 }
 
+interface ExtensionInternal {
+  id: number;
+  description: string;
+  price: string;
+  orderer: string;
+  company: string;
+  cost_center: string;
+  serial_number: string;
+  created_at: string;
+  inventory_id: number;
+  [key: string]: any;
+}
+
+
 export const extensionDisplayNames: Map<string, string> = new Map([
   ['description', 'Erweiterungstyp'],
   ['company', 'Bestellt bei'],
-  ['price', 'Preis in €'],
+  ['price', 'Preis'],
   // ['cost_center', 'Kostenstelle'],
   ['serial_number', 'Seriennummer'],
   // ['orderer', 'Hinzugefügt von'],
@@ -34,4 +49,12 @@ export function extensionItemFromArticle(article: Article): Extension {
     created_at: new Date().toISOString(), // Assuming current date as created_at
     serial_number: article.inventories_serial_number,
   } as Extension;
+}
+export function extensionLocalizePrice(extensions: Extension[]): ExtensionInternal[] {
+  return extensions.map((ext: Extension) => {
+    return {
+      ...ext,
+      price: ext.price ? localizePrice(ext.price) : '',
+    } as ExtensionInternal;
+  });
 }

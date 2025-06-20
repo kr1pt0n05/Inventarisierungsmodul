@@ -518,19 +518,30 @@ export class InventorizationComponent {
   }
 
   /**
-   * Adds new tags to the inventory item in the backend.
+   * Updates the tags of the current inventory item.
    * If there are new tags, creates them first and then updates the item.
    * Logs success or error messages based on the operation outcome.
    */
   private _setTagsOfItem() {
-    this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
-      next: (updatedItem) => {
-        this._notify('Tags updated successfully', 'success');
-      },
-      error: (error) => {
-        this._notify('Error updating tags', 'error', error);
-      }
-    });
+    if (this.tags().length > 0) {
+      this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
+        next: (updatedItem) => {
+          this._notify('Tags updated successfully', 'success');
+        },
+        error: (error) => {
+          this._notify('Error updating tags', 'error', error);
+        }
+      });
+    } else {
+      this.inventoriesService.deleteTagsFromId(this.editableInventoryItem().id).subscribe({
+        next: () => {
+          console.log('Tags deleted successfully');
+        },
+        error: (error) => {
+          this._notify('Error deleting tags', 'error', error);
+        }
+      });
+    }
   }
 
   /**
