@@ -34,14 +34,9 @@ export function localizePrice(price: number | string): string {
   } else {
     numPrice = price;
   }
-  return numPrice.toLocaleString('de-DE', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return numPrice.toString().replace('.', ',').concat('\xa0€').trim();
 }
 
-export function unLocalizePrize(price: string): number {
+export function unLocalizePrice(price: string): number {
   return parseFloat(String(price).replace(',', '.').replace('€', '').trim());
 }

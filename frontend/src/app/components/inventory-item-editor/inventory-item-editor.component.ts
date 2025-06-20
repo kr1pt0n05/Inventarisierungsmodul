@@ -5,7 +5,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { map, Observable, startWith } from 'rxjs';
-import { localizePrize, unLocalizePrize } from '../../app.component';
+import { localizePrice, unLocalizePrice } from '../../app.component';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { AuthenticationService } from '../../services/authentication.service';
 import { CacheInventoryService } from '../../services/cache-inventory.service';
@@ -139,7 +139,7 @@ export class InventoryItemEditorComponent {
     this.formGroup.valueChanges.subscribe(value => {
       this.inventoryItem.update(item => {
         for (const [key, control] of this.formControls.entries()) {
-          item[key as keyof InventoryItem] = key === 'price' ? unLocalizePrize(control.value) : control.value;
+          item[key as keyof InventoryItem] = key === 'price' ? unLocalizePrice(control.value) : control.value;
         }
         return item;
       });
@@ -179,7 +179,7 @@ export class InventoryItemEditorComponent {
       });
     }
     this.formControls.get('price')?.setValue(
-      this.formControls.get('price')?.value ? localizePrize(this.formControls.get('price')?.value) : '');
+      this.formControls.get('price')?.value ? localizePrice(this.formControls.get('price')?.value) : '');
   }
 
   /**

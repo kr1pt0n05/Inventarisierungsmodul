@@ -8,7 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { map, Observable, startWith } from 'rxjs';
-import { localizePrize, unLocalizePrize } from '../../app.component';
+import { localizePrice, unLocalizePrice } from '../../app.component';
 import { Extension, extensionDisplayNames } from '../../models/extension';
 import { inventoryItemDisplayNames } from '../../models/inventory-item';
 import { AuthenticationService } from '../../services/authentication.service';
@@ -139,7 +139,7 @@ export class ExtensionEditorComponent {
     this.formGroup.valueChanges.subscribe(value => {
       this.extension.update(extension => {
         for (const [key, control] of this.formControls.entries()) {
-          (extension as any)[key] = key === 'price' ? unLocalizePrize(control.value) : control.value;
+          (extension as any)[key] = key === 'price' ? unLocalizePrice(control.value) : control.value;
         }
         return extension;
       });
@@ -176,14 +176,14 @@ export class ExtensionEditorComponent {
       this.formControls.get('orderer')?.setValue(this.authService.getUsername());
     }
     this.formControls.get('price')?.setValue(
-      this.formControls.get('price')?.value ? localizePrize(this.formControls.get('price')?.value) : this.formControls.get('price')?.value, { emitEvent: false });
+      this.formControls.get('price')?.value ? localizePrice(this.formControls.get('price')?.value) : this.formControls.get('price')?.value, { emitEvent: false });
   }
 
   private _getChanges(): Partial<Extension> {
     const changes: Partial<Extension> = {};
     for (const [key, control] of this.formControls.entries()) {
       if (control.dirty && control.value !== this.initialValues[key as keyof Extension]) {
-        changes[key as keyof Extension] = key === 'price' ? unLocalizePrize(control.value) : control.value;
+        changes[key as keyof Extension] = key === 'price' ? unLocalizePrice(control.value) : control.value;
       }
     }
     return changes;

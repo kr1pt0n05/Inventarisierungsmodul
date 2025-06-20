@@ -5,7 +5,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { Router, RouterModule } from '@angular/router';
-import { localizePrize } from '../../app.component';
+import { localizePrice } from '../../app.component';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
@@ -131,7 +131,7 @@ export class DetailsComponent {
         const value = this.inventoryItem()[key as keyof InventoryItem];
         this.inventoryItemInternal.set(key, value ? value.toString() : '');
       }
-      this.inventoryItemInternal.set('price', localizePrize(this.inventoryItemInternal.get('price')!));
+      this.inventoryItemInternal.set('price', localizePrice(this.inventoryItemInternal.get('price')!));
 
       this.tags = this.inventoryItem().tags ?? [];
     } else {
@@ -189,8 +189,8 @@ function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
     };
 
     if (change.attributeChanged === 'price') {
-      internalChange.oldValue = change.valueFrom ? localizePrize(change.valueFrom) : '';
-      internalChange.newValue = change.valueTo ? localizePrize(change.valueTo) : '';
+      internalChange.oldValue = change.valueFrom ? localizePrice(change.valueFrom) : '';
+      internalChange.newValue = change.valueTo ? localizePrice(change.valueTo) : '';
     }
     return internalChange;
 

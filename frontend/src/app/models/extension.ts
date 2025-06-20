@@ -1,4 +1,4 @@
-import { localizePrize } from "../app.component";
+import { localizePrice } from "../app.component";
 import { Article } from "./Article";
 
 
@@ -54,7 +54,7 @@ export function extensionLocalizePrice(extensions: Extension[]): ExtensionIntern
   return extensions.map((ext: Extension) => {
     return {
       ...ext,
-      price: ext.price ? localizePrize(ext.price) : '',
+      price: ext.price ? localizePrice(ext.price) : '',
     } as ExtensionInternal;
   });
 }

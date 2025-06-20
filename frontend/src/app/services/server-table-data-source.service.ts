@@ -5,7 +5,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { localizePrize } from '../app.component';
+import { localizePrice } from '../app.component';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
 import { InventoriesService } from './inventories.service';
@@ -237,7 +237,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
           id: item.id,
           description: item.description,
           company: item.company,
-          price: localizePrize(item.price),
+          price: localizePrice(item.price),
           createdAt: item.created_at,
           serialNumber: item.serial_number,
           location: item.location,
