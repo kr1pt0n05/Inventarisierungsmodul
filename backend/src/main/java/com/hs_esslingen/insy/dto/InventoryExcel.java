@@ -13,7 +13,6 @@ import java.util.List;
 public class InventoryExcel {
     private String costCenter;
     private Integer inventoryNumber;
-    private Integer amount;
     private String description;
     private String company;
     private Double price;
