@@ -27,7 +27,7 @@
 
     <!-- Details Section -->
     <div class="grid grid-cols-[max-content_1fr] gap-x-16">
-        @for (field of inventoryItemColumns.keys(); track field) {
+        @for (field of inventoryItemInternal.keys(); track field) {
         <div class="p-2">{{inventoryItemColumns.get(field)}}</div>
         <div class="p-2">{{inventoryItemInternal.get(field)}}</div>
         }
