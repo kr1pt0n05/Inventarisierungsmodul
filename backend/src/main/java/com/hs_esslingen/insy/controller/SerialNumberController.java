@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/inventories/serialNumbers")
+@RequestMapping("/serialNumbers")
 public class SerialNumberController {
 
     private final SerialNumberService serialNumberService;

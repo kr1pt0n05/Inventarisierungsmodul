@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="a6d33937-5f79-4768-a9c3-7ef76f77b3f7" name="Changes" comment="" />
+    <list default="true" id="a6d33937-5f79-4768-a9c3-7ef76f77b3f7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API-Documentation.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/API-Documentation.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/CompanyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/CompanyController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/CostCenterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/CostCenterController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/LocationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/LocationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/OrdererController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/OrdererController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/SerialNumberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/hs_esslingen/insy/controller/SerialNumberController.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,24 +48,12 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "statistics",
+    "git-widget-placeholder": "main",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="Documentation" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="Documentation" />
-      <option name="filePath" />
-      <method v="2" />
-    </configuration>
-  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

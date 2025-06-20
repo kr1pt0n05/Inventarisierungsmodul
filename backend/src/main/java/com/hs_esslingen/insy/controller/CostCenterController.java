@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/inventories/costCenters")
+@RequestMapping("/costCenters")
 public class CostCenterController {
 
     private final CostCenterService costCenterService;
