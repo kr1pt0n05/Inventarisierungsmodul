@@ -6,7 +6,7 @@ import { MatChipGrid, MatChipInput, MatChipRemove, MatChipRow } from '@angular/m
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatOption } from '@angular/material/select';
-import { Tag } from '../../models/tag';
+import { getTagColor, Tag } from '../../models/tag';
 import { CardComponent } from '../card/card.component';
 
 @Component({
@@ -124,6 +124,11 @@ export class TagsEditorComponent {
 
     // Update tags with Tag objects matching the selected names
     this.tags.set(this.availableTags().filter(tag => this.control().value!.includes(tag.name)));
+  }
+
+  getTagColor(tagName: string): string {
+    // Returns the color for a tag based on its name
+    return getTagColor(tagName);
   }
 
   /**

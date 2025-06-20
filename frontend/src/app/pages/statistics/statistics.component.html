@@ -1,0 +1,56 @@
+<body>
+    <div class="container-box">
+        <h1 class="font-semibold text-2xl">Statistiken</h1>
+
+        <div class="main-content">
+            <div class="left-section">
+                <div class="metrics">
+                    <div class="card">
+                        <h3>Gesamtanzahl Bestellungen</h3>
+                        <p style="font-size: 24px;">
+                            {{ totalOrders !== null ? totalOrders : '–' }}
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Gesamtwert</h3>
+                        <p style="font-size: 24px;">
+                            {{ totalPrice !== null ? (totalPrice + ' €') : '–' }}
+                        </p>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Nutzer</th>
+                        <th>Anzahl Artikel</th>
+                        <th>Gesamtwert (€)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let user of userOrders">
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.quantity }}</td>
+                        <td>{{ user.orderPrice | number:'1.2-2' }} €</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="right-section">
+                <canvas id="pieChart" width="300" height="300"></canvas>
+
+                <div class="legend-box">
+                    <strong>Nutzer</strong>
+                    <ul>
+                        <li *ngFor="let user of userOrders; let i = index">
+                            <span [style.color]="legendColors[i]">■</span>
+                            <span style="color: black;"> {{ user.name }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
