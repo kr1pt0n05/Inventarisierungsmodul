@@ -9,16 +9,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.hs_esslingen.insy.service.CSVService;
-
 import java.io.IOException;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/upload")
 public class UploadController {
-
-    private final CSVService csvService;
+    
     private final ExcelService excelService;
 
 
@@ -28,11 +25,4 @@ public class UploadController {
         return ResponseEntity.ok().build();
     }
 
-
-    @PostMapping("/csv")
-    public ResponseEntity<String> uploadCSV(@RequestParam("file") MultipartFile file) throws IOException {
-        csvService.importCSVImproved(file);
-
-        return ResponseEntity.ok().build();
-    }
 }
