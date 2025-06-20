@@ -19,7 +19,6 @@ import com.hs_esslingen.insy.repository.CommentRepository;
 import com.hs_esslingen.insy.repository.CompanyRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 import com.hs_esslingen.insy.repository.UserRepository;
-import com.hs_esslingen.insy.service.CSVService;
 
 class CSVServiceTest {
 
