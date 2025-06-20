@@ -38,6 +38,9 @@
     <mat-expansion-panel #Panels>
         <mat-expansion-panel-header>
             <mat-panel-title class="text-xl">{{panelIdNameMap.get(id)}}</mat-panel-title>
+            @if (id === 'extensions') {
+            <button mat-button class="mr-4" color="primary" (click)="addExtension()">Erweiterung hinzufügen</button>
+            }
         </mat-expansion-panel-header>
 
         <!-- Panel content -->
