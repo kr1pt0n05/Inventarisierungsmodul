@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,7 +38,6 @@ public class ExcelService {
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
     private final CommentRepository commentRepository;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     // Offset to start writing data from the specified row index
     // The first 2 Excel rows are left empty for compatibility purposes
@@ -91,6 +91,10 @@ public class ExcelService {
         deinventoriedFont.setColor(IndexedColors.RED.getIndex());
         deinventoriedFont.setStrikeout(true);
         deinventoriedStyle.setFont(deinventoriedFont);
+
+        // Date cell style
+        CellStyle dateCellStyle = wb.createCellStyle();
+        dateCellStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("dd.MM.yyyy"));
         
         // Insert comments
         for (int i = 0; i < inventoryList.size(); i++) {
@@ -104,7 +108,12 @@ public class ExcelService {
             row.createCell(3).setCellValue(inventory.getDescription());
             row.createCell(4).setCellValue(inventory.getCompany() == null ? "" : inventory.getCompany().getName());
             row.createCell(5).setCellValue(inventory.getPrice().doubleValue());
-            row.createCell(6).setCellValue(inventory.getCreatedAt().format(formatter));
+
+
+            Cell date = row.createCell(6);
+            date.setCellStyle(dateCellStyle);
+            date.setCellValue(Date.from(inventory.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant())); // Convert LocalDateTime to a Date to properly save it as date to excel
+
             row.createCell(7).setCellValue(inventory.getSerialNumber());
             row.createCell(8).setCellValue(inventory.getLocation());
             row.createCell(9).setCellValue(inventory.getUser() == null ? "" : inventory.getUser().getName());
@@ -174,6 +183,8 @@ public class ExcelService {
 
                             int inventoryNumber = ExcelService.getCellFormularValue(row.getCell(1));
                             System.out.println("Inventory Number: " + (inventoryNumber+j));
+                            System.out.println(row.getCell(6));
+                            System.out.println(row.getCell(6).getCellType());
                             inv.setInventoryNumber(inventoryNumber + j);
 
                             inv.setDescription(ExcelService.getCellStringValue(row.getCell(3)));
