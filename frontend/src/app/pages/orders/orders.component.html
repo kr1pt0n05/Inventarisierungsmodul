@@ -6,18 +6,19 @@
     <app-card title="Ausgewählte Artikel inventarisieren ({{this.checkedCount()}})">
       <div card-content class="space-y-4 mt-4">
 
-        <button mat-flat-button class="w-full" color="primary" [disabled]="checkedCount() < 1"
-          (click)="inventarize('asItems')">
+        <button mat-flat-button matTooltip="Artikel mit eigenen Inventarnummern inventarisieren."
+          class="w-full min-w-fit" color="primary" [disabled]="checkedCount() < 1" (click)="inventarize('asItems')">
           Einzeln
         </button>
 
-        <button mat-stroked-button class="w-full" color="primary" [disabled]="checkedCount() < 1"
-          (click)="inventarize('asExtensions')">
+        <button mat-stroked-button matTooltip="Artikel bestehenden Inventarnummern hinzufügen." class="w-full min-w-fit"
+          color="primary" [disabled]="checkedCount() < 1" (click)="inventarize('asExtensions')">
           Als Erweiterungen
         </button>
 
-        <button mat-stroked-button class="w-full" color="primary" [disabled]="checkedCount() <= 1"
-          (click)="inventarize('addToFirst')">
+        <button mat-stroked-button
+          matTooltip="Artikel unter einer Inventarnummer inventarisieren. Erster Artikel ist der Hauptartikel."
+          class="w-full min-w-fit" color="primary" [disabled]="checkedCount() <= 1" (click)="inventarize('addToFirst')">
           Als ein Gegenstand
         </button>
 
@@ -34,7 +35,7 @@
           <!-- Checkbox aligned to the left -->
 
           <div class="px-2 py-2">
-            <mat-checkbox class="example-margin" [checked]="allChecked" (change)="checkAll()">Alle
+            <mat-checkbox color="primary" [checked]="allChecked" (change)="checkAll()">Alle
               auswählen</mat-checkbox>
           </div>
 
@@ -48,13 +49,14 @@
         @for (order of orders; track order.id) {
         <app-accordion title="{{order.description}} ({{order.articles.length}} Artikel)">
           <div expansion-panel-header class="flex items-center justify-between">
-            <mat-checkbox class="example-margin" [checked]="isOrderChecked(order)"
-              (click)="checkOrder($event, order)" />
+            <mat-checkbox color="primary" [checked]="isOrderChecked(order)" (click)="checkOrder($event, order)" />
           </div>
 
           <div expansion-panel-content class="flex flex-col space-y-2">
             @for (article of order.articles; track article.article_id) {
-            <mat-checkbox class="example-margin" (click)="checkBox($event, article)" [checked]="article.checked">
+            <mat-checkbox [color]="checkedArticles.at(0)?.article_id === article.article_id ? 'accent' : 'primary'"
+              (click)="checkBox($event, article)" [checked]="article.checked">
+
               {{article.description}}, {{article.price}}&nbsp;€, {{article.company}}, {{article.orderer}}
               {{checkedArticles.at(0)?.article_id === article.article_id ? '- Hauptartikel': ''}}
             </mat-checkbox> }

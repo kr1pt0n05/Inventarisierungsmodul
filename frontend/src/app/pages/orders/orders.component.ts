@@ -1,8 +1,9 @@
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { AccordionComponent } from '../../components/accordion/accordion.component';
 import { CardComponent } from '../../components/card/card.component';
@@ -17,7 +18,7 @@ import { OrderService } from '../../services/order.service';
     AccordionComponent,
     MatButton,
     MatCheckbox,
-    NgClass,
+    MatTooltipModule,
     MatExpansionModule,
     CommonModule,
 
