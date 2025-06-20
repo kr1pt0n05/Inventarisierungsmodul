@@ -206,7 +206,7 @@ export class InventorizationComponent {
     this.tags.set(this.editableInventoryItem().tags ?? []);
 
     if (!this.isNewInventorization()) {
-      this.disabledInputs.set(['id']);
+      this.disabledInputs.set(['id', 'created_at']);
       this._fetchComments(this.editableInventoryItem().id);
     } else {
       this.disabledInputs.set(['created_at']);
