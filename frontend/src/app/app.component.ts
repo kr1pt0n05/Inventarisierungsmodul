@@ -27,7 +27,7 @@ export class AppComponent {
 
 }
 
-export function localizePrize(price: number | string): string {
+export function localizePrice(price: number | string): string {
   let numPrice: number;
   if (typeof price === 'string') {
     numPrice = parseFloat(price);
