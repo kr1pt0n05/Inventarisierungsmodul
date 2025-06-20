@@ -14,6 +14,7 @@ import { ExtensionsResolver } from './resolver/extensions.resolver';
 import { InventoryItemResolver } from './resolver/inventory-item.resolver';
 import { DefaultGuardService } from './services/default-guard.service';
 import {StatisticsComponent} from './pages/statistics/statistics.component';
+import {ImportComponent} from './pages/import/import.component';
 
 
 export const routes: Routes = [
@@ -101,9 +102,16 @@ export const routes: Routes = [
     canActivate: [DefaultGuardService],
     resolve: {
       isNewExtension: () => true,
-    }
-
+    },
   },
+
+  {
+    title: 'Import',
+    path: 'import',
+    component: ImportComponent,
+    canActivate: [DefaultGuardService],
+  },
+
   {
     title: '404 Not Found!',
     path: '**',
