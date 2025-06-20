@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -18,7 +18,9 @@ import { OrderService } from '../../services/order.service';
     MatButton,
     MatCheckbox,
     NgClass,
-    MatExpansionModule
+    MatExpansionModule,
+    CommonModule,
+
   ],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
@@ -117,6 +119,24 @@ export class OrdersComponent implements OnInit {
       })
     })
     this.checkedCount();
+  }
+
+  isOrderChecked(order: Order): boolean {
+    return order.articles.every(article => article.checked);
+  }
+
+  checkOrder(event: MouseEvent, order: Order) {
+    event.stopPropagation();
+    const isChecked = this.isOrderChecked(order);
+    order.articles.forEach(article => {
+      article.checked = !isChecked;
+      if (article.checked && !this.checkedArticles.includes(article)) {
+        this.checkedArticles.push(article);
+      } else if (!article.checked) {
+        this.checkedArticles = this.checkedArticles.filter(a => a.article_id !== article.article_id);
+      }
+    });
+    this.allChecked = this.isAllBoxesChecked();
   }
 
 
