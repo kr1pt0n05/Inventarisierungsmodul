@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.hs_esslingen.insy.utils.StringParser;
 import org.javers.core.Javers;
 import org.javers.core.diff.Diff;
 import org.javers.core.diff.changetype.ValueChange;
@@ -211,7 +212,7 @@ public class InventoryService {
         inventory.setLocation(dto.getLocation());
         inventory.setUser(user);
 
-        changeFullTextSearchString(inventory);
+        inventory.setSearchText(StringParser.fullTextSearchString(inventory));
 
         // Save to allow adding tags to inventory
         inventoryRepository.save(inventory);
@@ -335,7 +336,7 @@ public class InventoryService {
         }
 
         Inventory updatedInventory = inventoryRepository.save(inventory);
-        changeFullTextSearchString(updatedInventory);
+        inventory.setSearchText(StringParser.fullTextSearchString(inventory));
         inventoryRepository.save(updatedInventory);
 
         // Inventory after change
