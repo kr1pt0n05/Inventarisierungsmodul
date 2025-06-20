@@ -144,6 +144,12 @@ export class DetailsComponent {
     this.router.navigate(['/edit', this.inventoryItem().id, 'extension', ext.id]);
   }
 
+  addExtension(): void {
+    this.router.navigate(['/new-extension'], {
+      queryParams: { inventoryId: this.inventoryItem().id }
+    });
+  }
+
 }
 
 // Defines the table and column display names for the change history entries

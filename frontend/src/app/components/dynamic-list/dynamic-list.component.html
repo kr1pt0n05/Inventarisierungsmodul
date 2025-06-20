@@ -8,7 +8,7 @@
         @if (id !== 'actions') {
         {{element[id]}}
         } @else {
-        <button mat-stroked-button color="primary" (click)="handleClick(element)">
+        <button mat-button color="primary" (click)="handleClick(element)">
           {{buttonText()}}
         </button>
         }
