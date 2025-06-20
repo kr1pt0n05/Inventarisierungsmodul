@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d2c07a2-65a4-4799-95b0-9e8659a2ba31" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/pages/inventory/inventory.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/pages/inventory/inventory.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/pages/inventory/inventory.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/pages/inventory/inventory.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/app/services/inventories.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/app/services/inventories.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/environment.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/environment.ts" afterDir="false" />
-    </list>
+    <list default="true" id="0d2c07a2-65a4-4799-95b0-9e8659a2ba31" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

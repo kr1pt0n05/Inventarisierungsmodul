@@ -271,8 +271,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   }
 
   // This method is used by MatTable to disconnect from the data source
+  // This needs to stay EMPTY, otherwise Mat-Table wont render anything when re-entering Inventory Page!
   disconnect(collectionViewer: CollectionViewer): void {
-    this._data.complete();
   }
 
 }
