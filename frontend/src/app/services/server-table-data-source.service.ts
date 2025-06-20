@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {BehaviorSubject, debounceTime, Observable} from 'rxjs';
 import { localizePrice } from '../app.component';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
@@ -223,7 +223,9 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
    */
   set searchbar(searchbar: FormControl) {
     this._searchbar = searchbar;
-    this._searchbar.valueChanges.subscribe((searchText: string) => {
+    this._searchbar.valueChanges
+      .pipe(debounceTime(250))
+      .subscribe((searchText: string) => {
       this._queryParams.next({ ...this._queryParams.value, currentSearchText: searchText });
     })
   }
