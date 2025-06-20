@@ -27,7 +27,7 @@ export const routes: Routes = [
   {
     title: 'Home',
     path: 'homepage',
-    component: HomepageComponent,
+    component: StatisticsComponent,
     canActivate: [DefaultGuardService],
   },
   {
@@ -93,16 +93,6 @@ export const routes: Routes = [
       isNewExtension: () => true,
     }
 
-  },
-
-  {
-    title: 'Statistiken',
-    path: 'statistics',
-    component: StatisticsComponent,
-    canActivate: [DefaultGuardService],
-    resolve: {
-      isNewExtension: () => true,
-    },
   },
 
   {
