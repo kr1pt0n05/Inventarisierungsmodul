@@ -21,7 +21,8 @@
                 }
             </mat-autocomplete>
         </mat-form-field>
-        <button mat-stroked-button color="primary" (click)="addTag($event)">Hinzufügen</button>
+        <button mat-stroked-button color="primary" (click)="addTag($event)"
+            [disabled]="userTextInputSignal().length <= 0">Hinzufügen</button>
 
 
     </div>

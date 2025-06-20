@@ -91,10 +91,6 @@ export class ExtensionInventorizationComponent {
     Array.from(extensionDisplayNames.keys()).map(key => [key, new FormControl('')])
   );
   /**
-   * FormControl for the inventoryId selection.
-   */
-  inventoryIdControl = new FormControl('');
-  /**
    * FormGroup containing all form controls for validation and value tracking.
    */
   formGroup = new FormGroup(Object.fromEntries(
@@ -166,12 +162,8 @@ export class ExtensionInventorizationComponent {
    * Called when the user selects an inventory item by ID.
    * Updates the inventoryId and reloads the inventory item.
    */
-  onSelectInventory(id: number | undefined = undefined) {
-    if (id === undefined) {
-      this.inventoryId.set(Number(this.inventoryIdControl.value));
-    } else {
-      this.inventoryId.set(id);
-    }
+  onSelectInventory(id: number) {
+    this.inventoryId.set(id);
     this._onChanges();
   }
 
@@ -184,7 +176,6 @@ export class ExtensionInventorizationComponent {
   resetSelectedInventory() {
     this.inventoryId.set(undefined);
     this.inventoryItem = {} as InventoryItem;
-    this.inventoryIdControl.setValue('');
     this._onChanges();
   }
 
