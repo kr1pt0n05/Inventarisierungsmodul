@@ -97,8 +97,9 @@ export class StatisticsComponent implements OnInit {
     if (!canvas) return;
 
     // Destroy existing chart instance if it exists
-    if ((Chart as any).instances && (Chart as any).instances.length > 0) {
-      (Chart as any).instances.forEach((chart: any) => chart.destroy());
+    const existingChart = Chart.getChart(canvas.id);
+    if (existingChart) {
+      existingChart.destroy();
     }
 
     const data = this.userOrders.map(u => u.orderPrice);
