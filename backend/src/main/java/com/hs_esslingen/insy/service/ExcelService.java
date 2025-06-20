@@ -23,8 +23,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +37,11 @@ public class ExcelService {
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
     private final CommentRepository commentRepository;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+    // Offset to start writing data from the specified row index
+    // The first 2 Excel rows are left empty for compatibility purposes
+    private final int STARTING_ROW_OFFSET = 2;
 
     public ResponseEntity<Resource> exportExcel() throws IOException {
 
@@ -51,6 +58,20 @@ public class ExcelService {
                 "Firma", "Preis", "Erstellungsdatum", "Seriennummer",
                 "Ort/Benutzer", "Besteller"
         };
+
+        // set columns min width
+        sheet.setColumnWidth(0, 256 * 25); // costCenter
+        sheet.setColumnWidth(1, 256 * 15); // InventoryNumber
+        sheet.setColumnWidth(2, 256 * 8);  // amount
+        sheet.setColumnWidth(3, 256 * 30);  // description
+        sheet.setColumnWidth(4, 256 * 30);  // company
+        sheet.setColumnWidth(5, 256 * 10);  // price
+        sheet.setColumnWidth(6, 256 * 12);  // createdAt
+        sheet.setColumnWidth(7, 256 * 20);  // serialNumber
+        sheet.setColumnWidth(8, 256 * 20);  // location/user
+        sheet.setColumnWidth(9, 256 * 20);  // orderer
+
+
         Row rowHeading = sheet.createRow(0);
         CellStyle rowHeadingStyle = wb.createCellStyle();
         Font rowHeadingFont = wb.createFont();
@@ -71,10 +92,11 @@ public class ExcelService {
         deinventoriedFont.setStrikeout(true);
         deinventoriedStyle.setFont(deinventoriedFont);
         
-
+        // Insert comments
         for (int i = 0; i < inventoryList.size(); i++) {
-            Row row = sheet.createRow(i+1);
+            Row row = sheet.createRow(i+ 1 + STARTING_ROW_OFFSET); // 1 offset for headings, STARTING_ROW_OFFSET for compatability with old excel
             Inventory inventory = inventoryList.get(i);
+            List<Comment> comments = inventory.getComments();
 
             row.createCell(0).setCellValue(inventory.getCostCenter() == null ? "" : inventory.getCostCenter().getDescription());
             row.createCell(1).setCellValue(inventory.getId());
@@ -82,10 +104,12 @@ public class ExcelService {
             row.createCell(3).setCellValue(inventory.getDescription());
             row.createCell(4).setCellValue(inventory.getCompany() == null ? "" : inventory.getCompany().getName());
             row.createCell(5).setCellValue(inventory.getPrice().doubleValue());
-            row.createCell(6).setCellValue(inventory.getCreatedAt());
+            row.createCell(6).setCellValue(inventory.getCreatedAt().format(formatter));
             row.createCell(7).setCellValue(inventory.getSerialNumber());
             row.createCell(8).setCellValue(inventory.getLocation());
             row.createCell(9).setCellValue(inventory.getUser() == null ? "" : inventory.getUser().getName());
+
+            IntStream.range(10, 10 + comments.size()).forEach(j -> row.createCell(j).setCellValue(comments.get(j-10).getDescription()));
 
             if(inventory.getIsDeinventoried()){
                 for(int j = 0; j < 10; j++){
