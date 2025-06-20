@@ -211,7 +211,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
         filter.createdBefore = DateTime.fromJSDate(new Date(filter.createdBefore)).setZone('Europe/Berlin').endOf('day').toUTC().toISO() ?? undefined;
       }
 
-      this._queryParams.next({ ...this._queryParams.value, currentFilter: filter });
+      this._queryParams.next({ ...this._queryParams.value, currentPage: {pageIndex: 0, pageSize: this._queryParams.value.currentPage.pageSize} , currentFilter: filter });
+      this._paginator!.pageIndex = 0;
     });
   }
 
