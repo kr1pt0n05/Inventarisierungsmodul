@@ -73,6 +73,6 @@ export class AuthenticationService {
    * If the username is not available, it returns an empty string.
    */
   getUsername(): string {
-    return this.oauthService.getIdentityClaims()?.['name'] || '';
+    return this.oauthService.getIdentityClaims()?.['name'] ?? '';
   }
 }
