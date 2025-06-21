@@ -5,7 +5,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { Router, RouterModule } from '@angular/router';
-import { localizePrice } from '../../app.component';
+import { localizePrice, unLocalizePrice } from '../../app.component';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
@@ -83,7 +83,7 @@ export class DetailsComponent {
 
   // Defines the column headers for the different panels
   // The keys are the internal names of the columns, the values are the display names
-  inventoryItemColumns = inventoryItemDisplayNames;
+  inventoryItemColumns = new Map(inventoryItemDisplayNames);
 
   extensionColumns = new Map(extensionDisplayNames);
 
@@ -130,7 +130,13 @@ export class DetailsComponent {
       for (const key of this.inventoryItemColumns.keys()) {
         const value = this.inventoryItem()[key as keyof InventoryItem];
         this.inventoryItemInternal.set(key, value ? value.toString() : '');
+
+        if (key === 'price' && this.calculateTotalExtensionsPrice() > 0) {
+          const basePrice = value - this.calculateTotalExtensionsPrice();
+          this.inventoryItemInternal.set('basePrice', localizePrice(basePrice));
+        }
       }
+      this.inventoryItemColumns.set('basePrice', 'Basispreis');
       this.inventoryItemInternal.set('price', localizePrice(this.inventoryItemInternal.get('price')!));
 
       this.tags = this.inventoryItem().tags ?? [];
@@ -155,6 +161,14 @@ export class DetailsComponent {
 
   getTagColor(tagName: string): string {
     return getTagColor(tagName);
+  }
+
+  calculateTotalExtensionsPrice(): number {
+    if (this.extensions().length === 0) {
+      return 0;
+    }
+    const sum = this.extensions().reduce((acc, ext) => acc + (unLocalizePrice(ext.price) ?? 0), 0);
+    return sum;
   }
 
 }

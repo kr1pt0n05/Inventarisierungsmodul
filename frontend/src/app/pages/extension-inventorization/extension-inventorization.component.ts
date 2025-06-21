@@ -147,7 +147,7 @@ export class ExtensionInventorizationComponent {
       this.extension.set(this.inputExtension()!);
     }
     if (this.disabledInputs() === undefined) {
-      this.disabledInputs.set(this.isNewExtension() ? ['created_at'] : []);
+      this.disabledInputs.set(['created_at']);
     }
     if (this.requiredInputs() === undefined) {
       this.requiredInputs.set(['company', 'price', 'description']);
@@ -295,7 +295,7 @@ export class ExtensionInventorizationComponent {
       this._fetchInventoryItemById(this.inventoryId()!);
     }
 
-    if (this.isNewExtension()) {
+    if (this.disabledInputs() === undefined) {
       this.disabledInputs.set(['created_at']);
     }
   }
