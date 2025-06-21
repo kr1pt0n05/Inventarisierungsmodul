@@ -4,8 +4,27 @@
       <!-- Logo-->
       <img class="h-16 w-auto object-contain px-8" src="images/logo_hochschule_esslingen_negativ_de.png"
         alt="Logo der Hochschule Esslingen" />
+      <!-- Hamburger menu button for mobile view -->
+      <button type="button"
+        class="xl:hidden relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+        aria-controls="mobile-menu" aria-expanded="false" (click)="toggleMobileMenu()">
+        <span class="absolute -inset-0.5"></span>
+        <span class="sr-only">Open main menu</span>
+        <!-- Menu icon -->
+        @if (showMobileMenu()) {
+        <svg class="block size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          aria-hidden="true" data-slot="icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+        } @else {
+        <svg class="block size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          aria-hidden="true" data-slot="icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        }
+      </button>
       <!-- Links-->
-      <div class="flex w-fit items-baseline space-x-4">
+      <div class="hidden xl:block w-fit items-baseline space-x-4">
         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
         <a (click)="updateCurrentPageTitle('Startseite')" routerLink="/homepage"
           [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
@@ -33,6 +52,33 @@
       Login
       }
     </button>
+  </nav>
+
+  <nav class="bg-he-darkblue shadow-2xl">
+    <div class="max-w-7xl ">
+      <div class="flex flex-col p-2 pl-8 items xl:hidden space-y-2">
+        <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+        @if (showMobileMenu()) {
+        <a (click)="updateCurrentPageTitle('Startseite')" routerLink="/homepage"
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Startseite</a>
+        <a (click)="updateCurrentPageTitle('Inventarliste')" routerLink="/inventory"
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Inventarliste</a>
+        <a (click)="updateCurrentPageTitle('Bestellungen')" routerLink="/orders"
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Bestellungen</a>
+        <a (click)="updateCurrentPageTitle('Neue Inventarisierung')" routerLink="/new"
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Neue&nbsp;Inventarisierung</a>
+        <a (click)="updateCurrentPageTitle('Neue Erweiterung')" routerLink="/new-extension"
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Neue&nbsp;Erweiterung</a>
+        <a (click)="updateCurrentPageTitle('Import')" routerLink="/import" [routerLinkActive]="buttonActiveClasses"
+          [routerLinkActiveOptions]="{ exact: true }" [class]="buttonClasses">Hochladen</a>
+        }
+      </div>
+    </div>
   </nav>
 
   <main class="px-4 py-6 sm:px-6 lg:px-8">

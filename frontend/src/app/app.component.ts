@@ -24,6 +24,8 @@ export class AppComponent {
   buttonClasses = 'w-fit rounded-md px-3 py-2 text-md font-medium text-gray-300 hover:bg-gray-700 hover:text-white';
   buttonActiveClasses = 'bg-gray-900 text-white';
 
+  showMobileMenu = signal<boolean>(false);
+
   updateCurrentPageTitle(currentPageTitle: string) {
     this.currentPageTitle.set(currentPageTitle);
   }
@@ -39,7 +41,12 @@ export class AppComponent {
     }
   }
 
+  toggleMobileMenu() {
+    this.showMobileMenu.set(!this.showMobileMenu());
+  }
+
 }
+
 
 /**
  * Converts a price value to a localized string representation with a comma as decimal separator
