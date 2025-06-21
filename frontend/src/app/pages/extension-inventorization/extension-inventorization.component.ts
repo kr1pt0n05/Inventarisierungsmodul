@@ -57,7 +57,7 @@ export class ExtensionInventorizationComponent {
   /**
    * List of disabled input field keys.
    */
-  disabledInputs = signal<string[]>([]);
+  disabledInputs = signal<string[]>(['created_at']);
   /**
    * List of required input field keys.
    */

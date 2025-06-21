@@ -4,12 +4,12 @@ import { inject, Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import {BehaviorSubject, debounceTime, Observable} from 'rxjs';
+import { DateTime } from 'luxon';
+import { BehaviorSubject, debounceTime, Observable } from 'rxjs';
 import { localizePrice } from '../app.component';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
 import { InventoriesService } from './inventories.service';
-import { DateTime } from 'luxon';
 
 // Interface for Pagination details (pageIndex and pageSize)
 interface Page {
@@ -204,15 +204,15 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._filter.valueChanges.subscribe((filter: Filter) => {
 
       if (filter.createdAfter != null) {
-        console.log(DateTime.fromISO(filter.createdAfter, {zone: 'Europe/Berlin'}).toISO());
+        console.log(DateTime.fromISO(filter.createdAfter, { zone: 'Europe/Berlin' }).toISO());
       }
       if (filter.createdAfter && filter.createdBefore) {
         filter.createdAfter = DateTime.fromJSDate(new Date(filter.createdAfter)).setZone('Europe/Berlin').startOf('day').toUTC().toISO() ?? undefined;
         filter.createdBefore = DateTime.fromJSDate(new Date(filter.createdBefore)).setZone('Europe/Berlin').endOf('day').toUTC().toISO() ?? undefined;
       }
 
-      this._queryParams.next({ ...this._queryParams.value, currentPage: {pageIndex: 0, pageSize: this._queryParams.value.currentPage.pageSize} , currentFilter: filter });
-      this._paginator!.pageIndex = 0;
+      this._queryParams.next({ ...this._queryParams.value, currentPage: { pageIndex: 0, pageSize: this._queryParams.value.currentPage.pageSize }, currentFilter: filter });
+      if (this._paginator) this._paginator.pageIndex = 0;
     });
   }
 
@@ -226,8 +226,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
     this._searchbar.valueChanges
       .pipe(debounceTime(250))
       .subscribe((searchText: string) => {
-      this._queryParams.next({ ...this._queryParams.value, currentSearchText: searchText });
-    })
+        this._queryParams.next({ ...this._queryParams.value, currentSearchText: searchText });
+      })
   }
 
   /**

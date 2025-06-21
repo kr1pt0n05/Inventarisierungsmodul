@@ -38,7 +38,7 @@ export class ExtensionEditorComponent {
   /**
    * List of disabled input field keys.
    */
-  disabledInputs = model<string[]>([]);
+  disabledInputs = model<string[]>(['created_at']);
   /**
    * List of required input field keys.
    */
