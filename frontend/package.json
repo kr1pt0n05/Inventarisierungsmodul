@@ -23,6 +23,7 @@
     "@tailwindcss/postcss": "^4.1.5",
     "angular-oauth2-oidc": "^19.0.0",
     "chart.js": "^4.5.0",
+    "luxon": "^3.6.1",
     "postcss": "^8.5.3",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.1.5",
