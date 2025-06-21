@@ -936,7 +936,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /excel-sheets:
+  /upload:
     get:
       tags:
         - Import/Export von Dateien
@@ -968,6 +968,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
+  /download:
     post:
       tags:
         - Import/Export von Dateien
@@ -987,58 +988,6 @@ paths:
       responses:
         '201':
           description: Daten wurden erfolgreich verarbeitet
-        '400':
-          description: 'Error 400: Bad Request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '500':
-          description: Interner Serverfehler
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-  /users/logout:
-    get:
-      tags:
-        - users (noch unklar, abhängig von keycloak)
-      summary: Abmelden des derzeitigen Benutzers.
-      description: Abmelden des Benutzers.
-      operationId: logoutUser
-      parameters: []
-      responses:
-        '200':
-          description: Erfolgreich abgemeldet
-        '500':
-          description: Interner Serverfehler
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-  /users/login:
-    get:
-      tags:
-        - users (noch unklar, abhängig von keycloak)
-      summary: Anmeldung des Benutzers.
-      description: Anmeldung in das System.
-      operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: Der Benutzername für das Login
-          required: false
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: Das Password für das Login
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Erfolgreich angemeldet
         '400':
           description: 'Error 400: Bad Request'
           content:
