@@ -875,39 +875,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error500'
-  /inventories/{id}/history:
-    get:
-      tags:
-        - Inventarisierungsliste - Historie
-      summary: Liste der Änderungen an einem Gegenstand
-      description: Ruft die Liste aller Änderungen an einem Gegenstand seit der Inventarisierung ab.
-      parameters:
-        - name: id
-          in: path
-          description: ID des Gegenstands
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Erfolgreiches Abrufen der Historie
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/History'
-        '400':
-          description: 'Error 400: Bad Request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '500':
-          description: Interner Fehler beim Abrufen des Gegenstands
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
   /statistics:
     get:
       tags:
@@ -924,70 +891,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Statistic'
-        '400':
-          description: 'Error 400: Bad Request'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error400'
-        '500':
-          description: Interner Serverfehler
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-  /upload:
-    get:
-      tags:
-        - Import/Export von Dateien
-      summary: Exportiert Inventarisierungsliste als Excel-Datei
-      description: Gesamte Liste kann ohne Parameter exportiert werden, mit Parametern werden nur einzelne Einträge exportiert
-      parameters:
-        - name: ids
-          in: query
-          description: ID der Gegenstände bzw. range von - bis
-          required: false
-          style: form
-          explode: true
-          schema:
-            type: array
-            items:
-              type: integer
-              format: int64
-      responses:
-        '200':
-          description: Excel-Liste wurde erfolgreich erstellt und zum Download bereitgestellt
-          content:
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-        '500':
-          description: Interner Fehler beim Erstellen der Excel-Liste
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error500'
-  /download:
-    post:
-      tags:
-        - Import/Export von Dateien
-      summary: Schickt Excelliste zum Importieren an Backend
-      description: Datei muss für Umwandlung passendes Format haben
-      requestBody:
-        required: true
-        content:
-          application/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Excel-Datei (.xls oder .xlsx)
-      responses:
-        '201':
-          description: Daten wurden erfolgreich verarbeitet
         '400':
           description: 'Error 400: Bad Request'
           content:
@@ -1333,10 +1236,10 @@ paths:
       responses:
         '204':
           description: Der Artikel wurde erfolgreich gelöscht.
-/upload/excel:
+  /upload/excel:
     post:
-      summary: Upload an Excel file
-      description: Accepts an `.xls` or `.xlsx` file containing inventory data and imports it into the database.
+      summary: Eine Excel-Datei hochladen
+      description: Akzeptiert eine `.xls`- oder `.xlsx`-Datei mit Inventardaten und importiert sie in die Datenbank.
       tags:
         - Excel Upload
       requestBody:
@@ -1349,31 +1252,58 @@ paths:
                 file:
                   type: string
                   format: binary
-                  description: Excel file to upload (.xls or .xlsx)
+                  description: Hochzuladende Excel-Datei (.xls oder .xlsx)
       responses:
         '200':
-          description: File uploaded and processed successfully
+          description: Datei erfolgreich hochgeladen und verarbeitet
         '400':
-          description: Bad Request - Invalid file or format
+          description: Ungültige Anfrage – ungültige Datei oder falsches Format
         '500':
-          description: Internal Server Error
+          description: Interner Serverfehler
 
   /download/xlsx:
     get:
-      summary: Download inventory data as Excel
-      description: Returns an Excel file containing the full inventory list.
+      summary: Inventardaten als Excel herunterladen
+      description: Gibt eine Excel-Datei mit der vollständigen Inventarliste zurück.
       tags:
         - Excel Download
       responses:
         '200':
-          description: Excel file download successful
+          description: Excel-Datei erfolgreich heruntergeladen
           content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
         '500':
-          description: Internal Server Error while generating file
+          description: Interner Serverfehler beim Erstellen der Datei
+          
+  /inventories/{id}/history:
+    get:
+      summary: Änderungshistorie eines Inventars abrufen
+      description: Gibt eine Liste aller Änderungen für ein bestimmtes Inventarobjekt zurück, sortiert nach Erstellungsdatum.
+      tags:
+        - Inventar-Historie
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Die ID des Inventarobjekts
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste der Änderungen für das angegebene Inventarobjekt
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryResponseDTO'
+        '404':
+          description: Inventarobjekt nicht gefunden
+        '500':
+          description: Interner Serverfehler
 
 tags:
   - name: Excel Upload
@@ -1931,3 +1861,39 @@ components:
         minPrice:
           type: integer
           example: 10
+    HistoryResponseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Eindeutige ID des Änderungsverlaufs
+          example: 2408
+        changedBy:
+          type: string
+          description: Name der Person, die die Änderung vorgenommen hat
+          example: Peter
+        attributeChanged:
+          type: string
+          description: Geändertes Attribut
+          example: price
+        valueFrom:
+          type: string
+          nullable: true
+          description: Ursprünglicher Wert vor der Änderung
+          example: 240.98
+        valueTo:
+          type: string
+          nullable: true
+          description: Neuer Wert nach der Änderung
+          example: 239.99
+        createdAt:
+          type: string
+          format: date-time
+          description: Zeitpunkt der Änderung
+      required:
+        - id
+        - changedBy
+        - attributeChanged
+        - valueTo
+        - createdAt
