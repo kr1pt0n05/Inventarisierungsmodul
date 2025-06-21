@@ -1,29 +1,43 @@
 <app-card title="Tags">
     <div card-content class="flex flex-col items-end pt-4">
 
-        <mat-form-field class="example-chip-list w-full">
+        <mat-form-field class="w-full">
             <mat-label>Tags hinzufügen</mat-label>
             <mat-chip-grid #chipGrid [formControl]="control()">
                 @for (element of control().value; track element) {
-                <mat-chip-row (removed)="remove(element)">
+                <mat-chip-row [style]="getTagColor(element)" (removed)="remove(element)">
                     {{element}}
                     <button matChipRemove>
                         <mat-icon matChipRemove>X</mat-icon>
                     </button>
                 </mat-chip-row>
                 }
+
+                <input matInput type="text" placeholder="z.B.: Laptop" [matChipInputFor]="chipGrid"
+                    [matAutocomplete]="auto" [formControl]="userTextInput" />
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addTag($event)">
+                    @for (option of selectedOptions().values(); track option) {
+                    <mat-option [value]="option">{{option}}</mat-option>
+                    }
+                </mat-autocomplete>
+
             </mat-chip-grid>
-            <input matInput type="text" placeholder="z.B.: Laptop" [matChipInputFor]="chipGrid" [matAutocomplete]="auto"
-                [formControl]="userTextInput" />
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addTag($event)">
-                @for (option of selectedOptions().values(); track option) {
-                <mat-option [value]="option">{{option}}</mat-option>
-                }
-            </mat-autocomplete>
         </mat-form-field>
         <button mat-stroked-button color="primary" (click)="addTag($event)"
             [disabled]="userTextInputSignal().length <= 0">Hinzufügen</button>
 
-
     </div>
+
+    <!-- Tailwind Color Loader -->
+    <div class="
+        bg-red-300 bg-orange-300
+        bg-amber-300 bg-yellow-300
+        bg-lime-300 bg-green-300
+        bg-emerald-300 bg-teal-300
+        bg-cyan-300 bg-sky-300
+        bg-blue-300 bg-indigo-300
+        bg-violet-300 bg-purple-300
+        bg-fuchsia-300 bg-pink-300
+        bg-rose-300
+    "></div>
 </app-card>

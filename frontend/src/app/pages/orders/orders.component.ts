@@ -1,8 +1,9 @@
-import { NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { AccordionComponent } from '../../components/accordion/accordion.component';
 import { CardComponent } from '../../components/card/card.component';
@@ -17,8 +18,10 @@ import { OrderService } from '../../services/order.service';
     AccordionComponent,
     MatButton,
     MatCheckbox,
-    NgClass,
-    MatExpansionModule
+    MatTooltipModule,
+    MatExpansionModule,
+    CommonModule,
+
   ],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
@@ -117,6 +120,24 @@ export class OrdersComponent implements OnInit {
       })
     })
     this.checkedCount();
+  }
+
+  isOrderChecked(order: Order): boolean {
+    return order.articles.every(article => article.checked);
+  }
+
+  checkOrder(event: MouseEvent, order: Order) {
+    event.stopPropagation();
+    const isChecked = this.isOrderChecked(order);
+    order.articles.forEach(article => {
+      article.checked = !isChecked;
+      if (article.checked && !this.checkedArticles.includes(article)) {
+        this.checkedArticles.push(article);
+      } else if (!article.checked) {
+        this.checkedArticles = this.checkedArticles.filter(a => a.article_id !== article.article_id);
+      }
+    });
+    this.allChecked = this.isAllBoxesChecked();
   }
 
 

@@ -13,6 +13,7 @@ import { ExtensionResolver } from './resolver/extension.resolver';
 import { ExtensionsResolver } from './resolver/extensions.resolver';
 import { InventoryItemResolver } from './resolver/inventory-item.resolver';
 import { DefaultGuardService } from './services/default-guard.service';
+import {StatisticsComponent} from './pages/statistics/statistics.component';
 
 
 export const routes: Routes = [
@@ -86,6 +87,17 @@ export const routes: Routes = [
     title: 'Neue Erweiterung',
     path: 'new-extension',
     component: ExtensionInventorizationComponent,
+    canActivate: [DefaultGuardService],
+    resolve: {
+      isNewExtension: () => true,
+    }
+
+  },
+
+  {
+    title: 'Statistiken',
+    path: 'statistics',
+    component: StatisticsComponent,
     canActivate: [DefaultGuardService],
     resolve: {
       isNewExtension: () => true,

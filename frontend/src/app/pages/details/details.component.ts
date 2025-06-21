@@ -1,15 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { afterNextRender, Component, input, QueryList, ViewChildren } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule, MatExpansionPanel } from '@angular/material/expansion';
 import { Router, RouterModule } from '@angular/router';
+import { localizePrice } from '../../app.component';
 import { DynamicListComponent } from "../../components/dynamic-list/dynamic-list.component";
 import { Change } from '../../models/change';
 import { Comment } from '../../models/comment';
-import { Extension, extensionDisplayNames } from '../../models/extension';
+import { Extension, extensionDisplayNames, extensionLocalizePrice } from '../../models/extension';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
-import { Tag } from '../../models/tag';
+import { getTagColor, Tag } from '../../models/tag';
 
 /**
  * DetailsComponent
@@ -49,6 +51,7 @@ import { Tag } from '../../models/tag';
     DynamicListComponent,
     RouterModule,
     MatButtonModule,
+    CommonModule
   ],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css'
@@ -57,14 +60,13 @@ export class DetailsComponent {
   panelIdNameMap = new Map<string, string>([
     ['extensions', 'Erweiterungen'],
     ['comments', 'Kommentare'],
-    ['tags', 'Tags'],
     ['changes', 'Historie']
   ]);
 
   @ViewChildren('Panels') panels!: QueryList<MatExpansionPanel>;
 
   inventoryItem = input.required<InventoryItem>();
-  extensions = input<Extension[]>([]);
+  extensions = input([], { transform: extensionLocalizePrice });
   comments = input<Comment[]>([]);
   tags: Tag[] = [];
   // The transform merges table and column names for change history entries to display them in a single column
@@ -129,8 +131,9 @@ export class DetailsComponent {
         const value = this.inventoryItem()[key as keyof InventoryItem];
         this.inventoryItemInternal.set(key, value ? value.toString() : '');
       }
-      this.tags = this.inventoryItem().tags ?? [];
+      this.inventoryItemInternal.set('price', localizePrice(this.inventoryItemInternal.get('price')!));
 
+      this.tags = this.inventoryItem().tags ?? [];
     } else {
       this.inventoryItemInternal = new Map<string, string>();
       for (let id of this.inventoryItemColumns.keys()) {
@@ -144,6 +147,16 @@ export class DetailsComponent {
     this.router.navigate(['/edit', this.inventoryItem().id, 'extension', ext.id]);
   }
 
+  addExtension(): void {
+    this.router.navigate(['/new-extension'], {
+      queryParams: { inventoryId: this.inventoryItem().id }
+    });
+  }
+
+  getTagColor(tagName: string): string {
+    return getTagColor(tagName);
+  }
+
 }
 
 // Defines the table and column display names for the change history entries
@@ -153,7 +166,7 @@ const changesTableNames = new Map<string, string>([
 ]);
 const changesColumnNames = new Map<string, string>([
   ['location', 'Standort/Nutzer:in'],
-  ['price', 'Preis in €'],
+  ['price', 'Preis'],
   ['company', 'Firma'],
   ['description', 'Beschreibung'],
   ['serialNumber', 'Seriennummer'],
@@ -170,15 +183,23 @@ const changesColumnNames = new Map<string, string>([
  */
 function mergeChangeLocation(rawChanges: Change[]): ChangeInternal[] {
   let changes = rawChanges.map((change: Change) => {
-    const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable;
+    // const changedTableDisplayName = changesTableNames.get(change.changedTable) ?? change.changedTable; Disabled as only the inventory_item table is tracked for now
     const changedColumnDisplayName = changesColumnNames.get(change.attributeChanged) ?? change.attributeChanged;
-    return {
+
+    const internalChange: ChangeInternal = {
       changedAt: change.createdAt,
       changedBy: change.changedBy,
-      change: `${changedTableDisplayName} - ${changedColumnDisplayName}`,
+      change: changedColumnDisplayName, // `${changedTableDisplayName} - ${changedColumnDisplayName}`,
       oldValue: change.valueFrom,
       newValue: change.valueTo
     };
+
+    if (change.attributeChanged === 'price') {
+      internalChange.oldValue = change.valueFrom ? localizePrice(change.valueFrom) : '';
+      internalChange.newValue = change.valueTo ? localizePrice(change.valueTo) : '';
+    }
+    return internalChange;
+
   })
   return changes;
 }

@@ -1,28 +1,20 @@
 <mat-form-field class="example-chip-list">
-  <mat-label>{{  heading() }}</mat-label>
+  <mat-label>{{ heading() }}</mat-label>
   <mat-chip-grid #chipGrid [formControl]="control()">
     @for (element of control().value; track element) {
-      <mat-chip-row
-        (removed)="remove(element)"
-      >
-        {{element}}
-        <button matChipRemove>
-          <mat-icon matChipRemove>X</mat-icon>
-        </button>
-      </mat-chip-row>
+    <mat-chip-row [style]="getTagColor(element)" (removed)="remove(element)">
+      {{element}}
+      <button matChipRemove>
+        <mat-icon matChipRemove>X</mat-icon>
+      </button>
+    </mat-chip-row>
     }
   </mat-chip-grid>
-    <input
-      type="text"
-      [placeholder]="placeholder()"
-      [matChipInputFor]="chipGrid"
-      [matAutocomplete]="auto"
-      [(ngModel)]="userTextInput"
-
-    />
+  <input type="text" [placeholder]="placeholder()" [matChipInputFor]="chipGrid" [matAutocomplete]="auto"
+    [(ngModel)]="userTextInput" />
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
     @for (option of selectedOptions().values(); track option) {
-      <mat-option [value]="option">{{option}}</mat-option>
+    <mat-option [value]="option">{{option}}</mat-option>
     }
   </mat-autocomplete>
 </mat-form-field>

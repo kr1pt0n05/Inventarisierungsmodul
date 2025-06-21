@@ -322,10 +322,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
 
-  /inventories/costcenters:
+  /inventories/maxAndMinId:
     get:
       tags:
       - Inventarisierungsliste
+      summary: Ruft kleinstes und größtes ID von Gegenstände
+      responses:
+        "200":
+          description: Erfolgreiches Abrufen der IDs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdDTO'
+        "500":
+          description: Interner Serverfehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+  /inventories/maxAndMinPrice:
+    get:
+      tags:
+        - Inventarisierungsliste
+      summary: Ruft kleinster und größter Preis von Gegenstände
+      responses:
+        "200":
+          description: Erfolgreiches Abrufen der Preise
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceDTO'
+        "500":
+          description: Interner Serverfehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error500'
+
+  /costcenters:
+    get:
+      tags:
+      - Costcenter
       summary: Ruft alle Kostenstellen ab
       responses:
         "200":
@@ -333,7 +370,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Costcenter'
+                $ref: '#/components/schemas/CostCenterDTO'
         "500":
           description: Interner Serverfehler
           content:
@@ -341,10 +378,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
 
-  /inventories/companies:
+  /companies:
     get:
       tags:
-        - Inventarisierungsliste
+        - Firma
       summary: Ruft alle Firmen ab
       responses:
         "200":
@@ -352,7 +389,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Company'
+                $ref: '#/components/schemas/CompanyDTO'
         "500":
           description: Interner Serverfehler
           content:
@@ -360,10 +397,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
 
-  /inventories/orderers:
+  /orderers:
     get:
       tags:
-        - Inventarisierungsliste
+        - Besteller
       summary: Ruft alle Besteller ab
       responses:
         "200":
@@ -371,7 +408,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Orderer'
+                $ref: '#/components/schemas/OrdererDTO'
         "500":
           description: Interner Serverfehler
           content:
@@ -379,10 +416,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
 
-  /inventories/locations:
+  /locations:
     get:
       tags:
-        - Inventarisierungsliste
+        - Ort
       summary: Ruft alle Orte ab, wo sich Gegendstände befinden
       responses:
         "200":
@@ -390,7 +427,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Location'
+                $ref: '#/components/schemas/LocationDTO'
         "500":
           description: Interner Serverfehler
           content:
@@ -398,10 +435,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error500'
 
-  /inventories/serialnumbers:
+  /serialnumbers:
     get:
       tags:
-        - Inventarisierungsliste
+        - Seriennummer
       summary: Ruft alle Seriennummern von den Gegenständen ab
       responses:
         "200":
@@ -409,7 +446,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SerialNumber'
+                $ref: '#/components/schemas/SerialNumberDTO'
         "500":
           description: Interner Serverfehler
           content:
@@ -1718,38 +1755,38 @@ components:
         empty:
           type: boolean
           example: false
-    Costcenter:
+    CostCenterDTO:
       type: object
       properties:
-        content:
+        costCenters:
           type: array
           items:
             example: "Costcenter1, Costcenter2"
-    Company:
+    CompanyDTO:
       type: object
       properties:
-        content:
+        companies:
           type: array
           items:
             example: "Company1, Company2"
-    Orderer:
+    OrdererDTO:
       type: object
       properties:
-        content:
+        orderers:
           type: array
           items:
             example: "Orderer1, Orderer2"
-    Location:
+    LocationDTO:
       type: object
       properties:
-        content:
+        locations:
           type: array
           items:
             example: "Location1, Location2"
-    SerialNumber:
+    SerialNumberDTO:
       type: object
       properties:
-        content:
+        serialNumbers:
           type: array
           items:
             example: "Serial number1, Serial number2"
@@ -1880,3 +1917,21 @@ components:
         - user_name
         - order_quote_price
         - items
+    IdDTO:
+      type: object
+      properties:
+        maxId:
+          type: integer
+          example: 20
+        minId:
+          type: integer
+          example: 1
+    PriceDTO:
+      type: object
+      properties:
+        maxPrice:
+          type: integer
+          example: 200
+        minPrice:
+          type: integer
+          example: 10

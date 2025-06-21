@@ -23,8 +23,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +38,10 @@ public class ExcelService {
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
     private final CommentRepository commentRepository;
+
+    // Offset to start writing data from the specified row index
+    // The first 2 Excel rows are left empty for compatibility purposes
+    private final int STARTING_ROW_OFFSET = 1;
 
     public ResponseEntity<Resource> exportExcel() throws IOException {
 
@@ -51,6 +58,20 @@ public class ExcelService {
                 "Firma", "Preis", "Erstellungsdatum", "Seriennummer",
                 "Ort/Benutzer", "Besteller"
         };
+
+        // set columns min width
+        sheet.setColumnWidth(0, 256 * 25); // costCenter
+        sheet.setColumnWidth(1, 256 * 15); // InventoryNumber
+        sheet.setColumnWidth(2, 256 * 8);  // amount
+        sheet.setColumnWidth(3, 256 * 30);  // description
+        sheet.setColumnWidth(4, 256 * 30);  // company
+        sheet.setColumnWidth(5, 256 * 10);  // price
+        sheet.setColumnWidth(6, 256 * 12);  // createdAt
+        sheet.setColumnWidth(7, 256 * 20);  // serialNumber
+        sheet.setColumnWidth(8, 256 * 20);  // location/user
+        sheet.setColumnWidth(9, 256 * 20);  // orderer
+
+
         Row rowHeading = sheet.createRow(0);
         CellStyle rowHeadingStyle = wb.createCellStyle();
         Font rowHeadingFont = wb.createFont();
@@ -70,11 +91,16 @@ public class ExcelService {
         deinventoriedFont.setColor(IndexedColors.RED.getIndex());
         deinventoriedFont.setStrikeout(true);
         deinventoriedStyle.setFont(deinventoriedFont);
-        
 
+        // Date cell style
+        CellStyle dateCellStyle = wb.createCellStyle();
+        dateCellStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("dd.MM.yyyy"));
+        
+        // Insert comments
         for (int i = 0; i < inventoryList.size(); i++) {
-            Row row = sheet.createRow(i+1);
+            Row row = sheet.createRow(i+ 1 + STARTING_ROW_OFFSET); // 1 offset for headings, STARTING_ROW_OFFSET for compatability with old excel
             Inventory inventory = inventoryList.get(i);
+            List<Comment> comments = inventory.getComments();
 
             row.createCell(0).setCellValue(inventory.getCostCenter() == null ? "" : inventory.getCostCenter().getDescription());
             row.createCell(1).setCellValue(inventory.getId());
@@ -82,10 +108,17 @@ public class ExcelService {
             row.createCell(3).setCellValue(inventory.getDescription());
             row.createCell(4).setCellValue(inventory.getCompany() == null ? "" : inventory.getCompany().getName());
             row.createCell(5).setCellValue(inventory.getPrice().doubleValue());
-            row.createCell(6).setCellValue(inventory.getCreatedAt());
+
+
+            Cell date = row.createCell(6);
+            date.setCellStyle(dateCellStyle);
+            date.setCellValue(Date.from(inventory.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant())); // Convert LocalDateTime to a Date to properly save it as date to excel
+
             row.createCell(7).setCellValue(inventory.getSerialNumber());
             row.createCell(8).setCellValue(inventory.getLocation());
             row.createCell(9).setCellValue(inventory.getUser() == null ? "" : inventory.getUser().getName());
+
+            IntStream.range(10, 10 + comments.size()).forEach(j -> row.createCell(j).setCellValue(comments.get(j-10).getDescription()));
 
             if(inventory.getIsDeinventoried()){
                 for(int j = 0; j < 10; j++){
@@ -132,33 +165,49 @@ public class ExcelService {
                     if (row.getCell(0) == null || row.getRowNum() == 0 || row.getRowNum() == 1) continue;
 
                     // Parse all values of excel files into one object
-                    InventoryExcel inv = new InventoryExcel();
                     CellStyle style = row.getCell(1).getCellStyle();
                     Font font = wb.getFontAt(style.getFontIndex());
 
-                    // Parse each row into InventoryExcel object
-                    inv.setCostCenter(ExcelService.getCellStringValue(row.getCell(0)));
-                    inv.setInventoryNumber(ExcelService.getCellFormularValue(row.getCell(1)));
-                    inv.setAmount(ExcelService.getCellIntegerValue(row.getCell(2)));
-                    inv.setDescription(ExcelService.getCellStringValue(row.getCell(3)));
-                    inv.setCompany(ExcelService.getCellStringValue(row.getCell(4)) );
-                    inv.setPrice(ExcelService.getCellDoubleValue(row.getCell(5)));
-                    inv.setCreatedAt(ExcelService.getCellLocalDateValue(row.getCell(6)));
-                    inv.setSerialNumber(ExcelService.getCellStringValue(row.getCell(7)) );
-                    inv.setLocation(ExcelService.getCellStringValue(row.getCell(8)));
-                    inv.setOrderer(ExcelService.getCellStringValue(row.getCell(9)));
 
-                    inv.addComment(ExcelService.getCellStringValue(row.getCell(10)));
-                    inv.addComment(ExcelService.getCellStringValue(row.getCell(11)));
-                    inv.addComment(ExcelService.getCellStringValue(row.getCell(12)));
-                    inv.addComment(ExcelService.getCellStringValue(row.getCell(13)));
-                    inv.addComment(ExcelService.getCellStringValue(row.getCell(14)));
-                    inv.addComment(ExcelService.getCellStringValue(row.getCell(15)));
-                    inv.addComment(ExcelService.getCellStringValue(row.getCell(16)));
+                    // Create Inventory Item, if inventoryNumber is present
+                    if(ExcelService.getCellFormularValue(row.getCell(1)) != null){
+
+                        // Create inventory items based on 'amount':
+                        // - If amount == 1, create one item.
+                        // - If amount > 1, duplicate the item 'amount' times and increase inventory number
+                        Integer amount = ExcelService.getCellFormularValue(row.getCell(2));
+
+                        for (int j = 0; j < amount; j++) {
+                            InventoryExcel inv = new InventoryExcel();
+                            inv.setCostCenter(ExcelService.getCellStringValue(row.getCell(0)));
+
+                            int inventoryNumber = ExcelService.getCellFormularValue(row.getCell(1));
+                            System.out.println("Inventory Number: " + (inventoryNumber+j));
+                            System.out.println(row.getCell(6));
+                            System.out.println(row.getCell(6).getCellType());
+                            inv.setInventoryNumber(inventoryNumber + j);
+
+                            inv.setDescription(ExcelService.getCellStringValue(row.getCell(3)));
+                            inv.setCompany(ExcelService.getCellStringValue(row.getCell(4)) );
+                            inv.setPrice(ExcelService.getCellDoubleValue(row.getCell(5)));
+                            inv.setCreatedAt(ExcelService.getCellLocalDateValue(row.getCell(6)));
+                            inv.setSerialNumber(ExcelService.getCellStringValue(row.getCell(7)) );
+                            inv.setLocation(ExcelService.getCellStringValue(row.getCell(8)));
+                            inv.setOrderer(ExcelService.getCellStringValue(row.getCell(9)));
+
+                            inv.addComment(ExcelService.getCellStringValue(row.getCell(10)));
+                            inv.addComment(ExcelService.getCellStringValue(row.getCell(11)));
+                            inv.addComment(ExcelService.getCellStringValue(row.getCell(12)));
+                            inv.addComment(ExcelService.getCellStringValue(row.getCell(13)));
+                            inv.addComment(ExcelService.getCellStringValue(row.getCell(14)));
+                            inv.addComment(ExcelService.getCellStringValue(row.getCell(15)));
+                            inv.addComment(ExcelService.getCellStringValue(row.getCell(16)));
 
 
-                    inv.setDeinventoried(font.getStrikeout());
-                    excelObjects.add(inv);
+                            inv.setDeinventoried(font.getStrikeout());
+                            excelObjects.add(inv);
+                        }
+                    }
                 }
             }
         }
