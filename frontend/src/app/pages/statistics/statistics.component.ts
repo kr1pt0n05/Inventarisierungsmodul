@@ -62,7 +62,7 @@ export class StatisticsComponent implements OnInit {
       totalOrders: number;
       totalPrice: number;
       names: UserOrder[];
-    }[]>(`${environment.apiUrl}statistics`).subscribe({
+    }[]>(`${environment.apiUrl}/statistics`).subscribe({
       next: (data) => {
         if (data.length > 0) {
           const stats = data[0];
