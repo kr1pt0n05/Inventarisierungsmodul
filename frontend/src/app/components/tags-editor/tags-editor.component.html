@@ -24,7 +24,7 @@
             </mat-chip-grid>
         </mat-form-field>
         <button mat-stroked-button color="primary" (click)="addTag($event)"
-            [disabled]="userTextInputSignal().length <= 0">Hinzufügen</button>
+            [disabled]="userTextInputSignal().trim().length === 0">Hinzufügen</button>
 
     </div>
 
