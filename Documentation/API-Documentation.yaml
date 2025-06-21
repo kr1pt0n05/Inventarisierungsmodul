@@ -1333,6 +1333,53 @@ paths:
       responses:
         '204':
           description: Der Artikel wurde erfolgreich gelöscht.
+/upload/excel:
+    post:
+      summary: Upload an Excel file
+      description: Accepts an `.xls` or `.xlsx` file containing inventory data and imports it into the database.
+      tags:
+        - Excel Upload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Excel file to upload (.xls or .xlsx)
+      responses:
+        '200':
+          description: File uploaded and processed successfully
+        '400':
+          description: Bad Request - Invalid file or format
+        '500':
+          description: Internal Server Error
+
+  /download/xlsx:
+    get:
+      summary: Download inventory data as Excel
+      description: Returns an Excel file containing the full inventory list.
+      tags:
+        - Excel Download
+      responses:
+        '200':
+          description: Excel file download successful
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '500':
+          description: Internal Server Error while generating file
+
+tags:
+  - name: Excel Upload
+    description: Upload Excel files to import inventory records
+  - name: Excel Download
+    description: Download inventory data in Excel format
 components:
   schemas:
     InventoriesCreateDTO:
