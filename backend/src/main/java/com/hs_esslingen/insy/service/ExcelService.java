@@ -182,9 +182,6 @@ public class ExcelService {
                             inv.setCostCenter(ExcelService.getCellStringValue(row.getCell(0)));
 
                             int inventoryNumber = ExcelService.getCellFormularValue(row.getCell(1));
-                            System.out.println("Inventory Number: " + (inventoryNumber+j));
-                            System.out.println(row.getCell(6));
-                            System.out.println(row.getCell(6).getCellType());
                             inv.setInventoryNumber(inventoryNumber + j);
 
                             inv.setDescription(ExcelService.getCellStringValue(row.getCell(3)));

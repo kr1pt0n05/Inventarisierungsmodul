@@ -223,7 +223,7 @@ export class InventoriesService {
    * @returns {Observable<string[]>} - An observable containing a list of cost centers.
    */
   getAllCostCenters(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/costCenters`).pipe(
+    return this.http.get<any>(`${environment.apiUrl}/costCenters`).pipe(
       map(response => response.costCenters)
     );
   }
@@ -234,7 +234,7 @@ export class InventoriesService {
    * @returns {Observable<string[]>} - An observable containing a list of companies.
    */
   getAllCompanies(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/companies`).pipe(
+    return this.http.get<any>(`${environment.apiUrl}/companies`).pipe(
       map(response => response.companies)
     );
   }
@@ -245,7 +245,7 @@ export class InventoriesService {
    * @returns {Observable<string[]>} - An observable containing a list of serial numbers.
    */
   getAllSerialNumbers(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/serialNumbers`).pipe(
+    return this.http.get<any>(`${environment.apiUrl}/serialNumbers`).pipe(
       map(response => response.serialNumbers)
     );
   }
@@ -256,7 +256,7 @@ export class InventoriesService {
    * @returns {Observable<string[]>} - An observable containing a list of locations.
    */
   getAllLocations(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/locations`).pipe(
+    return this.http.get<any>(`${environment.apiUrl}/locations`).pipe(
       map(response => response.locations)
     );
   }
@@ -267,7 +267,7 @@ export class InventoriesService {
    * @returns {Observable<string[]>} - An observable containing a list of orderers.
    */
   getAllOrderers(): Observable<string[]> {
-    return this.http.get<any>(`${this.url}/orderers`).pipe(
+    return this.http.get<any>(`${environment.apiUrl}/orderers`).pipe(
       map(response => response.orderers)
     );
   }
