@@ -8,23 +8,23 @@
       <div class="flex w-fit items-baseline space-x-4">
         <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
         <a (click)="updateCurrentPageTitle('Startseite')" routerLink="/homepage"
-          routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-          class="w-fit rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Startseite</a>
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Startseite</a>
         <a (click)="updateCurrentPageTitle('Inventarliste')" routerLink="/inventory"
-          routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-          class="w-fit rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Inventarliste</a>
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Inventarliste</a>
         <a (click)="updateCurrentPageTitle('Bestellungen')" routerLink="/orders"
-          routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-          class="w-fit rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Bestellungen</a>
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Bestellungen</a>
         <a (click)="updateCurrentPageTitle('Neue Inventarisierung')" routerLink="/new"
-          routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-          class="w-fit rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Neue&nbsp;Inventarisierung</a>
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Neue&nbsp;Inventarisierung</a>
         <a (click)="updateCurrentPageTitle('Neue Erweiterung')" routerLink="/new-extension"
-          routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-          class="w-fit rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Neue&nbsp;Erweiterung</a>
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Neue&nbsp;Erweiterung</a>
         <a (click)="updateCurrentPageTitle('Statistiken')" routerLink="/statistics"
-          routerLinkActive="bg-gray-900 text-white" [routerLinkActiveOptions]="{ exact: true }"
-          class="w-fit rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Statistiken</a>
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
+          [class]="buttonClasses">Statistiken</a>
       </div>
     </div>
     <button mat-button color="accent" class="mx-8" (click)="handleLogInOut()">
