@@ -22,9 +22,8 @@
         <a (click)="updateCurrentPageTitle('Neue Erweiterung')" routerLink="/new-extension"
           [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
           [class]="buttonClasses">Neue&nbsp;Erweiterung</a>
-        <a (click)="updateCurrentPageTitle('Import')" routerLink="/import"
-           routerLinkActive="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
-           class="buttonClasses">Hochladen</a>
+        <a (click)="updateCurrentPageTitle('Import')" routerLink="/import" [routerLinkActive]="buttonActiveClasses"
+          [routerLinkActiveOptions]="{ exact: true }" [class]="buttonClasses">Hochladen</a>
       </div>
     </div>
     <button mat-button color="accent" class="mx-8" (click)="handleLogInOut()">
