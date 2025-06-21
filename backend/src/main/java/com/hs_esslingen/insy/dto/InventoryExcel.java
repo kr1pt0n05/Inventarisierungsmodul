@@ -1,15 +1,18 @@
 package com.hs_esslingen.insy.dto;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-@Getter @Setter @NoArgsConstructor @ToString
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 public class InventoryExcel {
     private String costCenter;
     private Integer inventoryNumber;
@@ -24,6 +27,7 @@ public class InventoryExcel {
     private boolean isDeinventoried = false;
 
     public void addComment(String comment) {
-        if(comment != null) comments.add(comment);
+        if (comment != null)
+            comments.add(comment);
     }
 }

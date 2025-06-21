@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.hs_esslingen.insy.utils.StringParser;
 import org.javers.core.Javers;
 import org.javers.core.diff.Diff;
 import org.javers.core.diff.changetype.ValueChange;
@@ -39,6 +38,7 @@ import com.hs_esslingen.insy.repository.HistoryRepository;
 import com.hs_esslingen.insy.repository.InventoryRepository;
 import com.hs_esslingen.insy.utils.OrderByUtils;
 import com.hs_esslingen.insy.utils.RelationUtils;
+import com.hs_esslingen.insy.utils.StringParser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -73,24 +73,26 @@ public class InventoryService {
     }
 
     /**
-     * Retrieves all inventory items based on the provided filters.
+     * Retrieves all inventory items based on the provided filters and pagination.
      *
      * @param tags            List of tag IDs to filter by
      * @param minId           Minimum ID for filtering
      * @param maxId           Maximum ID for filtering
      * @param minPrice        Minimum price for filtering
      * @param maxPrice        Maximum price for filtering
-     * @param isDeinventoried Whether to filter by deinventoried status
-     * @param orderer         Name of the orderer to filter by
-     * @param company         Name of the company to filter by
-     * @param location        Location to filter by
-     * @param costCenter      Cost center to filter by
-     * @param serialNumber    Serial number to filter by
+     * @param isDeinventoried Filter by deinventoried status
+     * @param orderers        List of orderer IDs to filter by
+     * @param companies       List of company names to filter by
+     * @param locations       List of locations to filter by
+     * @param costCenters     List of cost center descriptions to filter by
+     * @param serialNumbers   List of serial numbers to filter by
+     * @param createdAfter    Filter for creation date after this date
+     * @param createdBefore   Filter for creation date before this date
      * @param orderBy         Field to order results by
-     * @param direction       Direction of ordering (asc/desc)
+     * @param direction       Direction of sorting (asc/desc)
+     * @param searchText      Text to search in inventory items
      * @param pageable        Pagination information
-     * @return Page of InventoriesResponseDTO containing the filtered inventory
-     *         items
+     * @return Page containing filtered and sorted inventory items as DTOs
      */
     public Page<InventoriesResponseDTO> getAllInventories(
             List<Integer> tags,
@@ -422,7 +424,7 @@ public class InventoryService {
         allFields.addAll(extensionFields);
 
         // Set the search text for the Inventory
-        inventory.setSearchText(String.join(" ", allFields));
+        inventory.setSearchText(String.join("", allFields));
     }
 
 }

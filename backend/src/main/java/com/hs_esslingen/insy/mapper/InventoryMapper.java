@@ -1,20 +1,28 @@
 package com.hs_esslingen.insy.mapper;
 
-import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
-import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
-import com.hs_esslingen.insy.model.*;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.ReportingPolicy;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
+
+import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
+import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
+import com.hs_esslingen.insy.model.Company;
+import com.hs_esslingen.insy.model.CostCenter;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.model.Tag;
+import com.hs_esslingen.insy.model.User;
+
+/**
+ * Mapper interface for converting between Inventory entities and DTOs.
+ * It uses MapStruct to generate the implementation at compile time.
+ */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = { TagMapper.class })
 public interface InventoryMapper {
 
@@ -75,5 +83,4 @@ public interface InventoryMapper {
             return tag;
         }).collect(Collectors.toSet());
     }
-
 }

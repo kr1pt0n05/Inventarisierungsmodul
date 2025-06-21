@@ -3,12 +3,11 @@ package com.hs_esslingen.insy.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.hs_esslingen.insy.exception.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.hs_esslingen.insy.dto.ArticleDTO;
-import com.hs_esslingen.insy.exception.BadRequestException;
+import com.hs_esslingen.insy.exception.NotFoundException;
 import com.hs_esslingen.insy.mapper.ArticleMapper;
 import com.hs_esslingen.insy.model.Article;
 import com.hs_esslingen.insy.model.Order;
@@ -94,6 +93,13 @@ public class ArticleService {
         return ResponseEntity.ok(articleMapper.toDto(saved));
     }
 
+    /**
+     * Retrieves all articles associated with a specific order.
+     *
+     * @param orderId the ID of the order for which to retrieve articles
+     * @return a ResponseEntity containing a list of ArticleDTOs or no content if
+     *         none found
+     */
     public ResponseEntity<List<ArticleDTO>> getAllArticles(Integer orderId) {
         List<Article> articles = orderService.getArticlesByOrder(orderId);
         if (articles.isEmpty()) {
@@ -105,6 +111,13 @@ public class ArticleService {
         return ResponseEntity.ok(articleDTOs);
     }
 
+    /**
+     * Creates a new article associated with a specific order.
+     *
+     * @param orderId    the ID of the order to associate with the article
+     * @param articleDTO the ArticleDTO containing the article information
+     * @return a ResponseEntity containing the created ArticleDTO
+     */
     public ResponseEntity<ArticleDTO> createArticle(Integer orderId, ArticleDTO articleDTO) {
         Order order = orderService.retrieveOrderById(orderId)
                 .orElseThrow(() -> new NotFoundException("Order with id " + orderId + " not found."));
@@ -116,6 +129,13 @@ public class ArticleService {
         return ResponseEntity.ok(articleMapper.toDto(savedArticle));
     }
 
+    /**
+     * Retrieves an article by its ID.
+     *
+     * @param articleId the ID of the article to retrieve
+     * @return a ResponseEntity containing the ArticleDTO if found
+     * @throws NotFoundException if the article with the given ID does not exist
+     */
     public ResponseEntity<ArticleDTO> getArticleById(Integer articleId) {
         Optional<Article> article = articleRepository.findById(articleId);
         if (article.isPresent()) {
@@ -126,6 +146,13 @@ public class ArticleService {
         }
     }
 
+    /**
+     * Deletes an article by its ID.
+     *
+     * @param articleId the ID of the article to delete
+     * @return a ResponseEntity with no content if the deletion was successful
+     * @throws NotFoundException if the article with the given ID does not exist
+     */
     public ResponseEntity<Void> deleteArticle(Integer articleId) {
         Optional<Article> article = articleRepository.findById(articleId);
         if (article.isPresent()) {

@@ -1,17 +1,32 @@
 package com.hs_esslingen.insy.service;
 
-import com.hs_esslingen.insy.dto.InventoryExcel;
-import com.hs_esslingen.insy.model.Comment;
-import com.hs_esslingen.insy.model.Company;
-import com.hs_esslingen.insy.model.CostCenter;
-import com.hs_esslingen.insy.model.Inventory;
-import com.hs_esslingen.insy.model.User;
-import com.hs_esslingen.insy.repository.*;
-import com.hs_esslingen.insy.utils.StringParser;
-import lombok.AllArgsConstructor;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.apache.coyote.BadRequestException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
@@ -19,15 +34,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import com.hs_esslingen.insy.dto.InventoryExcel;
+import com.hs_esslingen.insy.model.Comment;
+import com.hs_esslingen.insy.model.Company;
+import com.hs_esslingen.insy.model.CostCenter;
+import com.hs_esslingen.insy.model.Inventory;
+import com.hs_esslingen.insy.model.User;
+import com.hs_esslingen.insy.repository.CommentRepository;
+import com.hs_esslingen.insy.repository.CompanyRepository;
+import com.hs_esslingen.insy.repository.CostCenterRepository;
+import com.hs_esslingen.insy.repository.InventoryRepository;
+import com.hs_esslingen.insy.repository.UserRepository;
+import com.hs_esslingen.insy.utils.StringParser;
+
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -41,8 +61,14 @@ public class ExcelService {
 
     // Offset to start writing data from the specified row index
     // The first 2 Excel rows are left empty for compatibility purposes
-    private final int STARTING_ROW_OFFSET = 1;
+    private static final int STARTING_ROW_OFFSET = 1;
 
+    /**
+     * Exports all inventory items to an Excel file (.xls format).
+     *
+     * @return ResponseEntity containing the Excel file as a Resource
+     * @throws IOException if an error occurs while writing the Excel file
+     */
     public ResponseEntity<Resource> exportExcel() throws IOException {
 
         // Build the .xlsx file
@@ -62,15 +88,14 @@ public class ExcelService {
         // set columns min width
         sheet.setColumnWidth(0, 256 * 25); // costCenter
         sheet.setColumnWidth(1, 256 * 15); // InventoryNumber
-        sheet.setColumnWidth(2, 256 * 8);  // amount
-        sheet.setColumnWidth(3, 256 * 30);  // description
-        sheet.setColumnWidth(4, 256 * 30);  // company
-        sheet.setColumnWidth(5, 256 * 10);  // price
-        sheet.setColumnWidth(6, 256 * 12);  // createdAt
-        sheet.setColumnWidth(7, 256 * 20);  // serialNumber
-        sheet.setColumnWidth(8, 256 * 20);  // location/user
-        sheet.setColumnWidth(9, 256 * 20);  // orderer
-
+        sheet.setColumnWidth(2, 256 * 8); // amount
+        sheet.setColumnWidth(3, 256 * 30); // description
+        sheet.setColumnWidth(4, 256 * 30); // company
+        sheet.setColumnWidth(5, 256 * 10); // price
+        sheet.setColumnWidth(6, 256 * 12); // createdAt
+        sheet.setColumnWidth(7, 256 * 20); // serialNumber
+        sheet.setColumnWidth(8, 256 * 20); // location/user
+        sheet.setColumnWidth(9, 256 * 20); // orderer
 
         Row rowHeading = sheet.createRow(0);
         CellStyle rowHeadingStyle = wb.createCellStyle();
@@ -95,33 +120,45 @@ public class ExcelService {
         // Date cell style
         CellStyle dateCellStyle = wb.createCellStyle();
         dateCellStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("dd.MM.yyyy"));
-        
+
         // Insert comments
         for (int i = 0; i < inventoryList.size(); i++) {
-            Row row = sheet.createRow(i+ 1 + STARTING_ROW_OFFSET); // 1 offset for headings, STARTING_ROW_OFFSET for compatability with old excel
+            Row row = sheet.createRow(i + 1 + STARTING_ROW_OFFSET); // 1 offset for headings, STARTING_ROW_OFFSET for
+                                                                    // compatability with old excel
             Inventory inventory = inventoryList.get(i);
             List<Comment> comments = inventory.getComments();
 
-            row.createCell(0).setCellValue(inventory.getCostCenter() == null ? "" : inventory.getCostCenter().getDescription());
+            row.createCell(0)
+                    .setCellValue(inventory.getCostCenter() == null ? "" : inventory.getCostCenter().getDescription());
             row.createCell(1).setCellValue(inventory.getId());
             row.createCell(2).setCellValue(1);
             row.createCell(3).setCellValue(inventory.getDescription());
             row.createCell(4).setCellValue(inventory.getCompany() == null ? "" : inventory.getCompany().getName());
             row.createCell(5).setCellValue(inventory.getPrice().doubleValue());
 
-
             Cell date = row.createCell(6);
             date.setCellStyle(dateCellStyle);
-            date.setCellValue(Date.from(inventory.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant())); // Convert LocalDateTime to a Date to properly save it as date to excel
+            date.setCellValue(Date.from(inventory.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant())); // Convert
+                                                                                                               // LocalDateTime
+                                                                                                               // to a
+                                                                                                               // Date
+                                                                                                               // to
+                                                                                                               // properly
+                                                                                                               // save
+                                                                                                               // it as
+                                                                                                               // date
+                                                                                                               // to
+                                                                                                               // excel
 
             row.createCell(7).setCellValue(inventory.getSerialNumber());
             row.createCell(8).setCellValue(inventory.getLocation());
             row.createCell(9).setCellValue(inventory.getUser() == null ? "" : inventory.getUser().getName());
 
-            IntStream.range(10, 10 + comments.size()).forEach(j -> row.createCell(j).setCellValue(comments.get(j-10).getDescription()));
+            IntStream.range(10, 10 + comments.size())
+                    .forEach(j -> row.createCell(j).setCellValue(comments.get(j - 10).getDescription()));
 
-            if(inventory.getIsDeinventoried()){
-                for(int j = 0; j < 10; j++){
+            if (inventory.getIsDeinventoried()) {
+                for (int j = 0; j < 10; j++) {
                     row.getCell(j).setCellStyle(deinventoriedStyle);
                 }
             }
@@ -137,20 +174,26 @@ public class ExcelService {
                 .body(resource);
     }
 
-
+    /**
+     * Imports inventory items from an Excel file (.xls or .xlsx format).
+     *
+     * @param file the Excel file to import
+     * @throws IOException if an error occurs while reading the file
+     */
     public void importExcel(MultipartFile file) throws IOException {
         // Check file is not empty
-        if(file.isEmpty()) throw new BadRequestException("File must not be empty!");
+        if (file.isEmpty())
+            throw new BadRequestException("File must not be empty!");
 
         // Check file extension. Must be .xls or .xlsx
         String fileName = file.getOriginalFilename();
-        if(fileName == null || !(fileName.endsWith(".xls") || fileName.endsWith(".xlsx"))
-        ) throw new BadRequestException("File must end with .xls or .xlsx!");
+        if (fileName == null || !(fileName.endsWith(".xls") || fileName.endsWith(".xlsx")))
+            throw new BadRequestException("File must end with .xls or .xlsx!");
 
-        // Creates appropriate Workbook (HSSFWorkbook for .xls and XSSFWorkbook for .xls)
+        // Creates appropriate Workbook (HSSFWorkbook for .xls and XSSFWorkbook for
+        // .xls)
         Workbook wb = WorkbookFactory.create(file.getInputStream());
         List<InventoryExcel> excelObjects = new ArrayList<>();
-
 
         // Parse Inventory Items of every sheet's row
         int numberOfSheets = wb.getNumberOfSheets();
@@ -158,23 +201,24 @@ public class ExcelService {
             Sheet sheet = wb.getSheetAt(i);
 
             // Validate sheet name
-            if(ExcelService.isYearBetweenXAndY(sheet.getSheetName(), 2000, 2100)){
+            if (ExcelService.isYearBetweenXAndY(sheet.getSheetName(), 2000, 2100)) {
                 for (Row row : sheet) {
 
                     // Skip first row, since it contains headings
-                    if (row.getCell(0) == null || row.getRowNum() == 0 || row.getRowNum() == 1) continue;
+                    if (row.getCell(0) == null || row.getRowNum() == 0 || row.getRowNum() == 1)
+                        continue;
 
                     // Parse all values of excel files into one object
                     CellStyle style = row.getCell(1).getCellStyle();
                     Font font = wb.getFontAt(style.getFontIndex());
 
-
                     // Create Inventory Item, if inventoryNumber is present
-                    if(ExcelService.getCellFormularValue(row.getCell(1)) != null){
+                    if (ExcelService.getCellFormularValue(row.getCell(1)) != null) {
 
                         // Create inventory items based on 'amount':
                         // - If amount == 1, create one item.
-                        // - If amount > 1, duplicate the item 'amount' times and increase inventory number
+                        // - If amount > 1, duplicate the item 'amount' times and increase inventory
+                        // number
                         Integer amount = ExcelService.getCellFormularValue(row.getCell(2));
 
                         for (int j = 0; j < amount; j++) {
@@ -185,10 +229,10 @@ public class ExcelService {
                             inv.setInventoryNumber(inventoryNumber + j);
 
                             inv.setDescription(ExcelService.getCellStringValue(row.getCell(3)));
-                            inv.setCompany(ExcelService.getCellStringValue(row.getCell(4)) );
+                            inv.setCompany(ExcelService.getCellStringValue(row.getCell(4)));
                             inv.setPrice(ExcelService.getCellDoubleValue(row.getCell(5)));
                             inv.setCreatedAt(ExcelService.getCellLocalDateValue(row.getCell(6)));
-                            inv.setSerialNumber(ExcelService.getCellStringValue(row.getCell(7)) );
+                            inv.setSerialNumber(ExcelService.getCellStringValue(row.getCell(7)));
                             inv.setLocation(ExcelService.getCellStringValue(row.getCell(8)));
                             inv.setOrderer(ExcelService.getCellStringValue(row.getCell(9)));
 
@@ -199,7 +243,6 @@ public class ExcelService {
                             inv.addComment(ExcelService.getCellStringValue(row.getCell(14)));
                             inv.addComment(ExcelService.getCellStringValue(row.getCell(15)));
                             inv.addComment(ExcelService.getCellStringValue(row.getCell(16)));
-
 
                             inv.setDeinventoried(font.getStrikeout());
                             excelObjects.add(inv);
@@ -217,7 +260,8 @@ public class ExcelService {
                 .toList();
 
         // Only persist Excel Inventory Items to database, that do not already exist
-        Set<Integer> existingInventoryNumbers = inventoryRepository.findInventoriesIdIn(excelObjects.stream().map(InventoryExcel::getInventoryNumber).toList());
+        Set<Integer> existingInventoryNumbers = inventoryRepository
+                .findInventoriesIdIn(excelObjects.stream().map(InventoryExcel::getInventoryNumber).toList());
         excelObjects = excelObjects.stream()
                 .filter(obj -> !existingInventoryNumbers.contains(obj.getInventoryNumber()))
                 .toList();
@@ -229,13 +273,11 @@ public class ExcelService {
                 .filter(costCenter -> !costCenter.contains("*"))
                 .collect(Collectors.toSet());
 
-
         // Parse each User of Inventory Excel collection
         Set<String> excelUsers = excelObjects.stream()
                 .map(InventoryExcel::getOrderer)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-
 
         // Parse each company of Inventory Excel collection
         Set<String> excelCompanies = excelObjects.stream()
@@ -243,39 +285,40 @@ public class ExcelService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-
         // Parse each comment of Inventory Excel collection
         Map<Integer, List<String>> excelComments = excelObjects.stream()
-                .filter(obj -> obj.getComments() != null)  // Make sure comments are not null
+                .filter(obj -> obj.getComments() != null) // Make sure comments are not null
                 .collect(Collectors.groupingBy(
-                        InventoryExcel::getInventoryNumber,  // Group by inventory number
+                        InventoryExcel::getInventoryNumber, // Group by inventory number
                         Collectors.flatMapping(
-                                obj -> obj.getComments().stream().filter(Objects::nonNull),  // Flatten the list of comments
-                                Collectors.toList()  // Collect the comments into a list
-                        )
-                ));
-
+                                obj -> obj.getComments().stream().filter(Objects::nonNull), // Flatten the list of
+                                                                                            // comments
+                                Collectors.toList() // Collect the comments into a list
+                        )));
 
         // 1. Get all <entity> of Excel Inventory Objects, remove duplicates & null ones
-        // 2. Get all <entity>, that are in the excel sheet, off of the database if they exist there
+        // 2. Get all <entity>, that are in the excel sheet, off of the database if they
+        // exist there
         // 3. Subtract database <entity> from excel <entity> and persist excel <entity>
         // 4. Get newly persisted <entity> from the database
-        // 5. Merge excel and newly persisted <entity> in one collection, so Inventory Item can use it for lookup
-
+        // 5. Merge excel and newly persisted <entity> in one collection, so Inventory
+        // Item can use it for lookup
 
         // Get all costCenters of the excel Sheet that already exist in the database
         List<CostCenter> existingCostCenters = costCentersRepository.findByDescriptionIn(excelCostCenters);
         // Remove the already existing costCenters from the excel's costCenters
         excelCostCenters.removeAll(existingCostCenters.stream().map(CostCenter::getDescription).toList());
-        // Persist the now remaining excel sheets costCenters (all costCenters that are new and do not already exist in the DB)
+        // Persist the now remaining excel sheets costCenters (all costCenters that are
+        // new and do not already exist in the DB)
         // to the database;
-        List<CostCenter> costCenters = costCentersRepository.saveAll(excelCostCenters.stream().map(CostCenter::new).toList());
-        // finally merge the excel sheet costCenters (that were just persisted) and the database costCenters (that already existed)
+        List<CostCenter> costCenters = costCentersRepository
+                .saveAll(excelCostCenters.stream().map(CostCenter::new).toList());
+        // finally merge the excel sheet costCenters (that were just persisted) and the
+        // database costCenters (that already existed)
         // and put them in a map for fast & easy access
         Map<String, CostCenter> costCentersMap = new HashMap<>();
         existingCostCenters.forEach(cc -> costCentersMap.put(cc.getDescription(), cc));
         costCenters.forEach(cc -> costCentersMap.put(cc.getDescription(), cc));
-
 
         List<User> existingUsers = userRepository.findByNameIn(excelUsers);
         excelUsers.removeAll(existingUsers.stream().map(User::getName).toList());
@@ -284,14 +327,12 @@ public class ExcelService {
         existingUsers.forEach(u -> usersMap.put(u.getName(), u));
         users.forEach(u -> usersMap.put(u.getName(), u));
 
-
         List<Company> existingCompanies = companyRepository.findByNameIn(excelCompanies);
         excelCompanies.removeAll(existingCompanies.stream().map(Company::getName).toList());
         List<Company> companies = companyRepository.saveAll(excelCompanies.stream().map(Company::new).toList());
         Map<String, Company> companiesMap = new HashMap<>();
         existingCompanies.forEach(c -> companiesMap.put(c.getName(), c));
         companies.forEach(c -> companiesMap.put(c.getName(), c));
-
 
         // Put Inventory Items to a map, for easier access when creating comments
         Map<Integer, Inventory> inventory = new HashMap<>();
@@ -311,7 +352,6 @@ public class ExcelService {
         });
         inventoryRepository.saveAll(inventory.values());
 
-
         List<com.hs_esslingen.insy.model.Comment> comments = new ArrayList<>();
         excelComments.forEach((invNumber, commentsList) -> {
             Inventory inv = inventory.get(invNumber);
@@ -327,9 +367,16 @@ public class ExcelService {
 
     }
 
-
+    /**
+     * Parses the value of a cell as a String.
+     *
+     * @param cell the cell to parse
+     * @return the String value of the cell, or null if the cell is blank or not a
+     *         String
+     */
     static String getCellStringValue(Cell cell) {
-        if (cell == null || cell.getCellType() == CellType.BLANK) return null;
+        if (cell == null || cell.getCellType() == CellType.BLANK)
+            return null;
 
         switch (cell.getCellType()) {
             case STRING:
@@ -341,9 +388,16 @@ public class ExcelService {
         }
     }
 
-
+    /**
+     * Parses the value of a cell as an Integer.
+     *
+     * @param cell the cell to parse
+     * @return the Integer value of the cell, or null if the cell is blank or not a
+     *         valid Integer
+     */
     static Integer getCellIntegerValue(Cell cell) {
-        if (cell == null || cell.getCellType() == CellType.BLANK) return null;
+        if (cell == null || cell.getCellType() == CellType.BLANK)
+            return null;
         switch (cell.getCellType()) {
             case NUMERIC:
                 return (int) cell.getNumericCellValue();
@@ -354,9 +408,16 @@ public class ExcelService {
         }
     }
 
-
+    /**
+     * Parses the value of a cell as a Double.
+     *
+     * @param cell the cell to parse
+     * @return the Double value of the cell, or null if the cell is blank or not a
+     *         valid Double
+     */
     static Double getCellDoubleValue(Cell cell) {
-        if (cell == null || cell.getCellType() == CellType.BLANK) return null;
+        if (cell == null || cell.getCellType() == CellType.BLANK)
+            return null;
         switch (cell.getCellType()) {
             case NUMERIC:
                 return cell.getNumericCellValue();
@@ -367,10 +428,18 @@ public class ExcelService {
         }
     }
 
-
+    /**
+     * Parses the value of a cell as an Integer, specifically for formula cells.
+     *
+     * @param cell the cell to parse
+     * @return the Integer value of the cell if it is a formula or numeric cell, or
+     *         null if the cell is blank or not a valid Integer
+     */
     static Integer getCellFormularValue(Cell cell) {
-        if(cell == null || cell.getCellType() == CellType.BLANK) return null;
-        if(cell.getCellType() == CellType.FORMULA && cell.getCachedFormulaResultType() == CellType.STRING) return null;
+        if (cell == null || cell.getCellType() == CellType.BLANK)
+            return null;
+        if (cell.getCellType() == CellType.FORMULA && cell.getCachedFormulaResultType() == CellType.STRING)
+            return null;
 
         switch (cell.getCellType()) {
             case FORMULA, NUMERIC:
@@ -380,24 +449,39 @@ public class ExcelService {
         }
     }
 
-
+    /**
+     * Parses the value of a cell as a LocalDateTime.
+     *
+     * @param cell the cell to parse
+     * @return the LocalDateTime value of the cell, or null if the cell is blank or
+     *         not a valid date
+     */
     static LocalDateTime getCellLocalDateValue(Cell cell) {
-        if (cell == null || cell.getCellType() == CellType.BLANK) return null;
+        if (cell == null || cell.getCellType() == CellType.BLANK)
+            return null;
         return cell.getLocalDateTimeCellValue();
     }
 
-
-    static boolean isYearBetweenXAndY(String sheetname, Integer yearX, Integer yearY){
-        if(sheetname.length() != 4) return false;
-        try{
+    /**
+     * Checks if the sheet name is a valid year between X and Y.
+     *
+     * @param sheetname the name of the sheet
+     * @param yearX     the lower bound year
+     * @param yearY     the upper bound year
+     * @return true if the sheet name is a valid year between X and Y, false
+     *         otherwise
+     */
+    static boolean isYearBetweenXAndY(String sheetname, Integer yearX, Integer yearY) {
+        if (sheetname.length() != 4)
+            return false;
+        try {
             Integer.parseInt(sheetname);
-            if(Integer.parseInt(sheetname) < yearX || Integer.parseInt(sheetname) > yearY) return false;
+            if (Integer.parseInt(sheetname) < yearX || Integer.parseInt(sheetname) > yearY)
+                return false;
             return true;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return false;
         }
     }
-
-
 
 }

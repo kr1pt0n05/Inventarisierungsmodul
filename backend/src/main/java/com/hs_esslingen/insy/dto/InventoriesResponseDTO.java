@@ -25,13 +25,15 @@ public class InventoriesResponseDTO {
     @JsonProperty("serial_number")
     private String serialNumber;
 
+    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "#0.00", locale =
+    // "de_DE")
     private BigDecimal price;
 
     private String location;
 
     @JsonProperty("cost_center")
     private String costCenter;
-    
+
     private String company;
 
     private String orderer;

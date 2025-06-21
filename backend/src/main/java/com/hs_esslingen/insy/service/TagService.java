@@ -29,11 +29,26 @@ public class TagService {
     private final InventoryRepository inventoryRepository;
     private final TagMapper tagMapper;
 
+    /**
+     * Retrieves all tags from the repository and returns them as a paginated list
+     * of
+     * TagDTOs.
+     *
+     * @param pageable the pagination information
+     * @return a Page of TagDTOs containing all tags
+     */
     public Page<TagDTO> getAllTags(Pageable pageable) {
         Page<Tag> tagsPage = tagRepository.findAll(pageable);
         return tagsPage.map(tagMapper::toDto);
     }
 
+    /**
+     * Retrieves a tag by its ID.
+     *
+     * @param id the ID of the tag to be retrieved
+     * @return a TagDTO containing the tag details
+     * @throws NotFoundException if the tag with the given ID does not exist
+     */
     public TagDTO getTagById(Integer id) {
         Optional<Tag> tag = tagRepository.findById(id);
 
@@ -44,6 +59,13 @@ public class TagService {
         return tagMapper.toDto(tag.get());
     }
 
+    /**
+     * Creates a new tag with the provided details.
+     *
+     * @param tagDTO the DTO containing the tag details
+     * @return the created TagDTO
+     * @throws BadRequestException if a tag with the same name already exists
+     */
     public TagDTO createTag(TagDTO tagDTO) {
         // Check if tag with same name already exists
         Optional<Tag> existingTag = tagRepository.findByName(tagDTO.getName());
@@ -59,6 +81,14 @@ public class TagService {
         return tagMapper.toDto(savedTag);
     }
 
+    /**
+     * Updates an existing tag with the provided details.
+     *
+     * @param id     the ID of the tag to be updated
+     * @param tagDTO the DTO containing the updated tag details
+     * @return the updated TagDTO
+     * @throws NotFoundException if the tag with the given ID does not exist
+     */
     @Transactional
     public void deleteTag(Integer id) {
         Optional<Tag> tag = tagRepository.findById(id);
@@ -70,6 +100,13 @@ public class TagService {
         tagRepository.deleteById(id);
     }
 
+    /**
+     * Retrieves all tags associated with a specific inventory item.
+     *
+     * @param inventoryId the ID of the inventory item
+     * @return a list of TagDTOs associated with the inventory item
+     * @throws NotFoundException if the inventory with the given ID does not exist
+     */
     public List<TagDTO> getTagsByInventoryId(Integer inventoryId) {
         Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
 
@@ -86,8 +123,13 @@ public class TagService {
                 .collect(Collectors.toList());
     }
 
-    // Adds tags to an inventory item. If the inventory item does not exist, it
-    // throws a BadRequest exception.
+    /**
+     * Adds tags to an inventory item.
+     *
+     * @param inventoryId the ID of the inventory item
+     * @param tagIds      a list of tag IDs to be added
+     * @throws NotFoundException if the inventory or any of the tags do not exist
+     */
     @Transactional
     public void addTagsToInventory(Integer inventoryId, List<Integer> tagIds) {
         Inventory inventory = inventoryRepository.findById(inventoryId)
@@ -106,6 +148,14 @@ public class TagService {
         inventoryRepository.save(inventory);
     }
 
+    /**
+     * Removes a tag from an inventory item.
+     *
+     * @param inventoryId the ID of the inventory item
+     * @param tagId       the ID of the tag to be removed
+     * @throws NotFoundException   if the inventory or the tag does not exist
+     * @throws BadRequestException if the tag is not assigned to the inventory item
+     */
     @Transactional
     public void removeTagFromInventory(Integer inventoryId, Integer tagId) {
         Inventory inventory = inventoryRepository.findById(inventoryId)

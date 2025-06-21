@@ -67,7 +67,7 @@ public class Inventory {
     @Column(nullable = true)
     private String location;
 
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String searchText;
 
     @Column(name = "created_at", nullable = false)

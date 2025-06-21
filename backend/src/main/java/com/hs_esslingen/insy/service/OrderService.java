@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import com.hs_esslingen.insy.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.hs_esslingen.insy.dto.ItemCreateDTO;
 import com.hs_esslingen.insy.dto.OrderCreateDTO;
 import com.hs_esslingen.insy.dto.OrderResponseDTO;
+import com.hs_esslingen.insy.exception.NotFoundException;
 import com.hs_esslingen.insy.mapper.OrderMapper;
 import com.hs_esslingen.insy.model.Article;
 import com.hs_esslingen.insy.model.Order;
@@ -144,6 +144,11 @@ public class OrderService {
         return orderRepository.findById(orderId);
     }
 
+    /**
+     * Retrieves all orders from the repository, ordered by their creation date.
+     *
+     * @return a list of all orders wrapped in a ResponseEntity
+     */
     public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
         List<Order> allOrders = orderRepository.findAllOrderedByCreatedAt();
         List<OrderResponseDTO> dtos = allOrders.stream()

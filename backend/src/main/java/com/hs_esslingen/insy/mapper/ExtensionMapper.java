@@ -8,6 +8,10 @@ import com.hs_esslingen.insy.dto.ExtensionCreateDTO;
 import com.hs_esslingen.insy.dto.ExtensionResponseDTO;
 import com.hs_esslingen.insy.model.Extension;
 
+/**
+ * Mapper interface for converting between Extension entities and DTOs.
+ * It uses MapStruct to generate the implementation at compile time.
+ */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ExtensionMapper {
 

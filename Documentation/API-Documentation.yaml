@@ -156,6 +156,18 @@ paths:
             format: date
             example: '2024-12-31'
           description: Filtert Inventories, die **vor** diesem Datum erstellt wurden (inklusive 23:59:59).
+        - name: searchText
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 'gedankenfabrikgmbh'
+          description: >
+            Führt eine Volltextsuche in verschiedenen Attributen eines Inventars durch, einschließlich 
+            description, serialNumber, location, company.name, costCenter.description und user.name. 
+            Zusätzlich werden auch die Felder description und company.name der zugehörigen Erweiterungen (extensions) berücksichtigt. 
+            Der eingegebene Text wird dabei normalisiert, indem Leerzeichen entfernt und alle Zeichen in Kleinbuchstaben umgewandelt werden.
+
       responses:
         '200':
           description: A list of items

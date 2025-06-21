@@ -1,11 +1,18 @@
 package com.hs_esslingen.insy.exception;
 
-import com.hs_esslingen.insy.dto.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.hs_esslingen.insy.dto.ErrorResponseDTO;
+
+/**
+ * Global exception handler for handling various exceptions in the application.
+ * This class intercepts exceptions thrown by controllers and returns
+ * appropriate
+ * HTTP responses with error messages.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

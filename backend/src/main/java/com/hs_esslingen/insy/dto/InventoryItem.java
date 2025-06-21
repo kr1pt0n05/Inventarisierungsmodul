@@ -2,6 +2,12 @@ package com.hs_esslingen.insy.dto;
 
 import com.opencsv.bean.CsvBindByName;
 
+/**
+ * Represents an inventory item with various attributes such as cost center,
+ * inventory number, quantity, description, company, price, date, serial number,
+ * location, orderer, and comments.
+ * This class is used for mapping CSV data to Java objects using OpenCSV.
+ */
 public class InventoryItem {
 
     @CsvBindByName(column = "Kst / Lab")
@@ -43,11 +49,13 @@ public class InventoryItem {
 
     @Override
     public String toString() {
-        return
-                "Kostenstelle: " + costCenter + " InventarNr.: " + inventoryNumber + " Anzahl: " + quantity + " Gerätetyp/Software: " + description + " Firma: " + company + " Preis: " + price + " Datum: " + date + " Seriennummer: " + serialNumber + " Standort/Nutzer: " + location + " Besteller: " + orderer;
+        return "Kostenstelle: " + costCenter + " InventarNr.: " + inventoryNumber + " Anzahl: " + quantity
+                + " Gerätetyp/Software: " + description + " Firma: " + company + " Preis: " + price + " Datum: " + date
+                + " Seriennummer: " + serialNumber + " Standort/Nutzer: " + location + " Besteller: " + orderer;
     }
 
-    public InventoryItem(String costCenter, String inventoryNumber, String quantity, String description, String company, String price, String date, String serialNumber, String location, String orderer, String comment) {
+    public InventoryItem(String costCenter, String inventoryNumber, String quantity, String description, String company,
+            String price, String date, String serialNumber, String location, String orderer, String comment) {
         this.costCenter = costCenter;
         this.inventoryNumber = inventoryNumber;
         this.quantity = quantity;
