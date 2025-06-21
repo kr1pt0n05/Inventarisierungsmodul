@@ -58,13 +58,6 @@
         } @else {
         <!-- Inventory Selection Section -->
         <div card-content class="grid grid-cols-1 gap-2 pt-4">
-            <div class="flex flex-wrap items-center gap-4">
-                <mat-form-field>
-                    <mat-label>Inventarisierung</mat-label>
-                    <input matInput [formControl]="inventoryIdControl" placeholder="Inventarisierung auswählen" />
-                    <button mat-button color="primary" (click)="onSelectInventory()">Auswählen</button>
-                </mat-form-field>
-            </div>
             <app-inventory-list (onClickItem)="onSelectInventory($event)" />
         </div>
         }

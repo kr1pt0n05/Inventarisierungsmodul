@@ -91,10 +91,6 @@ export class ExtensionInventorizationComponent {
     Array.from(extensionDisplayNames.keys()).map(key => [key, new FormControl('')])
   );
   /**
-   * FormControl for the inventoryId selection.
-   */
-  inventoryIdControl = new FormControl('');
-  /**
    * FormGroup containing all form controls for validation and value tracking.
    */
   formGroup = new FormGroup(Object.fromEntries(
@@ -166,12 +162,8 @@ export class ExtensionInventorizationComponent {
    * Called when the user selects an inventory item by ID.
    * Updates the inventoryId and reloads the inventory item.
    */
-  onSelectInventory(id: number | undefined = undefined) {
-    if (id === undefined) {
-      this.inventoryId.set(Number(this.inventoryIdControl.value));
-    } else {
-      this.inventoryId.set(id);
-    }
+  onSelectInventory(id: number) {
+    this.inventoryId.set(id);
     this._onChanges();
   }
 
@@ -184,7 +176,6 @@ export class ExtensionInventorizationComponent {
   resetSelectedInventory() {
     this.inventoryId.set(undefined);
     this.inventoryItem = {} as InventoryItem;
-    this.inventoryIdControl.setValue('');
     this._onChanges();
   }
 
@@ -204,7 +195,6 @@ export class ExtensionInventorizationComponent {
   onInventorization() {
     const currentId = this.inventoryId();
     if (currentId !== undefined && this.isValid()) {
-      this._notify('Inventorization completed', 'success');
       if (this.isNewExtension()) {
         this._saveNewExtension(currentId);
       } else {
@@ -355,7 +345,7 @@ export class ExtensionInventorizationComponent {
     } as unknown as Article;
     this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
       next: (updatedArticle) => {
-        this._notify('Article updated successfully', 'success');
+        console.log('Article updated successfully');
       },
       error: (error) => {
         this._notify('Error updating article', 'error', error);
@@ -381,8 +371,8 @@ export class ExtensionInventorizationComponent {
         const extensionId = this.extension().id!;
         this.inventoriesService.deleteExtensionFromId(id, extensionId).subscribe({
           next: () => {
-            this.router.navigate(['/inventory', id]);
             this._notify('Extension deleted successfully', 'success');
+            this.router.navigate(['/inventory', id]);
           },
           error: (error) => {
             this._notify('Error deinventorizing inventory item', 'error', error);
