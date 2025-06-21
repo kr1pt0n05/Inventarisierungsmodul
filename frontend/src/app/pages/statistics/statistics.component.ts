@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from "@angular/common";
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { environment } from '../../../environment';
 
 /**
  * Interface representing user order statistics.
@@ -40,7 +41,7 @@ export class StatisticsComponent implements OnInit {
    */
   legendColors: string[] = ['#001f4d', '#1f3d7a', '#4a6bb3', '#7c98d4', '#aac4e7'];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Angular lifecycle hook.
@@ -61,29 +62,28 @@ export class StatisticsComponent implements OnInit {
       totalOrders: number;
       totalPrice: number;
       names: UserOrder[];
-    }[]>('http://localhost:8080/statistics')
-        .subscribe({
-          next: (data) => {
-            if (data.length > 0) {
-              const stats = data[0];
-              this.totalOrders = stats.totalOrders;
-              this.totalPrice = stats.totalPrice;
+    }[]>(`${environment.apiUrl}statistics`).subscribe({
+      next: (data) => {
+        if (data.length > 0) {
+          const stats = data[0];
+          this.totalOrders = stats.totalOrders;
+          this.totalPrice = stats.totalPrice;
 
-              // Sort by orderPrice in descending order and take top 5
-              this.userOrders = stats.names
-                  .sort((a, b) => b.orderPrice - a.orderPrice)
-                  .slice(0, 5);
+          // Sort by orderPrice in descending order and take top 5
+          this.userOrders = stats.names
+            .sort((a, b) => b.orderPrice - a.orderPrice)
+            .slice(0, 5);
 
-              this.renderChart();
-            }
-          },
-          error: (err) => {
-            console.error('Failed to fetch stats:', err);
-            this.totalOrders = 0;
-            this.totalPrice = 0;
-            this.userOrders = [];
-          }
-        });
+          this.renderChart();
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch stats:', err);
+        this.totalOrders = 0;
+        this.totalPrice = 0;
+        this.userOrders = [];
+      }
+    });
   }
 
   /**
