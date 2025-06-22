@@ -179,7 +179,7 @@ export class InventoryItemEditorComponent {
       });
     }
     this.formControls.get('price')?.setValue(
-      this.formControls.get('price')?.value ? localizePrice(this.formControls.get('price')?.value) : '');
+      localizePrice(this.formControls.get('price')?.value) ?? '');
   }
 
   /**

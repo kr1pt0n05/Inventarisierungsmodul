@@ -230,7 +230,8 @@ public class ExcelService {
 
                             inv.setDescription(ExcelService.getCellStringValue(row.getCell(3)));
                             inv.setCompany(ExcelService.getCellStringValue(row.getCell(4)));
-                            inv.setPrice(ExcelService.getCellDoubleValue(row.getCell(5)));
+                            inv.setPrice(ExcelService.getCellDoubleValue(row.getCell(5)) == null ? 0.0
+                                    : ExcelService.getCellDoubleValue(row.getCell(5)));
                             inv.setCreatedAt(ExcelService.getCellLocalDateValue(row.getCell(6)));
                             inv.setSerialNumber(ExcelService.getCellStringValue(row.getCell(7)));
                             inv.setLocation(ExcelService.getCellStringValue(row.getCell(8)));

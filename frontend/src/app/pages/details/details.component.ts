@@ -129,7 +129,7 @@ export class DetailsComponent {
 
       for (const key of this.inventoryItemColumns.keys()) {
         const value = this.inventoryItem()[key as keyof InventoryItem];
-        this.inventoryItemInternal.set(key, value ? value.toString() : '');
+        this.inventoryItemInternal.set(key, value?.toString() ?? '');
 
         if (key === 'price' && this.calculateTotalExtensionsPrice() > 0) {
           const basePrice = value - this.calculateTotalExtensionsPrice();

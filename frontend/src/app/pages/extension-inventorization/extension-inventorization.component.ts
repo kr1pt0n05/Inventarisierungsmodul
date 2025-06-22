@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { localizePrice } from '../../app.component';
 import { CardComponent } from '../../components/card/card.component';
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
 import { ExtensionEditorComponent } from "../../components/extension-editor/extension-editor.component";
@@ -20,7 +21,6 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { CacheInventoryService } from '../../services/cache-inventory.service';
 import { InventoriesService } from '../../services/inventories.service';
 import { OrderService } from '../../services/order.service';
-
 @Component({
   selector: 'app-extension-inventorization',
   imports: [
@@ -394,6 +394,10 @@ export class ExtensionInventorizationComponent {
     dialogRef.afterClosed().subscribe(result => {
       callback(result);
     });
+  }
+
+  localizePrice(price: number | string): string {
+    return localizePrice(price);
   }
 
 }
