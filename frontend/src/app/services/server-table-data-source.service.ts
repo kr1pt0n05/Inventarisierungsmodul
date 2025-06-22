@@ -267,6 +267,15 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
 
   // This method is used by MatTable to connect to the data source
   connect(collectionViewer: CollectionViewer): Observable<T[]> {
+    const queryParams = this._queryParams.value;
+    this.fetchData(
+      queryParams.currentPage.pageIndex,
+      queryParams.currentPage.pageSize,
+      queryParams.currentSort.active,
+      queryParams.currentSort.direction,
+      queryParams.currentFilter,
+      queryParams.currentSearchText,
+    );
     return this._data;
   }
 

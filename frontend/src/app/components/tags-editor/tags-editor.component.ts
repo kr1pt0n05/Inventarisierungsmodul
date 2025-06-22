@@ -88,7 +88,6 @@ export class TagsEditorComponent {
    * whenever the input properties change.
    */
   ngOnChanges() {
-    console.log('ngOnChanges called');
     this.control().setValue(this.tags().map(tag => tag.name).concat(this.newTags()));
   }
 
