@@ -75,7 +75,10 @@ export class OrdersComponent implements OnInit {
 
   // This will stop the Accordion from expanding when the checkbox is clicked
   // and check or uncheck the clicked check box
-  checkBox(event: MouseEvent, article: any) {
+  checkBox(event: MouseEvent | KeyboardEvent, article: any) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     event.stopPropagation();
     article.checked = !article.checked;
     this.allChecked = this.isAllBoxesChecked();
@@ -126,7 +129,10 @@ export class OrdersComponent implements OnInit {
     return order.articles.every(article => article.checked);
   }
 
-  checkOrder(event: MouseEvent, order: Order) {
+  checkOrder(event: MouseEvent | KeyboardEvent, order: Order) {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
     event.stopPropagation();
     const isChecked = this.isOrderChecked(order);
     order.articles.forEach(article => {

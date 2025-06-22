@@ -1,8 +1,8 @@
-<div class="flex justify-evenly">
+<div class="flex flex-col md:flex-row justify-evenly">
 
 
   <!--   Filter Section START   --->
-  <div class="w-1/5 min-w-3xs">
+  <div class="w-full md:w-1/5 min-w-3xs">
     <app-card title="Ausgewählte Artikel inventarisieren ({{this.checkedCount()}})">
       <div card-content class="space-y-4 mt-4">
 
@@ -27,11 +27,11 @@
   </div>
 
 
-  <div class="w-3/4">
+  <div class="w-full md:w-3/4">
     <app-card title="Zu inventarisierende Artikel ({{numberOfArticles()}})">
-      <div card-content>
+      <div card-content class="overflow-x-auto w-full">
 
-        <div card-content class="flex items-center justify-between space-x-4">
+        <div class="flex items-center justify-between space-x-4">
           <!-- Checkbox aligned to the left -->
 
           <div class="px-2 py-2">
@@ -49,13 +49,14 @@
         @for (order of orders; track order.id) {
         <app-accordion title="{{order.description}} ({{order.articles.length}} Artikel)">
           <div expansion-panel-header class="flex items-center justify-between">
-            <mat-checkbox color="primary" [checked]="isOrderChecked(order)" (click)="checkOrder($event, order)" />
+            <mat-checkbox color="primary" [checked]="isOrderChecked(order)" (click)="checkOrder($event, order)"
+              (keydown)="checkOrder($event, order)" />
           </div>
 
           <div expansion-panel-content class="flex flex-col space-y-2">
             @for (article of order.articles; track article.article_id) {
             <mat-checkbox [color]="checkedArticles.at(0)?.article_id === article.article_id ? 'accent' : 'primary'"
-              (click)="checkBox($event, article)" [checked]="article.checked">
+              (click)="checkBox($event, article)" (keydown)="checkBox($event, article)" [checked]="article.checked">
 
               {{article.description}}, {{article.price}}&nbsp;€, {{article.company}}, {{article.orderer}}
               {{checkedArticles.at(0)?.article_id === article.article_id ? '- Hauptartikel': ''}}

@@ -10,7 +10,7 @@
         </h1>
     </div>
 
-    <div class="flex gap-4">
+    <div class="flex flex-col md:flex-row gap-4">
         @if (!isNewExtension()) {
         <button mat-stroked-button color="warn" (click)="openDeleteDialog()"
             [disabled]="isNewExtension()">Löschen</button>
@@ -43,7 +43,7 @@
 
                 <mat-divider />
 
-                <div class="grid grid-cols-[max-content_1fr] gap-x-16">
+                <div class="grid grid-cols-[max-content_1fr] gap-x-16 overflow-x-auto w-full">
                     @for (field of inventoryItemColumns.keys(); track field) {
                     <div class="p-2">{{inventoryItemColumns.get(field)}}</div>
                     <div class="p-2">{{inventoryItem[field]}}

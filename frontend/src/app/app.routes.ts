@@ -1,20 +1,19 @@
 import { Routes } from '@angular/router';
 import { DetailsComponent } from './pages/details/details.component';
 import { ExtensionInventorizationComponent } from './pages/extension-inventorization/extension-inventorization.component';
-import { HomepageComponent } from './pages/homepage/homepage.component';
+import { ImportComponent } from './pages/import/import.component';
 import { InventorizationComponent } from './pages/inventorization/inventorization.component';
 import { InventoryComponent } from './pages/inventory/inventory.component';
 import { LoginComponent } from './pages/login/login.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { OrdersComponent } from './pages/orders/orders.component';
+import { StatisticsComponent } from './pages/statistics/statistics.component';
 import { InventoryItemChangesResolver } from './resolver/changes.resolver';
 import { CommentsResolver } from './resolver/comments.resolver';
 import { ExtensionResolver } from './resolver/extension.resolver';
 import { ExtensionsResolver } from './resolver/extensions.resolver';
 import { InventoryItemResolver } from './resolver/inventory-item.resolver';
 import { DefaultGuardService } from './services/default-guard.service';
-import {StatisticsComponent} from './pages/statistics/statistics.component';
-import {ImportComponent} from './pages/import/import.component';
 
 
 export const routes: Routes = [
