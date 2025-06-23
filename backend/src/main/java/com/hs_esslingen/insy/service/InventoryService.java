@@ -50,9 +50,9 @@ public class InventoryService {
     private final CompanyService companyService;
     private final TagService tagService;
     private final InventoryMapper inventoriesMapper;
-    private final OrdererService userService;
+    private final UserService userService;
     private final CostCenterService costCenterService;
-    private final OrdererService ordererService;
+    private final UserService ordererService;
     private final HistoryRepository historyRepository;
     private final Javers javers;
 
