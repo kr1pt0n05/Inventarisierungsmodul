@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hs_esslingen.insy.dto.StatisticDTO;
 import com.hs_esslingen.insy.dto.StatisticNameDTO;
 import com.hs_esslingen.insy.exception.InternalServerErrorException;
-import com.hs_esslingen.insy.repository.OrderRepository;
+import com.hs_esslingen.insy.repository.InventoryRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class StatisticService {
 
-    private final OrderRepository orderRepository;
+    private final InventoryRepository inventoryRepository;
+
 
     /**
      * Retrieves order statistics including total orders, total price, and
@@ -32,35 +33,30 @@ public class StatisticService {
      *                                      statistics.
      */
     @Transactional(readOnly = true)
-    public List<StatisticDTO> getOrderStatistics() {
+    public List<StatisticDTO> getInventoryStatistics() {
         try {
+            Long totalInventories = inventoryRepository.countActiveInventories();
+            BigDecimal totalPrice = inventoryRepository.sumActiveInventoryPrices();
 
-            // Fetching total orders and total price
-            Long totalOrders = orderRepository.countActiveOrders();
-            BigDecimal totalPrice = orderRepository.sumActivePrices();
-
-            // Fetching user statistics
-            List<Object[]> userStats = orderRepository.findOrderStatisticsByUser();
+            List<Object[]> userStats = inventoryRepository.findInventoryStatisticsByUser();
 
             List<StatisticNameDTO> statisticNames = userStats.stream()
-                    .map(row -> new StatisticNameDTO(
-                            (String) row[0], // user name
-                            (Long) row[1], // quantity
-                            (BigDecimal) row[2] // order price
-                    ))
-                    .collect(Collectors.toList());
+                .map(row -> new StatisticNameDTO(
+                        (String) row[0],        // user name
+                        (Long) row[1],          // quantity
+                        (BigDecimal) row[2]     // total price
+                ))
+                .collect(Collectors.toList());
 
-            // Creating main statistic
             StatisticDTO mainStatistic = StatisticDTO.builder()
-                    .totalOrders(totalOrders != null ? totalOrders.intValue() : 0)
-                    .totalPrice(totalPrice != null ? totalPrice : BigDecimal.ZERO)
-                    .names(statisticNames)
-                    .build();
+                .totalOrders(totalInventories != null ? totalInventories.intValue() : 0)
+                .totalPrice(totalPrice != null ? totalPrice : BigDecimal.ZERO)
+                .names(statisticNames)
+                .build();
 
             return List.of(mainStatistic);
-
         } catch (Exception e) {
-            throw new InternalServerErrorException("Fehler beim Abrufen der Bestellstatistiken: " + e.getMessage());
+            throw new InternalServerErrorException("Fehler beim Abrufen der Inventarstatistiken: " + e.getMessage());
         }
     }
 }
