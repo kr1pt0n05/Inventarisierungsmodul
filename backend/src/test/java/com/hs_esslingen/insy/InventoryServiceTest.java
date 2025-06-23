@@ -1,21 +1,22 @@
 package com.hs_esslingen.insy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +38,8 @@ import com.hs_esslingen.insy.repository.UserRepository;
 import com.hs_esslingen.insy.service.CompanyService;
 import com.hs_esslingen.insy.service.CostCenterService;
 import com.hs_esslingen.insy.service.InventoryService;
-import com.hs_esslingen.insy.service.OrdererService;
 import com.hs_esslingen.insy.service.TagService;
+import com.hs_esslingen.insy.service.UserService;
 
 class InventoryServiceTest {
 
@@ -67,7 +68,7 @@ class InventoryServiceTest {
     private CompanyService companyService;
 
     @Mock
-    private OrdererService ordererService;
+    private UserService ordererService;
 
     @Mock
     private TagService tagService;
@@ -136,10 +137,10 @@ class InventoryServiceTest {
         dto.setSerialNumber("ABC123");
         dto.setPrice(new BigDecimal("999.99"));
         dto.setLocation("Raum 101");
-        dto.setTags(List.of(1)); 
+        dto.setTags(List.of(1));
 
         when(inventoryRepository.existsById(123)).thenReturn(false);
-        
+
         // Mock des Verhalten der Service-Klassen
         when(costCenterService.resolveCostCenter("IT")).thenReturn(new CostCenter("IT"));
         when(companyService.resolveCompany("HS-Esslingen")).thenReturn(new Company("HS-Esslingen"));

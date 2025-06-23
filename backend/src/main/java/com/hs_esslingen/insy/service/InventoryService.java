@@ -50,7 +50,7 @@ public class InventoryService {
     private final CompanyService companyService;
     private final TagService tagService;
     private final InventoryMapper inventoriesMapper;
-    private final OrdererService userService;
+    private final UserService userService;
     private final CostCenterService costCenterService;
     private final HistoryRepository historyRepository;
     private final Javers javers;
@@ -344,6 +344,10 @@ public class InventoryService {
         // Inventory after change
         InventoryCreateRequestDTO inventoryNew = InventoryService.mapInventoryToDto(updatedInventory);
 
+        Object userNameRaw = patchData.get("user_name");
+        User author = userService.resolveUser(
+                userNameRaw instanceof String userName && !userName.isBlank() ? userName : "Unknown");
+
         // Store the changes to History entity
         List<History> historyList = new ArrayList<>();
         Diff diff = javers.compare(inventoryOld, inventoryNew);
@@ -354,7 +358,7 @@ public class InventoryService {
             Object after = change.getRight();
 
             History history = new History();
-            history.setAuthor(inventory.getUser()); // Replace this with user from JWT token
+            history.setAuthor(author); // Replace this with user from JWT token
             history.setAttributeChanged(property);
             history.setValueFrom(before == null ? "null" : before.toString());
             history.setValueTo(after.toString());

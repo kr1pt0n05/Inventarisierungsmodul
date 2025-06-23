@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrdererDTO {
+public class UserDTO {
     private List<String> orderers;
 }

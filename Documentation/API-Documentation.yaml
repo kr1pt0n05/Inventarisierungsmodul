@@ -277,6 +277,7 @@ paths:
             - inventories_location
             - orderer
             - tags (muss ein array sein!)
+            - user_name (der Name des Benutzers, der den Gegenstand bearbeitet)
         content:
           application/json:
             schema:
@@ -1438,6 +1439,10 @@ components:
           type: string
           description: Name des Felds, das geändert werden soll (z.B. "cost_center", "inventories_price", "tags")
           example: Teständerung
+        user_name: 
+          type: string
+          description: User, der die Änderung vorgenommen hat
+          example: Peter Müller
         tags:
           description: Neuer Wert für das Feld
           example:
