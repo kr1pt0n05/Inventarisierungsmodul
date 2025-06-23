@@ -4,6 +4,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
   provideHttpClient,
   withFetch,
+  withInterceptorsFromDi
 } from '@angular/common/http';
 import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { AuthConfig, provideOAuthClient } from 'angular-oauth2-oidc';
@@ -17,10 +18,11 @@ export const appConfig: ApplicationConfig = {
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
     provideHttpClient(
       withFetch(),
+      withInterceptorsFromDi(),
     ),
     provideOAuthClient({
       resourceServer: {
-        allowedUrls: ['http://localhost:8080', 'http://http://insy.hs-esslingen.com'],
+        allowedUrls: ['http://localhost:8080', 'https://http://insy.hs-esslingen.com'],
         sendAccessToken: true,
       }
     })
