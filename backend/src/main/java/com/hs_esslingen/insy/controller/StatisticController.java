@@ -19,7 +19,7 @@ public class StatisticController {
     
     @GetMapping("/statistics")
     public ResponseEntity<List<StatisticDTO>> getStatistics() {
-        List<StatisticDTO> statistics = statisticService.getOrderStatistics();
+        List<StatisticDTO> statistics = statisticService.getInventoryStatistics();
         return ResponseEntity.ok(statistics);
     }
 }
