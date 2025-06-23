@@ -196,7 +196,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InventoriesCreateDTO'
+              $ref: '#/components/schemas/InventoriesCreateRequestDTO'
         required: true
       responses:
         '201':
@@ -691,7 +691,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommentRequest'
+                $ref: '#/components/schemas/CommentDTO'
         '400':
           description: 'Error 400: Bad Request'
           content:
@@ -724,14 +724,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommentRequest'
+              $ref: '#/components/schemas/CommentDTO'
       responses:
         '201':
           description: Kommentar wurde erfolgreich erstellt
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommentRequest'
+                $ref: '#/components/schemas/CommentDTO'
         '400':
           description: 'Error 400: Bad Request'
           content:
@@ -902,7 +902,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Statistic'
+                  $ref: '#/components/schemas/StatisticDTO'
         '400':
           description: 'Error 400: Bad Request'
           content:
@@ -1324,10 +1324,10 @@ tags:
     description: Download inventory data in Excel format
 components:
   schemas:
-    InventoriesCreateDTO:
+    InventoriesCreateRequestDTO:
       type: object
       properties:
-        cost_center:
+        costCenter:
           type: string
           example: 723458320Z
         id:
@@ -1512,7 +1512,7 @@ components:
         price:
           type: number
           example: 357.23
-    CommentRequest:
+    CommentDTO:
       type: object
       properties:
         comments_id:
@@ -1565,13 +1565,13 @@ components:
         author:
           format: string
           example: Peter
-    Statistic:
+    StatisticDTO:
       type: object
       properties:
-        total_orders:
+        totalOrders:
           type: integer
           example: 53
-        total_price:
+        totalPrice:
           type: number
           format: float
           example: 12345.67
@@ -1586,7 +1586,7 @@ components:
               quantity:
                 type: integer
                 example: 23
-              order_price:
+              orderPrice:
                 type: number
                 format: float
                 example: 1234.56
