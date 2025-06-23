@@ -5,7 +5,7 @@
             <h1 class="font-semibold text-2xl">{{inventoryItem().description}}</h1>
 
             <div class="flex items-center gap-2">
-                <h2 class="mr-4"># {{inventoryItem().id}}</h2>
+                <h2 class="mr-4">#&nbsp;{{inventoryItem().id}}</h2>
                 @if (tags.length > 0) {
                 <div class="flex flex-wrap gap-2">
                     @for (tag of tags; track tag) {
