@@ -23,7 +23,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
                     // Change to "http://localhost:4200" for local development
-                    corsConfiguration.addAllowedOrigin("https://insy.hs-esslingen.com");
+                    corsConfiguration
+                            .setAllowedOrigins(Arrays.asList("https://insy.hs-esslingen.com", "http://localhost:4200"));
                     corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
                     corsConfiguration.addAllowedHeader("*");
                     return corsConfiguration;

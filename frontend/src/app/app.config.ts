@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideOAuthClient({
       resourceServer: {
-        allowedUrls: ['http://localhost:8080', 'https://http://insy.hs-esslingen.com'],
+        allowedUrls: ['http://localhost:8080', 'https://api.insy.hs-esslingen.com'],
         sendAccessToken: true,
       }
     })
