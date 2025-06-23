@@ -99,8 +99,8 @@ export class TagsEditorComponent {
   remove(element: string): void {
     this.control().setValue(this.control().value!.filter(v => v.toLowerCase() !== element.toLowerCase()));
 
-    if (this.newTags().includes(element.toLowerCase())) {
-      this.newTags.update(tags => tags.filter(tag => tag.toLowerCase() !== element.toLowerCase()));
+    if (this.newTags().includes(element)) {
+      this.newTags.update(tags => tags.filter(tag => tag !== element));
     }
 
     this.tags.set(this.availableTags().filter(tag => this.control().value!.includes(tag.name)));
@@ -163,7 +163,7 @@ export class TagsEditorComponent {
       return;
     }
 
-    if (!this.control().value!.includes(newTag.toLowerCase())) {
+    if (!this.control().value!.includes(newTag)) {
       this.control().setValue([...this.control().value!, newTag]);
       this.newTags.update(tags => [...tags, newTag]);
     } else {
