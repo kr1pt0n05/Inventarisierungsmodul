@@ -105,7 +105,8 @@ export class InventoriesService {
    * @returns {Observable<InventoryItem>} - An observable that completes when the update is successful.
    */
   updateInventoryById(id: number, item: Partial<InventoryItem>): Observable<InventoryItem> {
-    return this.http.patch<InventoryItem>(`${this.url}/${id}`, { ...item, user_name: this.authService.getUsername() !== '' ? this.authService.getUsername() : null });
+    const username = this.authService.getUsername();
+    return this.http.patch<InventoryItem>(`${this.url}/${id}`, { ...item, user_name: username !== '' ? username : null });
   }
 
   /**
