@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,7 +37,8 @@ public class SecurityConfig {
                     return corsConfiguration;
                 }))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/orders").hasAnyRole("SYSTEM") // Only allow BeSy to create orders
+                        .requestMatchers(HttpMethod.POST, "/orders").hasAnyRole("SYSTEM") // Only allow BeSy to create
+                                                                                          // orders
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults()) // Enable HTTP Basic authentication for BeSy-API
                 .oauth2ResourceServer(oauth2 -> oauth2
