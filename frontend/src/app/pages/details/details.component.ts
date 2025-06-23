@@ -176,7 +176,6 @@ export class DetailsComponent {
   onPanelChange(event: boolean, panelId: string): void {
     if (panelId === 'changes') {
       this.numberOfPanelChanges++;
-      console.log(`Panel ${panelId} has been changed ${this.numberOfPanelChanges} times.`);
       switch (this.numberOfPanelChanges) {
         case 40:
           document.body.style.backgroundColor = 'fuchsia';

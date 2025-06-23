@@ -1,28 +1,36 @@
 <body class="bg-white text-gray-800 flex flex-col min-h-screen overflow-hidden">
-<!-- Hero section that fills remaining space -->
-<main class="flex-grow relative flex items-center justify-center overflow-hidden">
+  <!-- Hero section that fills remaining space -->
+  <main class="flex-grow relative flex items-center justify-center overflow-hidden">
 
-  <!-- Blurry background -->
-  <div class="absolute left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-blue-400 to-blue-600 opacity-20 blur-3xl sm:left-[calc(50%-30rem)] sm:w-[72.1875rem] z-0"></div>
+    <!-- Blurry background -->
+    <div
+      class="absolute left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-blue-400 to-blue-600 opacity-20 blur-3xl sm:left-[calc(50%-30rem)] sm:w-[72.1875rem] z-0">
+    </div>
 
-  <!-- Hero content with limited width -->
-  <div class="text-center px-4 z-10 max-w-3xl mx-auto">
-    <h1 class="text-5xl md:text-6xl font-bold mb-4 text-gray-900">
-      Willkommen zu INSY!
-    </h1>
-    <p class="text-lg md:text-xl mb-8 text-gray-600">
-      Also gut, hier fängt der Text an, obwohl noch niemand so genau weiß, worum es eigentlich gehen soll. Wahrscheinlich um irgendwas mit Design oder Konzept oder Synergien, dieses Wort klingt immer wichtig. An dieser Stelle hatte ich eigentlich eine brillante Idee, aber dann kam der Kaffee dazwischen.
-      <br><br>
-      Weiter geht’s mit einem Absatz, der vor allem dafür da ist, den Platz zu füllen und dem Leser das Gefühl zu geben, hier passiere gleich was Spannendes. Spoiler: Tut es nicht.
-      <br><br>
-      Jetzt kommen wir zum berühmten Abschnitt, in dem ich ehrlich gestehe, dass mir die Wörter langsam ausgehen. Ich tippe einfach weiter, in der Hoffnung, dass mein zukünftiges Ich das hier nie zu Gesicht bekommt.
-      <br><br>
-      Ja und an der Stelle hier sind uns die Ideen ausgegangen, deswegen habe ich mir irgendwas Unkreatives zusammengedichtet, hilfeeeeee... Lorem irgendwas, Ipsum Dingsbums, und bitte niemand fragen, was „Dolor sit amet“ eigentlich bedeutet.
-    </p>
-    <a (click)="authService.login()" class="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow hover:bg-blue-700 transition">
-      Login
-    </a>
-  </div>
+    <!-- Hero content with limited width -->
+    <div class="text-center px-4 z-10 max-w-3xl mx-auto">
+      <h1 class="text-5xl md:text-6xl font-bold mb-4 text-he-red">
+        Willkommen zu INSY!
+      </h1>
+      <p class="text-lg md:text-xl mb-8 text-gray-600">
+        Also gut, hier fängt der Text an, obwohl noch niemand so genau weiß, worum es eigentlich gehen soll.
+        Wahrscheinlich um irgendwas mit Design oder Konzept oder Synergien, dieses Wort klingt immer wichtig. An dieser
+        Stelle hatte ich eigentlich eine brillante Idee, aber dann kam der Kaffee dazwischen.
+        <br><br>
+        Weiter geht’s mit einem Absatz, der vor allem dafür da ist, den Platz zu füllen und dem Leser das Gefühl zu
+        geben, hier passiere gleich was Spannendes. Spoiler: Tut es nicht.
+        <br><br>
+        Jetzt kommen wir zum berühmten Abschnitt, in dem ich ehrlich gestehe, dass mir die Wörter langsam ausgehen. Ich
+        tippe einfach weiter, in der Hoffnung, dass mein zukünftiges Ich das hier nie zu Gesicht bekommt.
+        <br><br>
+        Ja und an der Stelle hier sind uns die Ideen ausgegangen, deswegen habe ich mir irgendwas Unkreatives
+        zusammengedichtet, hilfeeeeee... Lorem irgendwas, Ipsum Dingsbums, und bitte niemand fragen, was „Dolor sit
+        amet“ eigentlich bedeutet.
+      </p>
+      <a mat-raised-button color="primary" (click)="authService.login()">
+        Login
+      </a>
+    </div>
 
-</main>
+  </main>
 </body>
