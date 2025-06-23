@@ -171,6 +171,29 @@ export class DetailsComponent {
     return sum;
   }
 
+
+  numberOfPanelChanges: number = -1;
+  onPanelChange(event: boolean, panelId: string): void {
+    if (panelId === 'changes') {
+      this.numberOfPanelChanges++;
+      console.log(`Panel ${panelId} has been changed ${this.numberOfPanelChanges} times.`);
+      switch (this.numberOfPanelChanges) {
+        case 40:
+          document.body.style.backgroundColor = 'fuchsia';
+          break;
+        case 45:
+          document.body.style.backgroundColor = 'lime';
+          break;
+        case 50:
+          document.body.style.backgroundColor = 'yellow';
+          break;
+        case 60:
+          window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ?autoplay=1';
+          break;
+      }
+    }
+  }
+
 }
 
 // Defines the table and column display names for the change history entries

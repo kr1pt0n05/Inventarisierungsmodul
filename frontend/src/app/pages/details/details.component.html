@@ -35,7 +35,7 @@
 
     <!-- Additional Data -->
     @for (id of panelIdNameMap.keys(); track id) {
-    <mat-expansion-panel #Panels>
+    <mat-expansion-panel #Panels (expandedChange)="onPanelChange($event, id)">
         <mat-expansion-panel-header>
             <mat-panel-title class="text-xl">{{panelIdNameMap.get(id)}}</mat-panel-title>
             @if (id === 'extensions') {
