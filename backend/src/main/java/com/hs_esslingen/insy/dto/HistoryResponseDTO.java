@@ -2,6 +2,7 @@ package com.hs_esslingen.insy.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,5 +24,6 @@ public class HistoryResponseDTO {
 
     private String valueTo;
 
+    @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdAt;
 }
