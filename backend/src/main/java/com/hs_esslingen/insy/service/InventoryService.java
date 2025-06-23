@@ -52,7 +52,6 @@ public class InventoryService {
     private final InventoryMapper inventoriesMapper;
     private final OrdererService userService;
     private final CostCenterService costCenterService;
-    private final OrdererService ordererService;
     private final HistoryRepository historyRepository;
     private final Javers javers;
 
