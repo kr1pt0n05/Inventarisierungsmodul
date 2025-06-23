@@ -22,9 +22,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    // Change to "http://localhost:4200" for local development
-                    corsConfiguration
-                            .setAllowedOrigins(Arrays.asList("https://insy.hs-esslingen.com", "http://localhost:4200"));
+                    corsConfiguration.addAllowedOrigin("https://insy.hs-esslingen.com");
+                    // Uncomment for local development
+                    // corsConfiguration.addAllowedOrigin("http://localhost:4200");
                     corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
                     corsConfiguration.addAllowedHeader("*");
                     return corsConfiguration;

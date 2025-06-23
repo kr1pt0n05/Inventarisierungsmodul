@@ -175,8 +175,9 @@ export class ExtensionEditorComponent {
     if (!this.initialValues.orderer) {
       this.formControls.get('orderer')?.setValue(this.authService.getUsername());
     }
+    const oldPrice = this.formControls.get('price')?.value;
     this.formControls.get('price')?.setValue(
-      this.formControls.get('price')?.value ? localizePrice(this.formControls.get('price')?.value) : this.formControls.get('price')?.value, { emitEvent: false });
+      localizePrice(oldPrice), { emitEvent: false });
   }
 
   private _getChanges(): Partial<Extension> {

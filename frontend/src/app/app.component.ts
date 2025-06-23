@@ -58,7 +58,10 @@ export class AppComponent {
  */
 export function localizePrice(price: number | string): string {
   let numPrice: number;
-  if (typeof price === 'string') {
+  if (typeof price !== 'number') {
+    if (price === '' || isNaN(parseFloat(price))) {
+      return '';
+    }
     numPrice = parseFloat(price);
   } else {
     numPrice = price;
