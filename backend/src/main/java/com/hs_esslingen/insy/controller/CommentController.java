@@ -2,6 +2,7 @@ package com.hs_esslingen.insy.controller;
 
 import java.util.List;
 import com.hs_esslingen.insy.dto.CommentDTO;
+import com.hs_esslingen.insy.model.User;
 import com.hs_esslingen.insy.service.CommentService;
 
 import lombok.RequiredArgsConstructor;
