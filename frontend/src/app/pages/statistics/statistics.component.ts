@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { environment } from '../../../environment';
 
@@ -88,15 +88,17 @@ export class StatisticsComponent implements OnInit {
 
   /**
    * Renders the pie chart using Chart.js.
+   * Accesses the canvas via ViewChild
    * Creates a pie chart showing the distribution of order values among the top 5 users.
    * Destroys any existing chart instance before creating a new one.
    * Uses custom colors from legendColors array and disables the default legend.
    */
+  @ViewChild('pieChart') pieChartRef!: ElementRef<HTMLCanvasElement>;
   renderChart(): void {
-    const canvas = document.getElementById('pieChart') as HTMLCanvasElement;
-    if (!canvas) return;
+    if (!this.pieChartRef) return;
 
-    // Destroy existing chart instance if it exists
+    const canvas = this.pieChartRef.nativeElement;
+
     const existingChart = Chart.getChart(canvas.id);
     if (existingChart) {
       existingChart.destroy();

@@ -1,56 +1,71 @@
-<body>
-    <div class="container-box">
-        <h1 class="font-semibold text-2xl">Statistiken</h1>
+<div class="p-4 min-h-screen">
+  <div class="bg-white rounded-lg shadow-md p-6 max-w-7xl mx-auto">
+    <!-- Header -->
+    <h1 class="text-2xl font-semibold mb-6">Statistiken</h1>
 
-        <div class="main-content">
-            <div class="left-section">
-                <div class="metrics">
-                    <div class="card">
-                        <h3>Gesamtanzahl Bestellungen</h3>
-                        <p style="font-size: 24px;">
-                            {{ totalOrders !== null ? totalOrders : '–' }}
-                        </p>
-                    </div>
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
 
-                    <div class="card">
-                        <h3>Gesamtwert</h3>
-                        <p style="font-size: 24px;">
-                            {{ totalPrice !== null ? (totalPrice + ' €') : '–' }}
-                        </p>
-                    </div>
-                </div>
+      <!-- Left Section: Metric Cards + Table -->
+      <div class="lg:col-span-2 flex flex-col gap-6">
 
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Nutzer</th>
-                        <th>Anzahl Artikel</th>
-                        <th>Gesamtwert (€)</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let user of userOrders">
-                        <td>{{ user.name }}</td>
-                        <td>{{ user.quantity }}</td>
-                        <td>{{ user.orderPrice | number:'1.2-2' }} €</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="right-section">
-                <canvas id="pieChart" width="300" height="300"></canvas>
-
-                <div class="legend-box">
-                    <strong>Nutzer</strong>
-                    <ul>
-                        <li *ngFor="let user of userOrders; let i = index">
-                            <span [style.color]="legendColors[i]">■</span>
-                            <span style="color: black;"> {{ user.name }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <!-- Metric Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-gray-100 text-center p-6 rounded">
+            <h3 class="font-medium text-lg">Gesamtanzahl Bestellungen</h3>
+            <p class="text-3xl font-bold mt-2">
+              {{ totalOrders !== null ? totalOrders : '–' }}
+            </p>
+          </div>
+          <div class="bg-gray-100 text-center p-6 rounded">
+            <h3 class="font-medium text-lg">Gesamtwert</h3>
+            <p class="text-3xl font-bold mt-2">
+              {{ totalPrice !== null ? (totalPrice + ' €') : '–' }}
+            </p>
+          </div>
         </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full border border-gray-300">
+            <thead>
+            <tr class="bg-blue-900 text-white">
+              <th class="p-2 text-left">Nutzer</th>
+              <th class="p-2 text-left">Anzahl Artikel</th>
+              <th class="p-2 text-left">Gesamtwert (€)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngIf="userOrders.length === 0">
+              <td colspan="3" class="text-center py-4 text-gray-500">Keine Daten vorhanden</td>
+            </tr>
+            <tr *ngFor="let user of userOrders; let i = index"
+                [ngClass]="{ 'bg-gray-100': i % 2 === 0, 'bg-gray-300': i % 2 !== 0 }">
+              <td class="p-2">{{ user.name }}</td>
+              <td class="p-2">{{ user.quantity }}</td>
+              <td class="p-2">{{ user.orderPrice | number:'1.2-2' }} €</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Section: Pie Chart and Legend -->
+      <div class="flex flex-col items-center gap-4">
+        <canvas #pieChart width="300" height="300"></canvas>
+        <div class="border p-4 w-full max-w-xs">
+          <strong class="block mb-2">Nutzer</strong>
+          <ul class="space-y-1" *ngIf="userOrders.length > 0; else noLegend">
+            <li *ngFor="let user of userOrders; let i = index" class="flex items-center gap-2">
+              <span [style.color]="legendColors[i]">■</span>
+              <span class="text-gray-800">{{ user.name }}</span>
+            </li>
+          </ul>
+          <ng-template #noLegend>
+            <p class="text-gray-500 text-sm">Keine Nutzer verfügbar</p>
+          </ng-template>
+        </div>
+      </div>
     </div>
-</body>
+  </div>
+</div>
