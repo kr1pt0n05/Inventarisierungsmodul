@@ -7,8 +7,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@Profile("production") // Activate this configuration only in the "production" profile
-public class CorsConfig {
+@Profile("dev") // Activate this configuration only in the "dev" profile
+public class CorsConfigDev {
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -16,7 +16,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://http://insy.hs-esslingen.com") // frontend origin
+                        .allowedOrigins("http://localhost:4200") // frontend origin
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);

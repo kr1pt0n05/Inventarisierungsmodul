@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,8 +22,8 @@ import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
-@Profile("production")
-public class SecurityConfig {
+@Profile("dev") // Activate this configuration only in the "dev" profile
+public class SecurityConfigDev {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,16 +31,30 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.addAllowedOrigin("https://insy.hs-esslingen.com");
+                    corsConfiguration.addAllowedOrigin("http://localhost:4200"); // Allow local development origin
                     corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
                     corsConfiguration.addAllowedHeader("*");
                     return corsConfiguration;
                 }))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/orders").hasAnyRole("SYSTEM") // Only allow BeSy to create orders
+                        .requestMatchers(HttpMethod.POST, "/orders").hasAnyRole("SYSTEM") // Only allow BeSy to create
+                                                                                          // orders
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll() // Disabling all protection for testing
+                                                                            // purposes
+                        .requestMatchers(HttpMethod.PUT, "/**").permitAll() // Disabling all protection for testing
+                                                                            // purposes
+                        .requestMatchers(HttpMethod.PATCH, "/**").permitAll() // Disabling all protection for testing
+                                                                              // purposes
+                        .requestMatchers(HttpMethod.POST, "/**").permitAll() // Disabling all protection for testing
+                                                                             // purposes
+                        .requestMatchers(HttpMethod.DELETE, "/**").permitAll() // Disabling all protection for testing
+                                                                               // purposes
+                        .requestMatchers(HttpMethod.POST, "/upload/csv").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/download/xlsx").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults()) // Enable HTTP Basic authentication for BeSy-API
-                .oauth2ResourceServer(oauth2 -> oauth2
+                .oauth2ResourceServer((oauth2) -> oauth2
                         .jwt(Customizer.withDefaults()));
         return http.build();
     }

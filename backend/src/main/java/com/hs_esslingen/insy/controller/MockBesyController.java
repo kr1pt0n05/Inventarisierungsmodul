@@ -36,7 +36,10 @@ public class MockBesyController {
                                                 "Marketing",
                                                 "User 1", new BigDecimal("199.99"), items2));
 
-                WebClient webClient = WebClient.create("http://localhost:8080");
+                WebClient webClient = WebClient.builder()
+                                .baseUrl("http://localhost:8080")
+                                .defaultHeaders(headers -> headers.setBasicAuth("besy", "secret"))
+                                .build();
 
                 webClient.post()
                                 .uri("/orders")
