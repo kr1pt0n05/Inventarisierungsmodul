@@ -24,7 +24,6 @@ import com.hs_esslingen.insy.dto.InventoriesResponseDTO;
 import com.hs_esslingen.insy.dto.InventoryCreateRequestDTO;
 import com.hs_esslingen.insy.service.InventoryService;
 
-
 @RestController
 @RequestMapping("/inventories")
 public class InventoryController {
