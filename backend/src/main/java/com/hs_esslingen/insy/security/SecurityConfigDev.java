@@ -50,7 +50,7 @@ public class SecurityConfigDev {
                         .requestMatchers(HttpMethod.DELETE, "/**").permitAll() // Disabling all protection for testing
                                                                                // purposes
                         .requestMatchers(HttpMethod.POST, "/upload/csv").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/download/xlsx").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/download/xls").permitAll()
                         .requestMatchers(HttpMethod.GET, "/").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults()) // Enable HTTP Basic authentication for BeSy-API
