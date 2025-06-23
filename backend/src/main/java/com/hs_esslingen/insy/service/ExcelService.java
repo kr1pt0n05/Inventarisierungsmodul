@@ -348,6 +348,7 @@ public class ExcelService {
             inv.setIsDeinventoried(obj.isDeinventoried());
             inv.setPrice(BigDecimal.valueOf(obj.getPrice()));
             inv.setLocation(obj.getLocation());
+            inv.setCreatedAt(obj.getCreatedAt() == null ? LocalDateTime.now() : obj.getCreatedAt());
             inv.setSearchText(StringParser.fullTextSearchString(inv));
             inventory.put(obj.getInventoryNumber(), inv);
         });

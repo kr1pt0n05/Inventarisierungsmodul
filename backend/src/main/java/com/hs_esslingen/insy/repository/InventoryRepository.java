@@ -1,15 +1,16 @@
 package com.hs_esslingen.insy.repository;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.hs_esslingen.insy.model.Inventory;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Set;
+import com.hs_esslingen.insy.model.Inventory;
 
 @Repository
 public interface InventoryRepository
@@ -35,4 +36,19 @@ public interface InventoryRepository
 
         @Query("SELECT MIN(i.id) from Inventory i")
         Integer findMinId();
+
+        //statisitc queries
+        @Query("SELECT COUNT(i) FROM Inventory i WHERE i.deletedAt IS NULL")
+        Long countActiveInventories();
+
+        @Query("SELECT COALESCE(SUM(i.price), 0) FROM Inventory i WHERE i.deletedAt IS NULL")
+        BigDecimal sumActiveInventoryPrices();
+
+        @Query("SELECT i.user.name, COUNT(i), COALESCE(SUM(i.price), 0) " +
+        "FROM Inventory i " +
+        "WHERE i.deletedAt IS NULL AND i.user IS NOT NULL " +
+        "GROUP BY i.user.name " +
+        "ORDER BY COUNT(i) DESC")
+        List<Object[]> findInventoryStatisticsByUser();
+
 }

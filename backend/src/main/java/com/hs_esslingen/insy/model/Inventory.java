@@ -70,8 +70,8 @@ public class Inventory {
     @Column(nullable = true, columnDefinition = "TEXT")
     private String searchText;
 
-    @Column(name = "created_at", nullable = false)
-    private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
+    @Column(name = "created_at", nullable = true)
+    private LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("Europe/Berlin"));
 
     @Column(name = "deleted_at")
     @Builder.Default

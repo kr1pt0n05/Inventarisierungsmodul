@@ -26,7 +26,8 @@ import lombok.RequiredArgsConstructor;
  * This class is used to seed the database with initial data.
  * It implements CommandLineRunner to execute code after the application context
  * is loaded.
- * Remove for production use.
+ * It is only active in the "dev" profile, allowing for easy testing and
+ * development without affecting production data.
  */
 
 @Component
