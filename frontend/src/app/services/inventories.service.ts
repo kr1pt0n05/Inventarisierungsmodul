@@ -9,6 +9,7 @@ import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
 import { Tag } from '../models/tag';
 import { minAndMaxId, minAndMaxPrice } from '../pages/inventory/inventory.component';
+import { AuthenticationService } from './authentication.service';
 import { Filter } from './server-table-data-source.service';
 
 
@@ -42,7 +43,8 @@ export class InventoriesService {
    *
    * @param http - Angular's HttpClient for making API requests.
    */
-  constructor(private readonly http: HttpClient) { }
+  constructor(private readonly http: HttpClient,
+    private readonly authService: AuthenticationService) { }
 
   /**
    * Fetches a paginated list of inventories with sorting and filtering options.
@@ -103,7 +105,7 @@ export class InventoriesService {
    * @returns {Observable<InventoryItem>} - An observable that completes when the update is successful.
    */
   updateInventoryById(id: number, item: Partial<InventoryItem>): Observable<InventoryItem> {
-    return this.http.patch<InventoryItem>(`${this.url}/${id}`, item);
+    return this.http.patch<InventoryItem>(`${this.url}/${id}`, { ...item, user_name: this.authService.getUsername() !== '' ? this.authService.getUsername() : null });
   }
 
   /**
