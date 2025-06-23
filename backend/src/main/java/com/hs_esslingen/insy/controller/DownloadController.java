@@ -19,7 +19,7 @@ public class DownloadController {
 
     private final ExcelService excelService;
 
-    @GetMapping("/xlsx")
+    @GetMapping("/xls")
     public ResponseEntity<Resource> downloadXlsx() throws IOException {
         return excelService.exportExcel();
     }

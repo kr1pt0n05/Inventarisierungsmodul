@@ -13,9 +13,9 @@ import {
   MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
   MatTable,
 } from '@angular/material/table';
+import { MatTooltip } from '@angular/material/tooltip';
+import { DownloadService } from '../../services/download.service';
 import { ServerTableDataSourceService } from '../../services/server-table-data-source.service';
-import {MatTooltip} from '@angular/material/tooltip';
-import {DownloadService} from '../../services/download.service';
 
 
 
@@ -140,14 +140,15 @@ export class InventoryListComponent implements AfterViewInit {
     this.onClickItem.emit(element.id);
   }
 
-  downloadInventoryList(){
-    this.api.downloadExcel().subscribe({
-      next(data) {
-      },
-      error(err) {
-        alert("Fehler beim Herunterladen der Liste.");
-      },
-    });
+  downloadInventoryList() {
+    this.api.downloadExcel().subscribe(blob => {
+      const a = document.createElement('a')
+      const objectUrl = URL.createObjectURL(blob)
+      a.href = objectUrl
+      a.download = `Export_${new Date().toLocaleString('de-DE').replace(' ', '_')}.xls`;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    })
   }
 
 }
