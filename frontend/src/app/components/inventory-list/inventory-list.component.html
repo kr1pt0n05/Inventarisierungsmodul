@@ -1,12 +1,22 @@
 <div class="overflow-x-auto w-full">
 
-  <!-- Search Bar -->
-  <!-- Mat Form Field for searching inventory items -->
-  <mat-form-field class="w-xl">
-    <mat-label>Inventarliste durchsuchen</mat-label>
-    <!-- Input field to filter inventory items based on search text -->
-    <input matInput placeholder="" #input [formControl]="searchText">
-  </mat-form-field>
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+    <!-- Mat Form Field for searching inventory items -->
+    <mat-form-field class="w-xl">
+      <mat-label>Inventarliste durchsuchen</mat-label>
+      <input matInput placeholder="" #input [formControl]="searchText">
+    </mat-form-field>
+
+    <button mat-raised-button
+            matTooltip="Gesamte Inventarliste als Excel (.xls) herunterladen."
+            color="primary"
+            class="mt-4"
+            style="margin-left: auto;"
+            (click)="downloadInventoryList()"
+    >
+      Herunterladen
+    </button>
+  </div>
 
   <!-- Inventory Table -->
   <!-- Mat Table to display inventory items with dynamic columns, pagination, and sorting -->

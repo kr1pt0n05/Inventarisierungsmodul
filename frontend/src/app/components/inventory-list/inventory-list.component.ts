@@ -14,6 +14,8 @@ import {
   MatTable,
 } from '@angular/material/table';
 import { ServerTableDataSourceService } from '../../services/server-table-data-source.service';
+import {MatTooltip} from '@angular/material/tooltip';
+import {DownloadService} from '../../services/download.service';
 
 
 
@@ -68,12 +70,16 @@ import { ServerTableDataSourceService } from '../../services/server-table-data-s
     MatFormField,
     MatLabel,
     ReactiveFormsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltip,
   ],
   templateUrl: './inventory-list.component.html',
   styleUrl: './inventory-list.component.css'
 })
 export class InventoryListComponent implements AfterViewInit {
+
+  api = inject(DownloadService);
+
   /**
    * Output event emitter that emits the ID of the clicked inventory item.
    * This can be used to navigate to the details page or perform other actions.
@@ -132,6 +138,16 @@ export class InventoryListComponent implements AfterViewInit {
    */
   onButtonClick(element: any) {
     this.onClickItem.emit(element.id);
+  }
+
+  downloadInventoryList(){
+    this.api.downloadExcel().subscribe({
+      next(data) {
+      },
+      error(err) {
+        alert("Fehler beim Herunterladen der Liste.");
+      },
+    });
   }
 
 }
