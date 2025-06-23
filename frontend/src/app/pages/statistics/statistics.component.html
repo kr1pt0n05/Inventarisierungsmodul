@@ -26,8 +26,8 @@
         </div>
 
         <!-- Table -->
-        <div class="overflow-x-auto">
-          <table class="w-full border border-gray-300">
+        <div class="overflow-x-auto rounded-lg shadow border border-gray-300">
+        <table class="w-full">
             <thead>
             <tr class="bg-blue-900 text-white">
               <th class="p-2 text-left">Nutzer</th>
@@ -53,7 +53,7 @@
       <!-- Right Section: Pie Chart and Legend -->
       <div class="flex flex-col items-center gap-4">
         <canvas #pieChart width="300" height="300"></canvas>
-        <div class="border p-4 w-full max-w-xs">
+        <div class="border p-4 w-full max-w-xs border-gray-300 rounded-lg">
           <strong class="block mb-2">Nutzer</strong>
           <ul class="space-y-1" *ngIf="userOrders.length > 0; else noLegend">
             <li *ngFor="let user of userOrders; let i = index" class="flex items-center gap-2">
