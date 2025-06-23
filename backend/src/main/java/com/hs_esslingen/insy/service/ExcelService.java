@@ -361,6 +361,7 @@ public class ExcelService {
                 com.hs_esslingen.insy.model.Comment c = new Comment();
                 c.setInventories(inv);
                 c.setDescription(comment);
+                c.setAuthor(inv.getUser());
                 comments.add(c);
 
             });
