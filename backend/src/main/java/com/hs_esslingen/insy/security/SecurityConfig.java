@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
                     corsConfiguration.addAllowedOrigin("https://insy.hs-esslingen.com");
+                    corsConfiguration.addAllowedOrigin("https://test.insy.hs-esslingen.com");
                     corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
                     corsConfiguration.addAllowedHeader("*");
                     return corsConfiguration;
