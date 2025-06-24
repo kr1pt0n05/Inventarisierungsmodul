@@ -248,6 +248,9 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
         filter.tags = tags.content.filter(tag => filter.tags?.includes(tag.name)).map(tag => tag.id.toString());
         this.fetchData(pageNumber, pageSize, sortActive, sortDirection, filter, searchText.toLowerCase());
       });
+    } else {
+      // If no tags are selected, fetch data without filtering by tags
+      this.fetchData(pageNumber, pageSize, sortActive, sortDirection, filter, searchText.toLowerCase());
     }
   }
 
