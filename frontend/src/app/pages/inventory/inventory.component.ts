@@ -104,6 +104,8 @@ export class InventoryComponent implements OnInit {
    */
   @ViewChildren(AccordionComponent) accordions!: QueryList<AccordionComponent>;
 
+  @ViewChildren(RangeSliderComponent) rangeSliders!: QueryList<RangeSliderComponent>;
+
   /**
    * The form group that contains all the filter controls for the inventory items.
    * It allows the user to filter items based on various criteria (cost center, price, date, etc.).
@@ -192,5 +194,25 @@ export class InventoryComponent implements OnInit {
     }
     this.showDeinventoried.set(!this.showDeinventoried());
     this.inventoryForm.get('isDeinventoried')?.setValue(this.showDeinventoried());
+  }
+
+  resetFilters() {
+    this.showDeinventoried.set(false);
+    this.inventoryForm.reset({
+      costCenter: [],
+      minId: this.minAndMaxId.minId,
+      maxId: this.minAndMaxId.maxId,
+      company: [],
+      minPrice: this.minAndMaxPrice.minPrice,
+      maxPrice: this.minAndMaxPrice.maxPrice,
+      createdAfter: '',
+      createdBefore: '',
+      serialNumber: [],
+      location: [],
+      orderer: [],
+      tags: [],
+      isDeinventoried: this.showDeinventoried(),
+    });
+    this.rangeSliders.forEach(slider => slider.resetSlider());
   }
 }
