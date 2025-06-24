@@ -506,12 +506,14 @@ export class InventorizationComponent {
       this._setTagsOfItem();
       return;
     }
+    const currentTags = this.tags();
 
     for (const tag of newTags) {
       this.tagsService.addTag({ name: tag } as Tag).subscribe({
         next: (savedTag) => {
-          this.tags.update(currentTags => [...currentTags, savedTag]);
+          this.tags.update(t => [...currentTags, savedTag]);
           this.newTags.update(currentNewTags => currentNewTags.filter(t => t !== tag));
+
           if (this.newTags().length === 0) {
             this._setTagsOfItem();
           }
