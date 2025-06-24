@@ -27,9 +27,11 @@
         zusammengedichtet, hilfeeeeee... Lorem irgendwas, Ipsum Dingsbums, und bitte niemand fragen, was „Dolor sit
         amet“ eigentlich bedeutet.
       </p>
+      @if (!authService.validToken()) {
       <a mat-raised-button color="primary" (click)="authService.login()">
         Login
       </a>
+      }
     </div>
 
   </main>
