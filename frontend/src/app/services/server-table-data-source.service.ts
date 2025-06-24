@@ -9,7 +9,9 @@ import { BehaviorSubject, debounceTime, Observable } from 'rxjs';
 import { localizePrice } from '../app.component';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
+import { Tag } from '../models/tag';
 import { InventoriesService } from './inventories.service';
+import { TagsService } from './tags.service';
 
 // Interface for Pagination details (pageIndex and pageSize)
 interface Page {
@@ -128,7 +130,9 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
    */
   private _pageCache: Map<Page, any> = new Map();
 
-  constructor() {
+  private _tags: Tag[] = [];
+
+  constructor(private readonly tagsService: TagsService) {
     super();
 
     // Initialize the data and query parameters
@@ -142,7 +146,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
 
     // Subscribe to queryParams and fetch data whenever the parameters change
     this._queryParams.subscribe((queryParams: QueryParams) => {
-      this.fetchData(
+      this.checkFilterandFetchData(
         queryParams.currentPage.pageIndex,
         queryParams.currentPage.pageSize,
         queryParams.currentSort.active,
@@ -240,7 +244,26 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
    * @param filter The active filter settings.
    * @param searchText The search text input from the user.
    */
-  private fetchData(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter, searchText: string = '') {
+  private checkFilterandFetchData(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter, searchText: string = '') {
+    if (filter.tags) {
+      const tagIds = this._tags.filter(tag => filter.tags?.includes(tag.name)).map(tag => tag.id.toString());
+      if (tagIds.length !== filter.tags?.length) { // If not all tags are resolved, fetch the tags from the service
+        this.tagsService.getTags().subscribe((tags) => {
+          this._tags = tags.content; // Update the local cache of tags
+          filter.tags = tags.content.filter(tag => filter.tags?.includes(tag.name)).map(tag => tag.id.toString());
+          this.fetchData(pageNumber, pageSize, sortActive, sortDirection, filter, searchText.toLowerCase());
+        });
+      } else {
+        filter.tags = tagIds; // If all tags are already resolved, use them directly
+        this.fetchData(pageNumber, pageSize, sortActive, sortDirection, filter, searchText.toLowerCase());
+      }
+    } else {
+      // If no tags are selected, fetch data without filtering by tags
+      this.fetchData(pageNumber, pageSize, sortActive, sortDirection, filter, searchText.toLowerCase());
+    }
+  }
+
+  private fetchData(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter, searchText: string) {
     // Call the API to fetch the inventory data with query parameters
     this._service.getInventories(pageNumber, pageSize, sortActive, sortDirection, filter, searchText).subscribe((inventories: Inventories) => {
       if (inventories.content === undefined) {
@@ -268,7 +291,7 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
   // This method is used by MatTable to connect to the data source
   connect(collectionViewer: CollectionViewer): Observable<T[]> {
     const queryParams = this._queryParams.value;
-    this.fetchData(
+    this.checkFilterandFetchData(
       queryParams.currentPage.pageIndex,
       queryParams.currentPage.pageSize,
       queryParams.currentSort.active,
