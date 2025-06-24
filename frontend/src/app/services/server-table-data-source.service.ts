@@ -9,6 +9,7 @@ import { BehaviorSubject, debounceTime, Observable } from 'rxjs';
 import { localizePrice } from '../app.component';
 import { Inventories } from '../models/inventories';
 import { InventoryItem } from '../models/inventory-item';
+import { Tag } from '../models/tag';
 import { InventoriesService } from './inventories.service';
 import { TagsService } from './tags.service';
 
@@ -129,6 +130,8 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
    */
   private _pageCache: Map<Page, any> = new Map();
 
+  private _tags: Tag[] = [];
+
   constructor(private readonly tagsService: TagsService) {
     super();
 
@@ -242,12 +245,18 @@ export class ServerTableDataSourceService<T> extends DataSource<T> {
    * @param searchText The search text input from the user.
    */
   private checkFilterandFetchData(pageNumber: number, pageSize: number, sortActive: string, sortDirection: string, filter: Filter, searchText: string = '') {
-    console.log('original filter', filter);
     if (filter.tags) {
-      this.tagsService.getTags().subscribe((tags) => {
-        filter.tags = tags.content.filter(tag => filter.tags?.includes(tag.name)).map(tag => tag.id.toString());
+      const tagIds = this._tags.filter(tag => filter.tags?.includes(tag.name)).map(tag => tag.id.toString());
+      if (tagIds.length !== filter.tags?.length) { // If not all tags are resolved, fetch the tags from the service
+        this.tagsService.getTags().subscribe((tags) => {
+          this._tags = tags.content; // Update the local cache of tags
+          filter.tags = tags.content.filter(tag => filter.tags?.includes(tag.name)).map(tag => tag.id.toString());
+          this.fetchData(pageNumber, pageSize, sortActive, sortDirection, filter, searchText.toLowerCase());
+        });
+      } else {
+        filter.tags = tagIds; // If all tags are already resolved, use them directly
         this.fetchData(pageNumber, pageSize, sortActive, sortDirection, filter, searchText.toLowerCase());
-      });
+      }
     } else {
       // If no tags are selected, fetch data without filtering by tags
       this.fetchData(pageNumber, pageSize, sortActive, sortDirection, filter, searchText.toLowerCase());
