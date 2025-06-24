@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.hs_esslingen.insy.dto.OrdererDTO;
+import com.hs_esslingen.insy.dto.UserDTO;
 import com.hs_esslingen.insy.exception.BadRequestException;
 import com.hs_esslingen.insy.exception.NotFoundException;
 import com.hs_esslingen.insy.model.User;
@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class OrdererService {
+public class UserService {
 
     private final UserRepository userRepository;
 
@@ -25,13 +25,13 @@ public class OrdererService {
      *
      * @return an OrdererDTO containing a list of all orderers
      */
-    public OrdererDTO getAllOrderers() {
+    public UserDTO getAllOrderers() {
         List<String> allCompanies = userRepository.findAll().stream()
                 .map(User::getName)
                 .sorted()
                 .collect(Collectors.toList());
 
-        return OrdererDTO.builder()
+        return UserDTO.builder()
                 .orderers(allCompanies)
                 .build();
     }
