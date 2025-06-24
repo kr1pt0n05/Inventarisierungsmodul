@@ -218,7 +218,7 @@ export class InventorizationComponent {
         this.availableTags.set([...tags.content]);
       },
       error: (error) => {
-        this._notify('Error fetching available tags', 'error', error);
+        this._notify('Fehler beim Laden der verfügbaren Tags', 'error', error);
       }
     });
   }
@@ -232,7 +232,18 @@ export class InventorizationComponent {
    */
   saveInventorization() {
     if (this.isNewInventorization()) {
-      this._saveNewInventorization();
+      this.orderService.getArticleById(this.currentArticleId.articleId).subscribe({
+        next: (article) => {
+          if (article.is_inventoried) {
+            this._notify('Artikel ist bereits inventarisiert, ein neuer Inventargegenstand kann nicht erstellt werden.', 'error');
+            return;
+          }
+          this._saveNewInventorization();
+        },
+        error: (error) => {
+          this._saveNewInventorization();
+        }
+      });
     } else if (Object.keys(this._getItemChanges()).length > 0) {
       this._saveExistingInventorization();
     } else {
@@ -258,11 +269,11 @@ export class InventorizationComponent {
         const id = this.editableInventoryItem().id;
         this.inventoriesService.deleteInventoryById(id).subscribe({
           next: () => {
-            this._notify('Inventory item deleted successfully', 'success');
+            this._notify('Inventargegenstand erfolgreich gelöscht', 'success');
             this.router.navigate(['/inventory']);
           },
           error: (error) => {
-            this._notify('Error deinventorizing inventory item', 'error', error);
+            this._notify('Fehler beim Deinventarisieren des Inventargegenstands', 'error', error);
           }
         });
       }
@@ -287,11 +298,11 @@ export class InventorizationComponent {
         this.inventoriesService.deinventorizeInventoryById(id).subscribe({
           next: (item) => {
             this.handleCommentChanges();
-            this._notify('Inventory item deinventorized successfully', 'success');
+            this._notify('Inventargegenstand erfolgreich deinventarisiert', 'success');
             this.router.navigate(['/inventory/', id]);
           },
           error: (error) => {
-            this._notify('Error deinventorizing inventory item', 'error', error);
+            this._notify('Fehler beim Deinventarisieren des Inventargegenstands', 'error', error);
           }
         });
       }
@@ -327,7 +338,7 @@ export class InventorizationComponent {
           this._fetchComments(id);
         },
         error: (error) => {
-          this._notify('Inventory item not found, cannot handle comments.', 'error', error);
+          this._notify('Inventargegenstand nicht gefunden, Kommentare können nicht verarbeitet werden.', 'error', error);
         }
       });
     }
@@ -345,7 +356,7 @@ export class InventorizationComponent {
         this.savedComments.update(() => comments);
       },
       error: (error) => {
-        this._notify('Error fetching comments', 'error', error);
+        this._notify('Fehler beim Laden der Kommentare', 'error', error);
       }
     });
   }
@@ -364,7 +375,7 @@ export class InventorizationComponent {
           this.newComments.update(currentNewComments => currentNewComments.filter(c => c !== comment));
         },
         error: (error) => {
-          this._notify('Error adding comment', 'error', error);
+          this._notify('Fehler beim Hinzufügen des Kommentars', 'error', error);
         }
       });
     }
@@ -385,7 +396,7 @@ export class InventorizationComponent {
             this.deletedComments.update(currentDeletedComments => currentDeletedComments.filter(c => c !== comment));
           },
           error: (error) => {
-            this._notify('Error deleting comment', 'error', error);
+            this._notify('Fehler beim Löschen des Kommentars', 'error', error);
           }
         });
       }
@@ -411,7 +422,7 @@ export class InventorizationComponent {
   private _saveNewInventorization() {
     this.inventoriesService.getInventoryById(this.editableInventoryItem().id).subscribe({
       next: () => {
-        this._notify('Inventory item already exists, cannot create a new one.', 'error');
+        this._notify('Inventargegenstand existiert bereits, ein neuer kann nicht erstellt werden.', 'error');
       },
       error: () => {
         this.inventoriesService.addInventoryItem(this.editableInventoryItem()).subscribe({
@@ -420,11 +431,11 @@ export class InventorizationComponent {
             if (this.currentArticleId.orderId && this.currentArticleId.articleId) {
               this._updateImportedArticle();
             }
-            this._notify('Inventory item created successfully', 'success');
+            this._notify('Inventargegenstand erfolgreich erstellt', 'success');
             this._onInventorization(newItem);
           },
           error: (error) => {
-            this._notify('Error creating new inventory item', 'error', error);
+            this._notify('Fehler beim Erstellen des neuen Inventargegenstands', 'error', error);
           }
         });
       }
@@ -443,16 +454,16 @@ export class InventorizationComponent {
         this.handleCommentChanges();
         this.inventoriesService.updateInventoryById(this.editableInventoryItem().id, this._getItemChanges()).subscribe({
           next: (updatedItem) => {
-            this._notify('Inventory item updated successfully', 'success');
+            this._notify('Inventargegenstand erfolgreich aktualisiert', 'success');
             this._onInventorization(updatedItem);
           },
           error: (error) => {
-            this._notify('Error updating inventory item', 'error', error);
+            this._notify('Fehler beim Aktualisieren des Inventargegenstands', 'error', error);
           }
         });
       },
       error: () => {
-        this._notify('Inventory item does not exist, cannot update.', 'error');
+        this._notify('Inventargegenstand existiert nicht, Aktualisierung nicht möglich.', 'error');
       }
     });
   }
@@ -506,7 +517,7 @@ export class InventorizationComponent {
           }
         },
         error: (error) => {
-          this._notify('Error saving tag', 'error', error);
+          this._notify('Fehler beim Speichern des Tags', 'error', error);
         }
       });
     }
@@ -524,7 +535,7 @@ export class InventorizationComponent {
           console.log('Tags updated successfully');
         },
         error: (error) => {
-          this._notify('Error updating tags', 'error', error);
+          this._notify('Fehler beim Aktualisieren der Tags', 'error', error);
         }
       });
     } else {
@@ -533,7 +544,7 @@ export class InventorizationComponent {
           console.log('Tags deleted successfully');
         },
         error: (error) => {
-          this._notify('Error deleting tags', 'error', error);
+          this._notify('Fehler beim Löschen der Tags', 'error', error);
         }
       });
     }
@@ -556,7 +567,7 @@ export class InventorizationComponent {
         articleStrings.update(articles => articles.slice(1)); // Remove the first article after setting it
       },
       error: (error) => {
-        this._notify('Error fetching order article', 'error', error);
+        this._notify('Fehler beim Laden des Bestellartikels', 'error', error);
       }
     });
   }
@@ -576,7 +587,7 @@ export class InventorizationComponent {
       next: (updatedArticle) => {
       },
       error: (error) => {
-        this._notify('Error updating article', 'error', error);
+        this._notify('Fehler beim Aktualisieren des Artikels', 'error', error);
       }
     });
   }

@@ -19,25 +19,7 @@ export class OrderService {
   }
 
   getOrderArticleByIds(orderId: number, articleId: number): Observable<Article> {
-    return new Observable<Article>((observer) => {
-      this.http.get<Order[]>(this.url).subscribe({
-        next: (orders: Order[]) => {
-          const article = orders
-            .find(order => order.id == orderId)
-            ?.articles.find(article => article.article_id == articleId);
-          if (article === undefined) {
-            console.log(orders, orderId, articleId);
-            observer.error(new Error(`Article with ID ${articleId} not found in order ${orderId}`));
-            return;
-          }
-          observer.next(article);
-          observer.complete();
-        },
-        error: (error) => {
-          observer.error(error);
-        }
-      });
-    });
+    return this.http.get<Article>(`${this.url}/${orderId}/items/${articleId}`);
   }
 
   updateOrderArticle(orderId: number, articleId: number, article: Article): Observable<Article> {

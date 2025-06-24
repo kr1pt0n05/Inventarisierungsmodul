@@ -196,12 +196,23 @@ export class ExtensionInventorizationComponent {
     const currentId = this.inventoryId();
     if (currentId !== undefined && this.isValid()) {
       if (this.isNewExtension()) {
-        this._saveNewExtension(currentId);
+        this.orderService.getArticleById(this.currentArticleId.articleId).subscribe({
+          next: (article) => {
+            if (article.is_inventoried) {
+              this._notify('Artikel ist bereits inventarisiert, eine neue Erweiterung kann nicht erstellt werden.', 'error');
+              return;
+            }
+            this._saveNewExtension(currentId);
+          },
+          error: (error) => {
+            this._saveNewExtension(currentId);
+          }
+        });
       } else {
         this._saveExistingExtension();
       }
     } else {
-      this._notify('Inventorization is not valid or inventoryId is not set.', 'error');
+      this._notify('Inventarisierung ist nicht gültig oder die Inventar-ID ist nicht gesetzt.', 'error');
     }
   }
 
@@ -226,14 +237,14 @@ export class ExtensionInventorizationComponent {
   private _saveNewExtension(currentId: number) {
     this.inventoriesService.addExtensionToId(currentId, this.extension()).subscribe({
       next: (extension) => {
-        this._notify('Extension added successfully', 'success');
+        this._notify('Erweiterung erfolgreich hinzugefügt', 'success');
         if (this.currentArticleId.orderId !== undefined && this.currentArticleId.articleId !== undefined) {
           this._updateImportedArticle();
         }
         this._navigateOnInventorization();
       },
       error: (error) => {
-        this._notify('Error adding extension', 'error', error);
+        this._notify('Fehler beim Hinzufügen der Erweiterung', 'error', error);
       }
     });
   }
@@ -243,11 +254,11 @@ export class ExtensionInventorizationComponent {
       this.changes.set({ ...this.changes(), inventory_id: this.inventoryId() });
       this.inventoriesService.updateExtension(this.inventoryId()!, this.extension().id!, this.changes()).subscribe({
         next: (extension) => {
-          this._notify('Extension updated successfully', 'success');
+          this._notify('Erweiterung erfolgreich aktualisiert', 'success');
           this._navigateOnInventorization();
         },
         error: (error) => {
-          this._notify('Error updating extension', 'error', error);
+          this._notify('Fehler beim Aktualisieren der Erweiterung', 'error', error);
         }
       });
     }
@@ -304,7 +315,7 @@ export class ExtensionInventorizationComponent {
       error: (error) => {
         this.inventoryItem = {} as InventoryItem;
         this.inventoryId.set(undefined);
-        this._notify('Error fetching inventory item', 'error', error);
+        this._notify('Fehler beim Laden des Inventargegenstands', 'error', error);
       }
     });
   }
@@ -327,7 +338,7 @@ export class ExtensionInventorizationComponent {
         this._onChanges();
       },
       error: (error) => {
-        this._notify('Error fetching order article', 'error', error);
+        this._notify('Fehler beim Laden des Bestellartikels', 'error', error);
       }
     });
   }
@@ -345,10 +356,10 @@ export class ExtensionInventorizationComponent {
     } as unknown as Article;
     this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
       next: (updatedArticle) => {
-        console.log('Article updated successfully');
+        console.log('Artikel erfolgreich aktualisiert');
       },
       error: (error) => {
-        this._notify('Error updating article', 'error', error);
+        this._notify('Fehler beim Aktualisieren des Artikels', 'error', error);
       }
     });
   }
@@ -371,11 +382,11 @@ export class ExtensionInventorizationComponent {
         const extensionId = this.extension().id!;
         this.inventoriesService.deleteExtensionFromId(id, extensionId).subscribe({
           next: () => {
-            this._notify('Extension deleted successfully', 'success');
+            this._notify('Erweiterung erfolgreich gelöscht', 'success');
             this.router.navigate(['/inventory', id]);
           },
           error: (error) => {
-            this._notify('Error deinventorizing inventory item', 'error', error);
+            this._notify('Fehler beim Entfernen der Erweiterung', 'error', error);
           }
         });
       }

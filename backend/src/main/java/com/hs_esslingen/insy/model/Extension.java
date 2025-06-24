@@ -43,7 +43,7 @@ public class Extension {
 
     private String description;
 
-    @Column(name = "serial_number", nullable = false)
+    @Column(name = "serial_number", nullable = true)
     private String serialNumber;
 
     @Column(nullable = false)
