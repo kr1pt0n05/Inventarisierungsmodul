@@ -8,25 +8,11 @@
     </div>
 
     <!-- Hero content with limited width -->
-    <div class="text-center px-4 z-10 max-w-3xl mx-auto">
+    <div class="text-center px-4 z-10 max-w-3xl mx-auto flex flex-col items-center">
       <h1 class="text-5xl md:text-6xl font-bold mb-4 text-he-red">
         Willkommen zu INSY!
       </h1>
-      <p class="text-lg md:text-xl mb-8 text-gray-600">
-        Also gut, hier fängt der Text an, obwohl noch niemand so genau weiß, worum es eigentlich gehen soll.
-        Wahrscheinlich um irgendwas mit Design oder Konzept oder Synergien, dieses Wort klingt immer wichtig. An dieser
-        Stelle hatte ich eigentlich eine brillante Idee, aber dann kam der Kaffee dazwischen.
-        <br><br>
-        Weiter geht’s mit einem Absatz, der vor allem dafür da ist, den Platz zu füllen und dem Leser das Gefühl zu
-        geben, hier passiere gleich was Spannendes. Spoiler: Tut es nicht.
-        <br><br>
-        Jetzt kommen wir zum berühmten Abschnitt, in dem ich ehrlich gestehe, dass mir die Wörter langsam ausgehen. Ich
-        tippe einfach weiter, in der Hoffnung, dass mein zukünftiges Ich das hier nie zu Gesicht bekommt.
-        <br><br>
-        Ja und an der Stelle hier sind uns die Ideen ausgegangen, deswegen habe ich mir irgendwas Unkreatives
-        zusammengedichtet, hilfeeeeee... Lorem irgendwas, Ipsum Dingsbums, und bitte niemand fragen, was „Dolor sit
-        amet“ eigentlich bedeutet.
-      </p>
+      <img class="object-contain max-w-3/5 mt-2 mb-4 rounded-2xl" src="images/InSy_pixel-bild.png">
       @if (!authService.validToken()) {
       <a mat-raised-button color="primary" (click)="authService.login()">
         Login
