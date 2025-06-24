@@ -232,7 +232,18 @@ export class InventorizationComponent {
    */
   saveInventorization() {
     if (this.isNewInventorization()) {
-      this._saveNewInventorization();
+      this.orderService.getArticleById(this.currentArticleId.articleId).subscribe({
+        next: (article) => {
+          if (article.is_inventoried) {
+            this._notify('Article is already inventoried, cannot create a new inventory item.', 'error');
+            return;
+          }
+          this._saveNewInventorization();
+        },
+        error: (error) => {
+          this._saveNewInventorization();
+        }
+      });
     } else if (Object.keys(this._getItemChanges()).length > 0) {
       this._saveExistingInventorization();
     } else {
