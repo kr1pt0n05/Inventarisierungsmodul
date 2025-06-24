@@ -196,7 +196,18 @@ export class ExtensionInventorizationComponent {
     const currentId = this.inventoryId();
     if (currentId !== undefined && this.isValid()) {
       if (this.isNewExtension()) {
-        this._saveNewExtension(currentId);
+        this.orderService.getArticleById(this.currentArticleId.articleId).subscribe({
+          next: (article) => {
+            if (article.is_inventoried) {
+              this._notify('Article is already inventoried, cannot create a new extension.', 'error');
+              return;
+            }
+            this._saveNewExtension(currentId);
+          },
+          error: (error) => {
+            this._saveNewExtension(currentId);
+          }
+        });
       } else {
         this._saveExistingExtension();
       }
