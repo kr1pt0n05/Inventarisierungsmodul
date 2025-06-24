@@ -3,79 +3,82 @@
   <app-card title="Filter" class="grow min-w-96 max-w-md">
     <div card-content class="w-full">
       <!-- Filter Action Buttons -->
-      <div class="example-action-buttons">
-        <button mat-button (click)="openAllAccordion()">Alles ausklappen</button>
-        <button mat-button (click)="closeAllAccordions()">Alles einklappen</button>
+      <div class="flex justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <button mat-button (click)="openAllAccordion()">Alles ausklappen</button>
+          <button mat-button (click)="closeAllAccordions()">Alles einklappen</button>
+        </div>
+        <button mat-button color="warn" (click)="resetFilters()">Reset</button>
       </div>
 
       <!-- Accordion Sections -->
       <app-accordion title="Inventarnummer">
         <div expansion-panel-content>
           <app-range-slider [minValue]="minAndMaxId.minId" [maxValue]="minAndMaxId.maxId"
-                            [controlMin]="$any(inventoryForm).get('minId')" [controlMax]="$any(inventoryForm).get('maxId')" />
+            [controlMin]="$any(inventoryForm).get('minId')" [controlMax]="$any(inventoryForm).get('maxId')" />
         </div>
       </app-accordion>
 
       <app-accordion title="Zeitraum">
         <div class="min-h-fit" expansion-panel-content>
           <app-datepicker class="min-h-fit" [controlMin]="$any(inventoryForm).get('createdAfter')"
-                          [controlMax]="$any(inventoryForm).get('createdBefore')" />
+            [controlMax]="$any(inventoryForm).get('createdBefore')" />
         </div>
       </app-accordion>
 
       <app-accordion title="Firma">
         <div expansion-panel-content>
           <app-chip-v2 placeholder="Firma hinzufügen" heading="Firma" [options]="companies"
-                       [control]="$any(inventoryForm).get('company')" />
+            [control]="$any(inventoryForm).get('company')" />
         </div>
       </app-accordion>
 
       <app-accordion title="Preis">
         <div expansion-panel-content>
           <app-range-slider [minValue]="minAndMaxPrice.minPrice" [maxValue]="minAndMaxPrice.maxPrice"
-                            [controlMin]="$any(inventoryForm).get('minPrice')" [controlMax]="$any(inventoryForm).get('maxPrice')" />
+            [controlMin]="$any(inventoryForm).get('minPrice')" [controlMax]="$any(inventoryForm).get('maxPrice')" />
         </div>
       </app-accordion>
 
       <app-accordion title="Seriennummer">
         <div expansion-panel-content>
           <app-chip-v2 placeholder="Seriennummer hinzufügen" heading="Seriennummer" [options]="serialNumbers"
-                       [control]="$any(inventoryForm).get('serialNumber')" />
+            [control]="$any(inventoryForm).get('serialNumber')" />
         </div>
       </app-accordion>
 
       <app-accordion title="Standort/Nutzer">
         <div expansion-panel-content>
           <app-chip-v2 placeholder="Standort oder Nutzer hinzufügen" heading="Standort/Nutzer" [options]="locations"
-                       [control]="$any(inventoryForm).get('location')" />
+            [control]="$any(inventoryForm).get('location')" />
         </div>
       </app-accordion>
 
       <app-accordion title="Bestellt von">
         <div expansion-panel-content>
           <app-chip-v2 placeholder="Besteller hinzufügen" heading="Besteller" [options]="orderers"
-                       [control]="$any(inventoryForm).get('orderer')" />
+            [control]="$any(inventoryForm).get('orderer')" />
         </div>
       </app-accordion>
 
       <app-accordion title="Tags">
         <div expansion-panel-content>
           <app-chip-v2 placeholder="Tags hinzufügen" heading="Tags" [options]="tags"
-                       [control]="$any(inventoryForm).get('tags')" [useTagColors]="true" />
+            [control]="$any(inventoryForm).get('tags')" [useTagColors]="true" />
         </div>
       </app-accordion>
 
       <app-accordion title="Kostenstelle">
         <div expansion-panel-content>
           <app-chip-v2 placeholder="Kostenstelle hinzufügen" heading="Kostenstellen" [options]="costCenters"
-                       [control]="$any(inventoryForm).get('costCenter')" />
+            [control]="$any(inventoryForm).get('costCenter')" />
         </div>
       </app-accordion>
 
       <app-accordion title="Deinventarisiert">
         <div expansion-panel-content>
           <mat-checkbox label="Deinventarisiert" (click)="checkDeinventoriedBox()"
-                        (keydown)="checkDeinventoriedBox($event)" [checked]="showDeinventoried()">
+            (keydown)="checkDeinventoriedBox($event)" [checked]="showDeinventoried()">
             Deinventarisiertes anzeigen
           </mat-checkbox>
         </div>
