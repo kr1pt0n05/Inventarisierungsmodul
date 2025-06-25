@@ -1,6 +1,7 @@
 package com.hs_esslingen.insy.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -207,10 +208,22 @@ public class InventoryService {
         // Get or create the User
         User user = userService.resolveUser(dto.getOrderer());
 
+        // Check if price is a valid positive number and set price if true, else throw
+        // an exception
+        if (dto.getPrice() != null) {
+            if (dto.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+                throw new BadRequestException("Price cannot be negative.");
+            }
+            // Make sure that the price has always 2 descendants
+            dto.setPrice(dto.getPrice().setScale(2, RoundingMode.HALF_UP));
+            inventory.setPrice(dto.getPrice());
+        } else {
+            // If price is not set, set it to 0
+            inventory.setPrice(BigDecimal.ZERO);
+        }
         // Set remaining fields
         inventory.setDescription(dto.getDescription());
         inventory.setSerialNumber(dto.getSerialNumber());
-        inventory.setPrice(dto.getPrice());
         inventory.setLocation(dto.getLocation());
         inventory.setUser(user);
 
@@ -303,7 +316,14 @@ public class InventoryService {
                     break;
                 case "price":
                     if (fieldValue != null) {
-                        inventory.setPrice(new BigDecimal(fieldValue.toString()));
+                        if (new BigDecimal(fieldValue.toString())
+                                .compareTo(BigDecimal.ZERO) < 0) {
+                            throw new BadRequestException("Price cannot be negative.");
+                        }
+                        // Make sure that the price has always 2 descendants
+                        fieldValue = new BigDecimal(fieldValue.toString()).setScale(2, RoundingMode.HALF_UP);
+                        // Set the price
+                        inventory.setPrice((BigDecimal) fieldValue);
                     }
                     break;
                 case "serial_number":
