@@ -8,6 +8,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { OrdersComponent } from './pages/orders/orders.component';
 import { StatisticsComponent } from './pages/statistics/statistics.component';
+import { UnauthorisedComponent } from './pages/unauthorised/unauthorised.component';
 import { InventoryItemChangesResolver } from './resolver/changes.resolver';
 import { CommentsResolver } from './resolver/comments.resolver';
 import { ExtensionResolver } from './resolver/extension.resolver';
@@ -99,6 +100,12 @@ export const routes: Routes = [
     path: 'import',
     component: ImportComponent,
     canActivate: [DefaultGuardService],
+  },
+
+  {
+    title: 'Unautorisiert',
+    path: 'unauthorised',
+    component: UnauthorisedComponent,
   },
 
   {

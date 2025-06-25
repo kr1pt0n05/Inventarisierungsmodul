@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, GuardResult, MaybeAsync, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, GuardResult, MaybeAsync, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthenticationService } from './authentication.service';
 
 @Injectable({
@@ -7,11 +7,15 @@ import { AuthenticationService } from './authentication.service';
 })
 export class DefaultGuardService {
 
-  constructor(private readonly authService: AuthenticationService) {
-  }
+  constructor(private readonly authService: AuthenticationService,
+    private readonly router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult> {
-    return this.authService.validToken();
+    if (this.authService.validToken()) {
+      return true;
+    }
+    this.router.navigate(['/unauthorised'], { skipLocationChange: true });
+    return false;
   }
 
 }
