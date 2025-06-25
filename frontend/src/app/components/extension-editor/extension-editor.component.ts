@@ -1,13 +1,14 @@
 
 import { AsyncPipe } from '@angular/common';
 import { Component, model, output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { map, Observable, startWith } from 'rxjs';
+import { environment } from '../../../environment';
 import { localizePrice, unLocalizePrice } from '../../app.component';
 import { Extension, extensionDisplayNames } from '../../models/extension';
 import { inventoryItemDisplayNames } from '../../models/inventory-item';
@@ -106,6 +107,10 @@ export class ExtensionEditorComponent {
     if (this.requiredInputs() === undefined) {
       this.requiredInputs.set(['company', 'price', 'description']);
     }
+
+    this.formControls.get('price')?.addValidators([
+      Validators.pattern(environment.priceRegEx)
+    ]);
 
     this._setupFormControls();
     this._setupAutocomplete();
