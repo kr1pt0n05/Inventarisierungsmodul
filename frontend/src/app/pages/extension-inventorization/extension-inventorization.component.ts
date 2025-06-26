@@ -17,8 +17,6 @@ import { Article } from '../../models/Article';
 import { Extension, extensionDisplayNames, extensionItemFromArticle } from '../../models/extension';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { ArticleId, fixSingleArticleString } from '../../models/Order';
-import { AuthenticationService } from '../../services/authentication.service';
-import { CacheInventoryService } from '../../services/cache-inventory.service';
 import { InventoriesService } from '../../services/inventories.service';
 import { OrderService } from '../../services/order.service';
 @Component({
@@ -99,8 +97,6 @@ export class ExtensionInventorizationComponent {
 
 
   constructor(
-    private readonly cache: CacheInventoryService,
-    private readonly authService: AuthenticationService,
     private readonly inventoriesService: InventoriesService,
     private readonly orderService: OrderService,
     private readonly router: Router, route: ActivatedRoute,
