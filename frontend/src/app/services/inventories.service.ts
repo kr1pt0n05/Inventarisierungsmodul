@@ -147,6 +147,7 @@ export class InventoriesService {
     return this.http.delete<void>(`${this.url}/${id}/comments/${commentId}`);
   }
 
+
   /**
    * Adds an extension to a specific inventory item by its ID.
    *
@@ -158,6 +159,14 @@ export class InventoriesService {
     return this.http.post<Extension>(`${this.url}/${id}/components`, extension);
   }
 
+  /**
+   * Updates an existing extension of a specific inventory item by its ID.
+   * This method allows partial updates to the extension data.
+   * @param id - The ID of the inventory item containing the extension.
+   * @param extensionId - The ID of the extension to update.
+   * @param changes - An object containing the changes to apply to the extension.
+   * @returns {Observable<Extension>} - An observable containing the updated extension.
+   */
   updateExtension(id: number, extensionId: number, changes: Partial<Extension>): Observable<Extension> {
     return this.http.patch<Extension>(`${this.url}/${id}/components/${extensionId}`, changes);
   }
@@ -180,6 +189,13 @@ export class InventoriesService {
     return this.http.delete<void>(`${this.url}/${id}/components/${extensionId}`);
   }
 
+
+  /**
+   * Fetches the tags associated with a specific inventory item by its ID.
+   *
+   * @param id - The ID of the inventory item for which to fetch tags.
+   * @returns {Observable<Tag[]>} - An observable containing an array of tags.
+   */
   getTagsForId(id: number): Observable<Tag[]> {
     return this.http.get<Tag[]>(`${this.url}/${id}/tags`);
   }
@@ -213,6 +229,7 @@ export class InventoriesService {
     );
   }
 
+
   /**
    * Fetches the changes associated with a specific inventory item by its ID.
    *
@@ -222,6 +239,7 @@ export class InventoriesService {
   getChangesForId(id: number): Observable<any> {
     return this.http.get<any>(`${this.url}/${id}/history`);
   }
+
 
   /**
    * Fetches all available cost centers from the backend for use in filters.
