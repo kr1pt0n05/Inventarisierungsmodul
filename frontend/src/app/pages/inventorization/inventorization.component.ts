@@ -591,14 +591,14 @@ export class InventorizationComponent {
       inventories_id: this.editableInventoryItem().id,
       is_inventoried: true,
       is_extension: false,
-    } as unknown as Article;
-    this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
-      next: (updatedArticle) => {
-      },
-      error: (error) => {
-        this._notify('Fehler beim Aktualisieren des Artikels', 'error', error);
-      }
-    });
+    } as Partial<Article>;
+    return this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).pipe(
+      tap({
+        error: (error) => {
+          this._notify('Fehler beim Aktualisieren des Artikels', 'error', error);
+        }
+      })
+    );
   }
 
   /**
