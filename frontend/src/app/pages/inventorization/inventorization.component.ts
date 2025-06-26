@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { concat, finalize, map, Observable, of, tap } from 'rxjs';
+import { concat, EMPTY, finalize, forkJoin, map, mergeMap, Observable, of, tap } from 'rxjs';
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
@@ -233,22 +233,22 @@ export class InventorizationComponent {
    */
   saveInventorization() {
     if (this.isNewInventorization()) {
-      this.orderService.getArticleById(this.currentArticleId.articleId).subscribe({
-        next: (article) => {
-          if (article.is_inventoried) {
-            this._notify('Artikel ist bereits inventarisiert, ein neuer Inventargegenstand kann nicht erstellt werden.', 'error');
-            return;
+      if (this.currentArticleId.articleId === undefined) {
+        this._saveNewInventorization();
+      } else {
+        this.orderService.getArticleById(this.currentArticleId.articleId).subscribe({
+          next: (article) => {
+            if (article.is_inventoried) {
+              this._notify('Artikel ist bereits inventarisiert, ein neuer Inventargegenstand kann nicht erstellt werden.', 'error');
+            } else {
+              this._saveNewInventorization();
+            }
           }
-          this._saveNewInventorization();
-        },
-        error: (error) => {
-          this._saveNewInventorization();
-        }
-      });
+        });
+      }
     } else if (Object.keys(this._getItemChanges()).length > 0) {
       this._saveExistingInventorization();
     } else {
-      this.handleCommentChanges();
       this._onInventorization(this.editableInventoryItem());
     }
   }
@@ -298,9 +298,8 @@ export class InventorizationComponent {
         const id = this.editableInventoryItem().id;
         this.inventoriesService.deinventorizeInventoryById(id).subscribe({
           next: (item) => {
-            this.handleCommentChanges();
             this._notify('Inventargegenstand erfolgreich deinventarisiert', 'success');
-            this.router.navigate(['/inventory/', id]);
+            this._onInventorization(item);
           },
           error: (error) => {
             this._notify('Fehler beim Deinventarisieren des Inventargegenstands', 'error', error);
@@ -325,83 +324,105 @@ export class InventorizationComponent {
   }
 
   /**
-   * Processes new and deleted comments for the current inventory item.
-   * Fetches the latest comments after all changes are processed.
-   * If the item does not exist, logs an error.
+   * Handles changes to comments for the current inventory item.
+   * - Fetches the current item from the backend.
+   * - Processes deleted comments and new comments.
+   * - Fetches the latest comments from the backend.
+   * @returns {Observable<InventoryItem | void[] | Comment | Comment[]>}
    */
-  handleCommentChanges() {
-    if (this.editableInventoryItem().id) {
-      const id = this.editableInventoryItem().id;
-      this.inventoriesService.getInventoryById(id).subscribe({
-        next: () => {
-          this._handleDeletedComments(id);
-          this._handleNewComments(id);
-          this._fetchComments(id);
-        },
+  handleCommentChanges(): Observable<InventoryItem | void[] | Comment | Comment[]> {
+    const id = this.editableInventoryItem().id;
+    return concat(
+      this._handleDeletedComments(id),
+      this._handleNewComments(id),
+      this._fetchComments(id)
+    ).pipe(
+      tap({
         error: (error) => {
-          this._notify('Inventargegenstand nicht gefunden, Kommentare können nicht verarbeitet werden.', 'error', error);
+          this._notify('Kommentare konnten nicht verarbeitet werden.', 'error', error);
         }
-      });
-    }
+      })
+    );
   }
 
   /**
-   * Loads all comments for the given inventory item from the backend.
+   * Fetches comments for the current inventory item from the backend.
    * Updates the savedComments signal with the fetched comments.
+   * Logs errors if any occur during the fetching process.
    * @param id The inventory item's ID.
+   * @returns {Observable<Comment[]>} An observable that emits the fetched comments.
    * @private
    */
-  private _fetchComments(id: number) {
-    this.inventoriesService.getCommentsForId(id).subscribe({
-      next: (comments) => {
-        this.savedComments.update(() => comments);
-      },
-      error: (error) => {
-        this._notify('Fehler beim Laden der Kommentare', 'error', error);
-      }
-    });
+  private _fetchComments(id: number): Observable<Comment[]> {
+    return this.inventoriesService.getCommentsForId(id).pipe(
+      tap({
+        next: (comments) => {
+          this.savedComments.update(() => comments);
+        },
+        error: (error) => {
+          this._notify('Fehler beim Laden der Kommentare', 'error', error);
+        }
+      })
+    );
   }
 
   /**
-   * Adds all new (unsaved) comments to the backend for the given inventory item.
-   * On success, moves the comment from newComments to savedComments.
+   * Handles adding new comments to the backend for the given inventory item.
+   * Returns an observable that completes when all new comments are saved.
+   * On success, updates the savedComments and newComments signals.
+   * Logs errors if any occur during the saving process.
    * @param id The inventory item's ID.
+   * @returns {Observable<void>} An observable that completes when all new comments are saved.
    * @private
    */
-  private _handleNewComments(id: number) {
-    for (const comment of this.newComments()) {
-      this.inventoriesService.addCommentToId(id, comment).subscribe({
-        next: (savedComment) => {
-          this.savedComments.update(currentComments => [...currentComments, savedComment]);
-          this.newComments.update(currentNewComments => currentNewComments.filter(c => c !== comment));
-        },
-        error: (error) => {
-          this._notify('Fehler beim Hinzufügen des Kommentars', 'error', error);
-        }
-      });
-    }
+  private _handleNewComments(id: number): Observable<Comment> {
+    return concat(...this.newComments().map(comment =>
+      this.inventoriesService.addCommentToId(id, comment).pipe(
+        tap({
+          next: savedComment => this._onCommentAdded(savedComment, comment),
+          error: (error) => this._notify('Fehler beim Hinzufügen des Kommentars', 'error', error)
+        })
+      )
+    ));
+  }
+
+  /**
+   * Handles updating signals after a comment is added.
+   * @param savedComment The comment that was saved.
+   * @param originalComment The original comment object.
+   * @private
+   */
+  private _onCommentAdded(savedComment: Comment, originalComment: Comment) {
+    this.savedComments.update(currentComments => [...currentComments, { ...savedComment }]);
+    this.newComments.update(currentNewComments => currentNewComments.filter(c => c !== originalComment));
   }
 
   /**
    * Deletes all comments marked for deletion from the backend for the given inventory item.
-   * On success, removes the comment from both deletedComments and savedComments.
+   * On success, removes the comment from both savedComments and deletedComments signals.
    * @param id The inventory item's ID.
+   * @returns {Observable<void[]>} An observable that completes when all deletions are done.
    * @private
    */
-  private _handleDeletedComments(id: number) {
-    for (const comment of this.deletedComments()) {
-      if (comment.id) {
-        this.inventoriesService.deleteCommentFromId(id, comment.id).subscribe({
-          next: () => {
-            this.savedComments.update(currentComments => currentComments.filter(c => c.id !== comment.id));
-            this.deletedComments.update(currentDeletedComments => currentDeletedComments.filter(c => c !== comment));
-          },
-          error: (error) => {
-            this._notify('Fehler beim Löschen des Kommentars', 'error', error);
-          }
-        });
-      }
-    }
+  private _handleDeletedComments(id: number): Observable<void[]> {
+    return forkJoin(this.deletedComments().map(comment =>
+      this.inventoriesService.deleteCommentFromId(id, comment.id!).pipe(
+        tap({
+          next: () => this._onCommentDeleted(comment),
+          error: (error) => this._notify('Fehler beim Löschen des Kommentars', 'error', error)
+        })
+      )
+    ));
+  }
+
+  /**
+   * Handles updating signals after a comment is deleted.
+   * @param comment The comment that was deleted.
+   * @private
+   */
+  private _onCommentDeleted(comment: Comment) {
+    this.savedComments.update(currentComments => currentComments.filter(c => c.id !== comment.id));
+    this.deletedComments.update(currentDeletedComments => currentDeletedComments.filter(c => c !== comment));
   }
 
   /**
@@ -426,18 +447,20 @@ export class InventorizationComponent {
         this._notify('Inventargegenstand existiert bereits, ein neuer kann nicht erstellt werden.', 'error');
       },
       error: () => {
-        this.inventoriesService.addInventoryItem(this.editableInventoryItem()).subscribe({
-          next: (newItem) => {
-            this.handleCommentChanges();
-            if (this.currentArticleId.orderId && this.currentArticleId.articleId) {
-              this._updateImportedArticle();
+        forkJoin([this.inventoriesService.addInventoryItem(this.editableInventoryItem()).pipe(
+          tap({
+            next: (newItem) => {
+              this._notify('Inventargegenstand erfolgreich erstellt', 'success');
+              this._onInventorization(newItem);
+            },
+            error: (error) => {
+              this._notify('Fehler beim Erstellen des neuen Inventargegenstands', 'error', error);
             }
-            this._notify('Inventargegenstand erfolgreich erstellt', 'success');
-            this._onInventorization(newItem);
-          },
-          error: (error) => {
-            this._notify('Fehler beim Erstellen des neuen Inventargegenstands', 'error', error);
-          }
+          })
+        ),
+        (this.currentArticleId.orderId && this.currentArticleId.articleId) ? this._updateImportedArticle() : EMPTY
+        ]).subscribe({
+          next: ([newItem, _]) => this._onInventorization(newItem)
         });
       }
     });
@@ -452,7 +475,6 @@ export class InventorizationComponent {
   private _saveExistingInventorization() {
     this.inventoriesService.getInventoryById(this.editableInventoryItem().id).subscribe({
       next: () => {
-        this.handleCommentChanges();
         this.inventoriesService.updateInventoryById(this.editableInventoryItem().id, this._getItemChanges()).subscribe({
           next: (updatedItem) => {
             this._notify('Inventargegenstand erfolgreich aktualisiert', 'success');
@@ -478,15 +500,12 @@ export class InventorizationComponent {
    * @private
    */
   private _onInventorization(inventoryItem: InventoryItem) {
-    concat(this._createNewTags(), this._setTagsOfItem().pipe(
-      tap({
-        next: updatedTags => {
-          this.tags.set(updatedTags);
-          inventoryItem.tags = updatedTags;
-        }
-      })
-    )).pipe(
+    forkJoin([
+      this._createNewTags(),
+      this.handleCommentChanges()
+    ]).pipe(
       finalize(() => {
+        inventoryItem.tags = this.tags();
         this.editableInventoryItem.set(inventoryItem);
         this.onInventorization.emit(inventoryItem);
         this._redirectOnInventorization(inventoryItem);
@@ -522,7 +541,7 @@ export class InventorizationComponent {
    * Logs errors if any occur during the creation process.
    * @returns {Observable<Tag[]>} An observable emitting the newly created tags.
    */
-  private _createNewTags() {
+  private _createNewTags(): Observable<Tag[]> {
     const newTags = this.newTags();
     if (newTags.length === 0) {
       return of([]);
@@ -533,12 +552,14 @@ export class InventorizationComponent {
       tap({
         next: (savedTags) => {
           this.tags.update(t => [...currentTags, ...savedTags]);
+          console.log('Tags erstellt', this.tags());
           this.newTags.set([]);
         },
         error: (error) => {
           this._notify('Fehler beim Speichern der Tags', 'error', error);
         }
-      })
+      }),
+      mergeMap(savedTags => this._setTagsOfItem())
     );
   }
 
@@ -549,9 +570,13 @@ export class InventorizationComponent {
    * @returns {Observable<Tag[]>} An observable emitting the updated tags.
    */
   private _setTagsOfItem(): Observable<Tag[]> {
+    console.log('tags speichern', this.tags());
     return this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).pipe(
       map(item => item.tags ?? []),
       tap({
+        next: updatedTags => {
+          this.tags.set(updatedTags);
+        },
         error: (error) => {
           this._notify('Fehler beim Aktualisieren der Tags', 'error', error);
         }
