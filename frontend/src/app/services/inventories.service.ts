@@ -192,6 +192,10 @@ export class InventoriesService {
    * @returns {Observable<InventoryItem>} - An observable containing the updated inventory item.
    */
   updateTagsOfId(id: number, tags: Tag[]): Observable<InventoryItem> {
+    if (tags.length === 0) {
+      this.deleteTagsFromId(id);
+      return of({} as InventoryItem); // Return an empty InventoryItem if no tags are provided
+    }
     return this.http.post<InventoryItem>(`${this.url}/${id}/tags`, tags.map(tag => tag.id));
   }
 
