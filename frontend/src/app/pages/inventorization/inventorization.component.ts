@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { concat, finalize, map, Observable, of, tap } from 'rxjs';
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
@@ -469,21 +470,40 @@ export class InventorizationComponent {
   }
 
   /**
-   * Updates local state and emits the onInventorization event after saving.
-   * Navigates to the appropriate page depending on context:
-   * - If there are more item articles, navigates to '/new' for the next.
-   * - If there are extension articles, navigates to '/new-extension'.
+   * Handles the inventorization process for the inventory item.
+   * - Creates new tags if any are added.
+   * - Updates the tags of the inventory item.
+   * - Emits the updated inventory item and redirects based on the current state.
+   * @param inventoryItem The inventory item being inventorized.
+   * @private
+   */
+  private _onInventorization(inventoryItem: InventoryItem) {
+    concat(this._createNewTags(), this._setTagsOfItem().pipe(
+      tap({
+        next: updatedTags => {
+          this.tags.set(updatedTags);
+          inventoryItem.tags = updatedTags;
+        }
+      })
+    )).pipe(
+      finalize(() => {
+        this.editableInventoryItem.set(inventoryItem);
+        this.onInventorization.emit(inventoryItem);
+        this._redirectOnInventorization(inventoryItem);
+      })
+    ).subscribe();
+  }
+
+  /**
+   * Redirects the user based on the current state after inventorization.
+   * - If there are item articles, navigates to '/new' with itemArticles and extensionArticles as query params.
+   * - If there are extension articles, navigates to '/new-extension' with inventoryId and extensionArticles as query params.
    * - If in order context, navigates to '/orders'.
    * - Otherwise, navigates to the detail page of the saved inventory item.
    * @param inventoryItem The saved inventory item.
    * @private
    */
-  private _onInventorization(inventoryItem: InventoryItem) {
-    this._createNewTags();
-    this.editableInventoryItem.set(inventoryItem);
-    this.tags.set(inventoryItem.tags ?? []);
-    this.onInventorization.emit(inventoryItem);
-
+  private _redirectOnInventorization(inventoryItem: InventoryItem) {
     if (this.itemArticles().length > 0) {
       this.router.navigate(['/new'], { queryParams: { itemArticles: [...this.itemArticles()], extensionArticles: this.extensionArticles() } });
     } else if (this.extensionArticles().length > 0) {
@@ -496,60 +516,47 @@ export class InventorizationComponent {
   }
 
   /**
-   * Creates new tags in the backend for each tag in the newTags signal.
-   * On success, updates the tags signal and removes the tag from newTags.
-   * Logs errors if any occur during the saving process.
+   * Creates new tags in the backend based on the newTags signal.
+   * If there are no new tags, returns an empty observable.
+   * On success, updates the tags signal with the newly created tags and clears newTags.
+   * Logs errors if any occur during the creation process.
+   * @returns {Observable<Tag[]>} An observable emitting the newly created tags.
    */
   private _createNewTags() {
     const newTags = this.newTags();
     if (newTags.length === 0) {
-      this._setTagsOfItem();
-      return;
+      return of([]);
     }
     const currentTags = this.tags();
 
-    for (const tag of newTags) {
-      this.tagsService.addTag({ name: tag } as Tag).subscribe({
-        next: (savedTag) => {
-          this.tags.update(t => [...currentTags, savedTag]);
-          this.newTags.update(currentNewTags => currentNewTags.filter(t => t !== tag));
-
-          if (this.newTags().length === 0) {
-            this._setTagsOfItem();
-          }
+    return this.tagsService.addTags(newTags).pipe(
+      tap({
+        next: (savedTags) => {
+          this.tags.update(t => [...currentTags, ...savedTags]);
+          this.newTags.set([]);
         },
         error: (error) => {
-          this._notify('Fehler beim Speichern des Tags', 'error', error);
+          this._notify('Fehler beim Speichern der Tags', 'error', error);
         }
-      });
-    }
+      })
+    );
   }
 
   /**
-   * Updates the tags of the current inventory item.
-   * If there are new tags, creates them first and then updates the item.
-   * Logs success or error messages based on the operation outcome.
+   * Updates the tags of the current inventory item in the backend.
+   * Returns an observable that emits the updated tags.
+   * Logs errors if any occur during the update process.
+   * @returns {Observable<Tag[]>} An observable emitting the updated tags.
    */
-  private _setTagsOfItem() {
-    if (this.tags().length > 0) {
-      this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).subscribe({
-        next: (updatedItem) => {
-          console.log('Tags updated successfully');
-        },
+  private _setTagsOfItem(): Observable<Tag[]> {
+    return this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).pipe(
+      map(item => item.tags ?? []),
+      tap({
         error: (error) => {
           this._notify('Fehler beim Aktualisieren der Tags', 'error', error);
         }
-      });
-    } else {
-      this.inventoriesService.deleteTagsFromId(this.editableInventoryItem().id).subscribe({
-        next: () => {
-          console.log('Tags deleted successfully');
-        },
-        error: (error) => {
-          this._notify('Fehler beim Löschen der Tags', 'error', error);
-        }
-      });
-    }
+      })
+    );
   }
 
   /**
