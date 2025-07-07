@@ -27,10 +27,22 @@ export class AppComponent {
 
   showMobileMenu = signal<boolean>(false);
 
+
+  /**
+   * Updates the current page title signal with the provided title.
+   * This method is used to set the title of the current page dynamically.
+   *
+   * @param currentPageTitle - The title to set for the current page.
+   */
   updateCurrentPageTitle(currentPageTitle: string) {
     this.currentPageTitle.set(currentPageTitle);
   }
 
+  /**
+   * Handles the login/logout functionality based on the user's authentication status.
+   * If the user has a valid token, it logs them out and navigates to the home page.
+   * If the user does not have a valid token, it initiates the login process.
+   */
   handleLogInOut() {
     if (this.authService.validToken()) {
       this.authService.logout()
@@ -42,6 +54,11 @@ export class AppComponent {
     }
   }
 
+  /**
+   * Toggles the visibility of the mobile menu.
+   * This method sets the `showMobileMenu` signal to its opposite value,
+   * effectively showing or hiding the mobile menu when called.
+   */
   toggleMobileMenu() {
     this.showMobileMenu.set(!this.showMobileMenu());
   }
