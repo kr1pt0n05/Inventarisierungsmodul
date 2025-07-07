@@ -46,6 +46,17 @@ export class AppComponent {
     this.showMobileMenu.set(!this.showMobileMenu());
   }
 
+  /**
+   * Generates user initials based on the username from the authentication service.
+   * It extracts the first letter of each word in the username, converts them to uppercase,
+   * and joins them together.
+   *
+   * @returns {string} - The initials of the user, or '?' if the username is not available.
+   */
+  getUserInitials(): string {
+    return this.authService.getUsername().match(/\b(\w)/g)?.join('').toUpperCase() ?? '?';
+  }
+
 }
 
 

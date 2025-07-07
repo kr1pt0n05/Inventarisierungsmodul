@@ -1,5 +1,5 @@
 <div class="min-h-full">
-  <nav class="flex h-16 items-center justify-between bg-he-darkblue shadow-2xl">
+  <nav class="flex h-20 items-center justify-between bg-he-darkblue shadow-2xl">
     <div class="flex items-center">
       <!-- Logo-->
       <img class="h-16 w-auto object-contain px-8 cursor-pointer" src="images/logo_hochschule_esslingen_negativ_de.png"
@@ -45,13 +45,22 @@
           [routerLinkActiveOptions]="{ exact: true }" [class]="buttonClasses">Hochladen</a>
       </div>
     </div>
-    <button mat-button color="accent" class="mx-8" (click)="handleLogInOut()">
+
+    <div class="flex items-center mr-8">
+      <button mat-button color="accent" (click)="handleLogInOut()">
+        @if (authService.validToken()) {
+        Logout
+        } @else {
+        Login
+        }
+      </button>
       @if (authService.validToken()) {
-      Logout
-      } @else {
-      Login
+      <div
+        class="flex items-center justify-center ml-4 px-1 pb-0.5 h-12 w-fit min-w-12 rounded-full bg-he-grey text-he-darkblue text-xl font-semibold">
+        {{getUserInitials()}}
+      </div>
       }
-    </button>
+    </div>
   </nav>
 
   @if (showMobileMenu()) {
