@@ -1,7 +1,9 @@
 import { Component, signal } from '@angular/core';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
+import { OrderService } from './services/order.service';
 
 @Component({
   standalone: true,
@@ -10,14 +12,18 @@ import { AuthenticationService } from './services/authentication.service';
     RouterLink,
     RouterLinkActive,
     RouterOutlet,
-    MatButtonModule
+    MatButtonModule,
+    MatBadgeModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
 export class AppComponent {
   constructor(public authService: AuthenticationService,
-    private readonly router: Router) {
+    private readonly router: Router,
+    private readonly orderService: OrderService) {
+    // Initialize the current page title based on the current route
+    this.updateCurrentPageTitle(this.router.url === '/' ? 'Startseite' : this.router.url.replace('/', ''));
   }
 
   currentPageTitle = signal<string>("Startseite");
@@ -26,6 +32,20 @@ export class AppComponent {
   buttonActiveClasses = 'bg-gray-900 text-white';
 
   showMobileMenu = signal<boolean>(false);
+
+  numberOfOpenArticles = signal<number>(0);
+  ngOnInit() {
+    this.orderService.getNumberOfOpenArticles().subscribe((count) => {
+      this.numberOfOpenArticles.set(count);
+    });
+
+    // Subscribe to changes in open articles to keep the value updated
+    this.orderService.openArticlesChanged.subscribe(() => {
+      this.orderService.getNumberOfOpenArticles().subscribe((count) => {
+        this.numberOfOpenArticles.set(count);
+      });
+    });
+  }
 
   updateCurrentPageTitle(currentPageTitle: string) {
     this.currentPageTitle.set(currentPageTitle);
