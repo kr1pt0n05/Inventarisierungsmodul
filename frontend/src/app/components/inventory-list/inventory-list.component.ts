@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, input, output, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
@@ -97,6 +97,12 @@ export class InventoryListComponent implements AfterViewInit {
    * This service handles pagination, sorting, filtering and searching of data.
    */
   inventoryItems = inject(ServerTableDataSourceService);
+
+  /**
+   * Input property to control the visibility of the download button.
+   * If set to true, the download button will be displayed, allowing users to download the inventory list as an Excel file.
+   */
+  showDownloadButton = input<boolean>(true);
 
   /**
    * Reference to the MatPaginator component used for handling pagination.
