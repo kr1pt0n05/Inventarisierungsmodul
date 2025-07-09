@@ -119,7 +119,7 @@ export class InventorizationComponent {
    * Input signal indicating whether a new inventory item is being inventorized.
    * Defaults to false, meaning the component is in edit mode for an existing item.
    */
-  isNewInventorization = model<boolean>(false);
+  isNew = model<boolean>(false);
   /**
    * Input signal for the inventory item to be edited (or undefined for new items).
    */
@@ -209,7 +209,7 @@ export class InventorizationComponent {
     this.editableInventoryItem.set({ ...this.inventoryItem() });
     this.tags.set(this.editableInventoryItem().tags ?? []);
 
-    if (!this.isNewInventorization()) {
+    if (!this.isNew()) {
       this.disabledInputs.set(['id', 'created_at']);
       this._fetchComments(this.editableInventoryItem().id);
     } else {
@@ -235,7 +235,7 @@ export class InventorizationComponent {
    * Emits the onInventorization event after completion.
    */
   saveInventorization() {
-    if (this.isNewInventorization()) {
+    if (this.isNew()) {
       this.orderService.getArticleById(this.currentArticleId.articleId).subscribe({
         next: (article) => {
           if (article.is_inventoried) {
