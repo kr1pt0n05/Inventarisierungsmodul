@@ -60,8 +60,8 @@ export const routes: Routes = [
     component: ExtensionInventorizationComponent,
     canActivate: [DefaultGuardService],
     resolve: {
-      isNewExtension: () => false,
-      inputExtension: ExtensionResolver
+      isNew: () => false,
+      extension: ExtensionResolver
     }
   },
   {
@@ -71,7 +71,7 @@ export const routes: Routes = [
     canActivate: [DefaultGuardService],
     resolve: {
       inventoryItem: InventoryItemResolver,
-      isNewInventorization: () => false,
+      isNew: () => false,
     },
   },
   {
@@ -80,7 +80,7 @@ export const routes: Routes = [
     component: InventorizationComponent,
     canActivate: [DefaultGuardService],
     resolve: {
-      isNewInventorization: () => true,
+      isNew: () => true,
       inventoryItem: () => ({}),
     }
   },
@@ -90,7 +90,7 @@ export const routes: Routes = [
     component: ExtensionInventorizationComponent,
     canActivate: [DefaultGuardService],
     resolve: {
-      isNewExtension: () => true,
+      isNew: () => true,
     }
 
   },
