@@ -11,8 +11,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { localizePrice } from '../../app.component';
 import { CardComponent } from '../../components/card/card.component';
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
-import { ExtensionEditorComponent } from "../../components/extension-editor/extension-editor.component";
 import { InventoryListComponent } from '../../components/inventory-list/inventory-list.component';
+import { ItemEditorComponent } from '../../components/item-editor/item-editor.component';
 import { Article } from '../../models/Article';
 import { Extension, extensionDisplayNames, extensionItemFromArticle } from '../../models/extension';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
@@ -33,7 +33,7 @@ import { OrderService } from '../../services/order.service';
     MatDividerModule,
     MatButtonModule,
     MatInputModule,
-    ExtensionEditorComponent
+    ItemEditorComponent
   ],
   templateUrl: './extension-inventorization.component.html',
   styleUrl: './extension-inventorization.component.css'
@@ -47,6 +47,7 @@ export class ExtensionInventorizationComponent {
    * Holds the current extension being edited.
    */
   extension = signal<Extension>({} as Extension);
+  itemColumns = extensionDisplayNames;
   inputExtension = input<Extension | undefined>(undefined);
   changes = signal<Partial<Extension>>({} as Partial<Extension>);
   /**

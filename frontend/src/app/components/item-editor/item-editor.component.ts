@@ -1,6 +1,5 @@
-
 import { AsyncPipe } from '@angular/common';
-import { Component, model, output } from '@angular/core';
+import { Component, input, model, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,14 +9,14 @@ import { MatInputModule } from '@angular/material/input';
 import { map, Observable, startWith } from 'rxjs';
 import { environment } from '../../../environment';
 import { localizePrice, unLocalizePrice } from '../../app.component';
-import { Extension, extensionDisplayNames } from '../../models/extension';
-import { inventoryItemDisplayNames } from '../../models/inventory-item';
+import { Extension } from '../../models/extension';
+import { InventoryItem } from '../../models/inventory-item';
 import { AuthenticationService } from '../../services/authentication.service';
 import { CacheInventoryService } from '../../services/cache-inventory.service';
-
+import { InventoriesService } from '../../services/inventories.service';
 
 @Component({
-  selector: 'app-extension-editor',
+  selector: 'app-item-editor',
   imports: [
     MatFormFieldModule,
     ReactiveFormsModule,
@@ -27,14 +26,14 @@ import { CacheInventoryService } from '../../services/cache-inventory.service';
     MatDividerModule,
     MatButtonModule,
   ],
-  templateUrl: './extension-editor.component.html',
-  styleUrl: './extension-editor.component.css'
+  templateUrl: './item-editor.component.html',
+  styleUrl: './item-editor.component.css'
 })
-export class ExtensionEditorComponent {
+export class ItemEditorComponent {
   /**
    * Holds the current extension being edited.
    */
-  extension = model<Extension>({} as Extension);
+  item = model<Extension | InventoryItem>({} as InventoryItem);
 
   /**
    * List of disabled input field keys.
@@ -43,7 +42,7 @@ export class ExtensionEditorComponent {
   /**
    * List of required input field keys.
    */
-  requiredInputs = model<string[]>(['company', 'price', 'description']);
+  requiredInputs = model<string[]>([]);
 
   /**
    * Event emitter that emits when the form validity changes.
@@ -55,28 +54,27 @@ export class ExtensionEditorComponent {
    * Event emitter that emits the current extension object when it changes.
    * This is used to notify parent components of changes to the extension.
    */
-  changes = output<Partial<Extension>>();
+  changes = output<Partial<Extension | InventoryItem>>();
 
   /**
    * Stores the initial values of the extension for change detection.
    */
-  initialValues!: Extension;
+  initialValues!: Extension | InventoryItem;
 
   /**
    * Defines the fields to display in the editor and their labels (for extensions).
    */
-  extensionColumns = extensionDisplayNames;
+  itemColumns = input.required<Map<string, string>>();
 
   /**
    * Map of FormControl objects for each extension property.
    */
-  formControls = new Map<string, FormControl>(
-    Array.from(extensionDisplayNames.keys()).map(key => [key, new FormControl('')])
-  );
+  formControls!: Map<string, FormControl>;
+
   /**
    * FormGroup containing all form controls for validation and value tracking.
    */
-  formGroup = new FormGroup(Object.fromEntries(this.formControls.entries()));
+  formGroup!: FormGroup;
 
 
   /**
@@ -88,9 +86,12 @@ export class ExtensionEditorComponent {
    */
   filteredOptions = new Map<string, Observable<string[]>>();
 
+  isInitialized = false;
+
   constructor(
     private readonly cache: CacheInventoryService,
-    private readonly authService: AuthenticationService) { }
+    private readonly authService: AuthenticationService,
+    private readonly inventoriesService: InventoriesService) { }
 
   /**
    * Angular lifecycle hook.
@@ -98,24 +99,12 @@ export class ExtensionEditorComponent {
    * and sets default values for new extensions.
    */
   ngOnInit() {
-    if (!this.extension()) {
-      this.extension.set({} as Extension);
-    }
-    if (this.disabledInputs() === undefined) {
-      this.disabledInputs.set(['created_at']);
-    }
-    if (this.requiredInputs() === undefined) {
-      this.requiredInputs.set(['company', 'price', 'description']);
-    }
-
-    this.formControls.get('price')?.addValidators([
-      Validators.pattern(environment.priceRegEx)
-    ]);
-
     this._setupFormControls();
     this._setupAutocomplete();
 
     this.isValid.emit(this.formGroup.valid && this.requiredInputs().every(input => this.formControls.get(input)?.value));
+    this.isInitialized = true;
+    this.ngOnChanges();
   }
 
   /**
@@ -123,7 +112,10 @@ export class ExtensionEditorComponent {
    * Resets form controls and values when the inventory item changes.
    */
   ngOnChanges() {
-    this.initialValues = { ...this.extension() };
+    if (!this.isInitialized) {
+      return;
+    }
+    this.initialValues = { ...this.item() };
     this._updateValuesFromInput();
     this.formGroup.markAsPristine();
     this.formGroup.markAsUntouched();
@@ -141,12 +133,21 @@ export class ExtensionEditorComponent {
    * @private
    */
   private _setupFormControls() {
+    this.formControls = new Map<string, FormControl>(
+      Array.from(this.itemColumns().keys()).map(key => [key as string, new FormControl('')])
+    );
+    this.formGroup = new FormGroup(Object.fromEntries(this.formControls.entries()));
+
+    this.formControls.get('price')?.addValidators([
+      Validators.pattern(environment.priceRegEx)
+    ]);
+
     this.formGroup.valueChanges.subscribe(value => {
-      this.extension.update(extension => {
+      this.item.update(item => {
         for (const [key, control] of this.formControls.entries()) {
-          (extension as any)[key] = key === 'price' ? unLocalizePrice(control.value) : control.value;
+          item[key] = key === 'price' ? unLocalizePrice(control.value) : control.value;
         }
-        return extension;
+        return item;
       });
 
       this.isValid.emit(this.formGroup.valid && this.requiredInputs().every(input => this.formControls.get(input)?.value));
@@ -180,16 +181,26 @@ export class ExtensionEditorComponent {
     if (!this.initialValues.orderer) {
       this.formControls.get('orderer')?.setValue(this.authService.getUsername());
     }
-    const oldPrice = this.formControls.get('price')?.value;
+    if (this.formControls.has('id') && !this.initialValues.id) {
+      this.inventoriesService.getMinAndMaxId().subscribe({
+        next: (minAndMaxId) => {
+          this.formControls.get('id')!.setValue(minAndMaxId.maxId + 1)
+        },
+        error: (error) => {
+          console.error('Error fetching min and max ID:', error);
+        }
+      });
+    }
     this.formControls.get('price')?.setValue(
-      localizePrice(oldPrice), { emitEvent: false });
+      localizePrice(this.formControls.get('price')?.value) ?? '', { emitEvent: false });
   }
 
-  private _getChanges(): Partial<Extension> {
-    const changes: Partial<Extension> = {};
+  private _getChanges(): Partial<Extension | InventoryItem> {
+    const changes: Partial<Extension | InventoryItem> = {};
     for (const [key, control] of this.formControls.entries()) {
-      if (control.dirty && control.value !== this.initialValues[key as keyof Extension]) {
-        changes[key as keyof Extension] = key === 'price' ? unLocalizePrice(control.value) : control.value;
+      const value = key === 'price' ? unLocalizePrice(control.value) : control.value;
+      if (control.dirty && value !== this.initialValues[key]) {
+        changes[key] = value;
       }
     }
     return changes;
@@ -201,10 +212,12 @@ export class ExtensionEditorComponent {
    * @private
    */
   private _setupAutocomplete() {
-    for (const key of inventoryItemDisplayNames.keys()) {
+    for (const key of this.itemColumns().keys()) {
       this.options.set(key, [] as string[]);
     }
+    this.cache.getCostCenters().subscribe(costCenters => this.options.set('cost_center', costCenters));
     this.cache.getCompanies().subscribe(companies => this.options.set('company', companies));
+    this.cache.getLocations().subscribe(locations => this.options.set('location', locations));
     this.cache.getOrderers().subscribe(orderers => this.options.set('orderer', orderers));
 
     for (const [key, control] of this.formControls.entries()) {
@@ -228,4 +241,5 @@ export class ExtensionEditorComponent {
     const filterValue = String(value).toLowerCase() ?? '';
     return this.options.get(id)?.filter(option => option.toLowerCase().includes(filterValue)) ?? [];
   }
+
 }

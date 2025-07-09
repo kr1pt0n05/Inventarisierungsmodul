@@ -24,10 +24,10 @@
         <div card-content class="grid grid-cols-1 lg:grid-cols-2 gap-2 pt-4">
 
             <!-- Form Section -->
-            <app-extension-editor [(extension)]="extension" [(disabledInputs)]="disabledInputs"
+            <app-item-editor [(item)]="extension" [itemColumns]="itemColumns" [(disabledInputs)]="disabledInputs"
                 [(requiredInputs)]="requiredInputs" (isValid)="onIsValidChange($event)"
                 (changes)="onExtensionChange($event)">
-            </app-extension-editor>
+            </app-item-editor>
 
             <!-- Inventory Item Section -->
             <div class="flex flex-col pl-4 pr-4 gap-8 m-2">

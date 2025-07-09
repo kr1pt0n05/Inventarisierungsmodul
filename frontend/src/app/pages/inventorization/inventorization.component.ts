@@ -10,13 +10,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CardComponent } from '../../components/card/card.component';
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
-import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
+import { ItemEditorComponent } from '../../components/item-editor/item-editor.component';
 import { TagsEditorComponent } from "../../components/tags-editor/tags-editor.component";
 import { Article } from '../../models/Article';
 import { Comment } from '../../models/comment';
-import { InventoryItem, inventoryItemFromArticle } from '../../models/inventory-item';
+import { InventoryItem, inventoryItemDisplayNames, inventoryItemFromArticle } from '../../models/inventory-item';
 import { ArticleId, fixSingleArticleString } from '../../models/Order';
 import { Tag } from '../../models/tag';
 import { InventoriesService } from '../../services/inventories.service';
@@ -106,8 +107,9 @@ import { TagsService } from '../../services/tags.service';
     MatInputModule,
     MatSelectModule,
     CommentsEditorComponent,
-    InventoryItemEditorComponent,
+    ItemEditorComponent,
     TagsEditorComponent,
+    CardComponent
   ],
   templateUrl: './inventorization.component.html',
   styleUrl: './inventorization.component.css'
@@ -122,6 +124,8 @@ export class InventorizationComponent {
    * Input signal for the inventory item to be edited (or undefined for new items).
    */
   inventoryItem = input<InventoryItem>({} as InventoryItem);
+  itemColumns = inventoryItemDisplayNames;
+  changes = signal<Partial<InventoryItem>>({} as InventoryItem);
 
   /**
    * Output event emitter, triggered when inventorization is saved.
@@ -244,7 +248,7 @@ export class InventorizationComponent {
           this._saveNewInventorization();
         }
       });
-    } else if (Object.keys(this._getItemChanges()).length > 0) {
+    } else if (Object.keys(this.changes()).length > 0) {
       this._saveExistingInventorization();
     } else {
       this.handleCommentChanges();
@@ -452,7 +456,7 @@ export class InventorizationComponent {
     this.inventoriesService.getInventoryById(this.editableInventoryItem().id).subscribe({
       next: () => {
         this.handleCommentChanges();
-        this.inventoriesService.updateInventoryById(this.editableInventoryItem().id, this._getItemChanges()).subscribe({
+        this.inventoriesService.updateInventoryById(this.editableInventoryItem().id, this.changes()).subscribe({
           next: (updatedItem) => {
             this._notify('Inventargegenstand erfolgreich aktualisiert', 'success');
             this._onInventorization(updatedItem);
@@ -595,19 +599,12 @@ export class InventorizationComponent {
   }
 
   /**
-   * Computes and returns the changed fields of the inventory item compared to the original.
-   * Only fields with changed values are included in the returned object.
-   * @returns {InventoryItem} An object containing only the changed fields.
-   * @private
+   * Handles changes to the inventory item, updating the changes signal.
+   * This method is called when an item is edited in the ItemEditorComponent.
+   * @param item Partial inventory item with updated fields.
    */
-  private _getItemChanges(): Partial<InventoryItem> {
-    const changes: Partial<InventoryItem> = {} as InventoryItem;
-    for (const [key, value] of Object.entries(this.editableInventoryItem())) {
-      if (value !== this.inventoryItem()[key as keyof InventoryItem]) {
-        changes[key as keyof InventoryItem] = value;
-      }
-    }
-    return changes;
+  onItemChange(item: Partial<InventoryItem>) {
+    this.changes.set(item);
   }
 
   /**
