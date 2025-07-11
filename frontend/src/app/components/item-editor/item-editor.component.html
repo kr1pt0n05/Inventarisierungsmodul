@@ -1,12 +1,12 @@
 <form [formGroup]="formGroup" class="flex flex-col gap-2">
-    @for (field of extensionColumns.keys(); track field) {
+    @for (field of itemColumns().keys(); track field) {
     <mat-form-field>
-        <mat-label>{{extensionColumns.get(field)}}</mat-label>
+        <mat-label>{{itemColumns().get(field)}}</mat-label>
         <input matInput formControlName="{{field}}" [matAutocomplete]="auto" [placeholder]="initialValues[field]"
             [required]="requiredInputs().includes(field)" />
         <mat-error>
             @if (formGroup.get(field)?.hasError('required')) {
-            {{extensionColumns.get(field)}} ist erforderlich.
+            {{itemColumns().get(field)}} ist erforderlich.
             } @else if (formGroup.get(field)?.hasError('pattern')) {
             Preis muss einem gültigen Format entsprechen.
             }

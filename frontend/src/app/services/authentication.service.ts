@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authCodeFlowConfig } from '../app.config';
 
@@ -29,12 +30,12 @@ export class AuthenticationService {
    *
    * @param oauthService - The OAuth2 service instance used for handling authentication.
    */
-  constructor(public oauthService: OAuthService) {
+  constructor(public oauthService: OAuthService, private readonly router: Router) {
     // Configure the OAuth2 service with the settings from the configuration file.
     this.oauthService.configure(authCodeFlowConfig);
 
-    // Load the discovery document and try logging the user in (if a valid token exists).
-    this.oauthService.loadDiscoveryDocumentAndTryLogin();
+    // Initialize authentication flow outside of constructor.
+    this.initializeAuthentication();
 
     // Set up automatic token refresh to ensure the user's session stays active.
     // This refresh happens when 75% of the access token's lifetime is used (this can be adjusted).
@@ -42,11 +43,27 @@ export class AuthenticationService {
   }
 
   /**
+   * Initializes the authentication flow by loading the discovery document and trying to log in.
+   * If a redirect URL is present in the state, navigates to that URL.
+   */
+  private initializeAuthentication(): void {
+    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
+      const url = this.oauthService.state;
+
+      if (url) {
+        this.router.navigateByUrl(decodeURIComponent(url));
+      }
+    });
+  }
+
+
+
+  /**
    * Initiates the login process by starting the OAuth2 authorization code flow.
    * This method redirects the user to the authorization server for authentication.
    */
   login(): void {
-    this.oauthService.initCodeFlow();
+    this.oauthService.initCodeFlow(window.location.pathname);
   }
 
   /**

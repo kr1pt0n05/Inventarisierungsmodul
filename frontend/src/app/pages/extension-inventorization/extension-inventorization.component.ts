@@ -11,14 +11,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { localizePrice } from '../../app.component';
 import { CardComponent } from '../../components/card/card.component';
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
-import { ExtensionEditorComponent } from "../../components/extension-editor/extension-editor.component";
 import { InventoryListComponent } from '../../components/inventory-list/inventory-list.component';
+import { ItemEditorComponent } from '../../components/item-editor/item-editor.component';
 import { Article } from '../../models/Article';
 import { Extension, extensionDisplayNames, extensionItemFromArticle } from '../../models/extension';
 import { InventoryItem, inventoryItemDisplayNames } from '../../models/inventory-item';
 import { ArticleId, fixSingleArticleString } from '../../models/Order';
-import { AuthenticationService } from '../../services/authentication.service';
-import { CacheInventoryService } from '../../services/cache-inventory.service';
 import { InventoriesService } from '../../services/inventories.service';
 import { OrderService } from '../../services/order.service';
 @Component({
@@ -33,7 +31,7 @@ import { OrderService } from '../../services/order.service';
     MatDividerModule,
     MatButtonModule,
     MatInputModule,
-    ExtensionEditorComponent
+    ItemEditorComponent
   ],
   templateUrl: './extension-inventorization.component.html',
   styleUrl: './extension-inventorization.component.css'
@@ -42,12 +40,13 @@ export class ExtensionInventorizationComponent {
   /**
    * Indicates if the editor is in "new extension" mode.
    */
-  isNewExtension = model<boolean>(false);
+  isNew = model<boolean>(false);
   /**
    * Holds the current extension being edited.
    */
-  extension = signal<Extension>({} as Extension);
-  inputExtension = input<Extension | undefined>(undefined);
+  editableExtension = signal<Extension>({} as Extension);
+  itemColumns = extensionDisplayNames;
+  extension = input<Extension | undefined>(undefined);
   changes = signal<Partial<Extension>>({} as Partial<Extension>);
   /**
    * Holds the current inventoryId (if set).
@@ -99,14 +98,11 @@ export class ExtensionInventorizationComponent {
 
 
   constructor(
-    private readonly cache: CacheInventoryService,
-    private readonly authService: AuthenticationService,
     private readonly inventoriesService: InventoriesService,
     private readonly orderService: OrderService,
     private readonly router: Router, route: ActivatedRoute,
     public dialog: MatDialog,
-    private readonly _snackBar: MatSnackBar // <--- Add MatSnackBar injection
-  ) {
+    private readonly _snackBar: MatSnackBar) {
     // Handles query params for extensionArticles and inventoryId, and triggers article loading if needed.
     route.queryParams.subscribe(val => {
       if (val['extensionArticles']) {
@@ -133,20 +129,11 @@ export class ExtensionInventorizationComponent {
    * and sets default values for new extensions.
    */
   ngOnInit() {
-    if (this.isNewExtension() === undefined) {
-      this.isNewExtension.set(false);
+    if (!this.editableExtension()) {
+      this.editableExtension.set({} as Extension);
     }
-    if (!this.extension()) {
-      this.extension.set({} as Extension);
-    }
-    if (this.inputExtension() !== undefined) {
-      this.extension.set(this.inputExtension()!);
-    }
-    if (this.disabledInputs() === undefined) {
-      this.disabledInputs.set(['created_at']);
-    }
-    if (this.requiredInputs() === undefined) {
-      this.requiredInputs.set(['company', 'price', 'description']);
+    if (this.extension() !== undefined) {
+      this.editableExtension.set(this.extension()!);
     }
   }
 
@@ -195,7 +182,7 @@ export class ExtensionInventorizationComponent {
   onInventorization() {
     const currentId = this.inventoryId();
     if (currentId !== undefined && this.isValid()) {
-      if (this.isNewExtension()) {
+      if (this.isNew()) {
         this.orderService.getArticleById(this.currentArticleId.articleId).subscribe({
           next: (article) => {
             if (article.is_inventoried) {
@@ -235,7 +222,7 @@ export class ExtensionInventorizationComponent {
   }
 
   private _saveNewExtension(currentId: number) {
-    this.inventoriesService.addExtensionToId(currentId, this.extension()).subscribe({
+    this.inventoriesService.addExtensionToId(currentId, this.editableExtension()).subscribe({
       next: (extension) => {
         this._notify('Erweiterung erfolgreich hinzugefügt', 'success');
         if (this.currentArticleId.orderId !== undefined && this.currentArticleId.articleId !== undefined) {
@@ -252,7 +239,7 @@ export class ExtensionInventorizationComponent {
   private _saveExistingExtension() {
     if (this.inventoryId() !== undefined) {
       this.changes.set({ ...this.changes(), inventory_id: this.inventoryId() });
-      this.inventoriesService.updateExtension(this.inventoryId()!, this.extension().id!, this.changes()).subscribe({
+      this.inventoriesService.updateExtension(this.inventoryId()!, this.editableExtension().id!, this.changes()).subscribe({
         next: (extension) => {
           this._notify('Erweiterung erfolgreich aktualisiert', 'success');
           this._navigateOnInventorization();
@@ -333,7 +320,7 @@ export class ExtensionInventorizationComponent {
     [this.currentArticleId.orderId, this.currentArticleId.articleId] = articleStrings()[0].split(',').map(Number);
     this.orderService.getOrderArticleByIds(this.currentArticleId.orderId, this.currentArticleId.articleId).subscribe({
       next: (article) => {
-        this.extension.set(extensionItemFromArticle(article));
+        this.editableExtension.set(extensionItemFromArticle(article));
         articleStrings.update(articles => articles.slice(1)); // Remove the first article after setting it
         this._onChanges();
       },
@@ -353,7 +340,7 @@ export class ExtensionInventorizationComponent {
       inventories_id: this.inventoryId(),
       is_inventoried: true,
       is_extension: true,
-    } as unknown as Article;
+    } as Partial<Article>;
     this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
       next: (updatedArticle) => {
         console.log('Artikel erfolgreich aktualisiert');
@@ -379,7 +366,7 @@ export class ExtensionInventorizationComponent {
     this._handleDialog(data, (result) => {
       if (result) {
         const id = this.inventoryId()!;
-        const extensionId = this.extension().id!;
+        const extensionId = this.editableExtension().id!;
         this.inventoriesService.deleteExtensionFromId(id, extensionId).subscribe({
           next: () => {
             this._notify('Erweiterung erfolgreich gelöscht', 'success');

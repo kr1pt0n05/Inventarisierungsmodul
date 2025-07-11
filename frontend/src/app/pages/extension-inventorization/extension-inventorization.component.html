@@ -2,7 +2,7 @@
 <div class="flex justify-between pl-4 pr-4 m-2">
     <div class="flex flex-wrap items-center gap-4">
         <h1 class="font-semibold text-2xl">
-            @if (isNewExtension()) {
+            @if (isNew()) {
             Erweiterung anlegen
             } @else {
             Erweiterung bearbeiten
@@ -11,31 +11,24 @@
     </div>
 
     <div class="flex flex-col md:flex-row gap-4">
-        @if (!isNewExtension()) {
-        <button mat-stroked-button color="warn" (click)="openDeleteDialog()"
-            [disabled]="isNewExtension()">Löschen</button>
+        @if (!isNew()) {
+        <button mat-stroked-button color="warn" (click)="openDeleteDialog()" [disabled]="isNew()">Löschen</button>
         }
         <button mat-flat-button color="primary" (click)="onInventorization()" [disabled]="!isValid()">Speichern</button>
     </div>
 </div>
 <div class="p-4 gap-4">
-    <app-card title="Erweiterung">
-        @if (inventoryId() !== undefined) {
-        <div card-content class="grid grid-cols-1 lg:grid-cols-2 gap-2 pt-4">
+    @if (inventoryId() !== undefined) {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
 
-            <!-- Form Section -->
-            <app-extension-editor [(extension)]="extension" [(disabledInputs)]="disabledInputs"
-                [(requiredInputs)]="requiredInputs" (isValid)="onIsValidChange($event)"
-                (changes)="onExtensionChange($event)">
-            </app-extension-editor>
-
-            <!-- Inventory Item Section -->
-            <div class="flex flex-col pl-4 pr-4 gap-8 m-2">
+        <!-- Inventory Item Section -->
+        <app-card title="Inventargegenstand">
+            <div card-content class="flex flex-col gap-8 mt-4">
 
                 <div class="flex justify-between">
-                    <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex flex-col items-start gap-2">
                         <h1 class="font-semibold text-xl">{{inventoryItem['description']}}</h1>
-                        <h2>{{inventoryItem['id']}}</h2>
+                        <h2>#&nbsp;{{inventoryItem['id']}}</h2>
                     </div>
                     <button mat-stroked-button color="primary" (click)="resetSelectedInventory()"
                         [disabled]="false">Ändern</button>
@@ -56,13 +49,25 @@
                     }
                 </div>
             </div>
+        </app-card>
 
+        <!-- Form Section -->
+        <app-card title="Erweiterung">
+            <div card-content class="mt-4">
+                <app-item-editor [(item)]="editableExtension" [itemColumns]="itemColumns"
+                    [(disabledInputs)]="disabledInputs" [(requiredInputs)]="requiredInputs"
+                    (isValid)="onIsValidChange($event)" (changes)="onExtensionChange($event)">
+                </app-item-editor>
+            </div>
+        </app-card>
+
+    </div>
+    } @else {
+    <!-- Inventory Selection Section -->
+    <app-card title="Inventargegenstand auswählen">
+        <div card-content class="mt-4">
+            <app-inventory-list (onClickItem)="onSelectInventory($event)" [showDownloadButton]="false" />
         </div>
-        } @else {
-        <!-- Inventory Selection Section -->
-        <div card-content class="grid grid-cols-1 gap-2 pt-4">
-            <app-inventory-list (onClickItem)="onSelectInventory($event)" />
-        </div>
-        }
     </app-card>
+    }
 </div>
