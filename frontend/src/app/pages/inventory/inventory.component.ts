@@ -5,8 +5,9 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { AccordionComponent } from '../../components/accordion/accordion.component';
 import { CardComponent } from '../../components/card/card.component';
@@ -71,9 +72,10 @@ export interface minAndMaxPrice {
     DatepickerComponent,
     InventoryListComponent,
     AccordionComponent,
-    MatButton,
+    MatButtonModule,
     ChipV2Component,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatIconModule
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
@@ -126,6 +128,8 @@ export class InventoryComponent implements OnInit {
   minAndMaxPrice: minAndMaxPrice = {} as minAndMaxPrice;
 
   showDeinventoried = signal<boolean>(false);
+
+  isFiltersVisible = signal<boolean>(true);
 
   /**
    * Initializes the component and sets up the filter form and data fetching.
