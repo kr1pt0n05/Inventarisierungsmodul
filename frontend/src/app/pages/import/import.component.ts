@@ -47,31 +47,27 @@ export class ImportComponent {
   }
 
   upload() {
-    this.openProcessingIndicator();
+    const dialogRef = this.dialog.open(ProcessingIndicatorComponent);
     if (this.file) this.api.uploadExcel(this.file.file).subscribe({
       next: (data) => {
         console.log(data);
       },
       error: (err) => {
         console.log(err);
-        this.dialog.closeAll();
-        this._snackBar.open('Error uploading file', 'Close', {
+        dialogRef.close();
+        this._snackBar.open('Fehler beim Hochladen der Datei', 'Close', {
           duration: 3000,
         });
       },
       complete: () => {
         console.log('complete');
-        this.dialog.closeAll();
-        this._snackBar.open('File uploaded successfully', 'Close', {
+        dialogRef.close();
+        this._snackBar.open('Datei erfolgreich hochgeladen', 'Close', {
           duration: 3000,
         });
         this.file = null;
       }
     });
-  }
-
-  openProcessingIndicator(): void {
-    this.dialog.open(ProcessingIndicatorComponent);
   }
 
 }
