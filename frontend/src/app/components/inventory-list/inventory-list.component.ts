@@ -128,6 +128,7 @@ export class InventoryListComponent implements AfterViewInit {
 
     // Bind the search bar to the data source
     this.inventoryItems.searchbar = this.searchText;
+    this.searchText.setValue(''); // Initialize search text
   }
 
   /**
