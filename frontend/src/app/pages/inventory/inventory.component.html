@@ -1,12 +1,15 @@
 <div class="flex flex-wrap md:flex-nowrap justify-evenly">
+
+  @if (isFiltersVisible()) {
   <!-- Filter Section START -->
   <app-card title="Filter" class="grow min-w-96 max-w-md">
+    <button title-suffix mat-button style="color: darkgrey;" (click)="isFiltersVisible.set(false)">ausblenden</button>
     <div card-content class="w-full">
       <!-- Filter Action Buttons -->
       <div class="flex justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <button mat-button (click)="openAllAccordion()">Alles ausklappen</button>
-          <button mat-button (click)="closeAllAccordions()">Alles einklappen</button>
+        <div class="flex flex-wrap items-center gap-2">
+          <button mat-button (click)="openAllAccordion()">Alles&nbsp;ausklappen</button>
+          <button mat-button (click)="closeAllAccordions()">Alles&nbsp;einklappen</button>
         </div>
         <button mat-button color="warn" (click)="resetFilters()">Reset</button>
       </div>
@@ -86,6 +89,16 @@
     </div>
   </app-card>
   <!-- Filter Section END -->
+  } @else {
+  <button mat-icon-button class="mt-2" (click)="isFiltersVisible.set(true)">
+    <mat-icon>
+      <svg class="block size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        aria-hidden="true" data-slot="icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75h16.5M3.75 9h16.5m-16.5 5.25h16.5" />
+      </svg>
+    </mat-icon>
+  </button>
+  }
 
   <!-- Content Section START -->
   <app-card title="Inventargegenstände" class="w-3xl min-w-96 grow">
