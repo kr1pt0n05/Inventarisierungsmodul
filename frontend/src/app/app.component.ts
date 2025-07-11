@@ -34,7 +34,7 @@ export class AppComponent {
    *
    * @param currentPageTitle - The title to set for the current page.
    */
-  updateCurrentPageTitle(currentPageTitle: string) {
+  updateCurrentPageTitle(currentPageTitle: string): void {
     this.currentPageTitle.set(currentPageTitle);
   }
 
