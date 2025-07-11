@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authCodeFlowConfig } from '../app.config';
+import { OrderService } from './order.service';
 
 
 /**
@@ -30,7 +31,9 @@ export class AuthenticationService {
    *
    * @param oauthService - The OAuth2 service instance used for handling authentication.
    */
-  constructor(public oauthService: OAuthService, private readonly router: Router) {
+  constructor(public oauthService: OAuthService,
+    private readonly router: Router,
+    private readonly orderService: OrderService) {
     // Configure the OAuth2 service with the settings from the configuration file.
     this.oauthService.configure(authCodeFlowConfig);
 
@@ -50,6 +53,7 @@ export class AuthenticationService {
     this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
       const url = this.oauthService.state;
 
+      this.orderService.openArticlesChanged.next(); // Trigger the initial load of open articles
       if (url) {
         this.router.navigateByUrl(decodeURIComponent(url));
       }

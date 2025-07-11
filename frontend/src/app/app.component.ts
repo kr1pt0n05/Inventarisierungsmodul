@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { startWith, switchMap } from 'rxjs';
+import { of, startWith, switchMap } from 'rxjs';
 import { AuthenticationService } from './services/authentication.service';
 import { OrderService } from './services/order.service';
 
@@ -35,10 +35,23 @@ export class AppComponent implements OnInit {
   showMobileMenu = signal<boolean>(false);
 
   numberOfOpenArticles = signal<number>(0);
+
+
+  /**
+   * Initializes the component and sets up a subscription to track the number of open articles.
+   * It uses the OrderService to fetch the number of open articles whenever there is a change
+   * in the open articles list, ensuring that the displayed count is always up-to-date.
+   */
   ngOnInit() {
     this.orderService.openArticlesChanged.pipe(
       startWith(null), // Trigger the initial load
-      switchMap(() => this.orderService.getNumberOfOpenArticles())
+      switchMap(() => {
+        if (this.authService.validToken()) {
+          return this.orderService.getNumberOfOpenArticles()
+        } else {
+          return of(0); // Return 0 if the user is not authenticated
+        }
+      })
     ).subscribe((count) => {
       this.numberOfOpenArticles.set(count);
     });
