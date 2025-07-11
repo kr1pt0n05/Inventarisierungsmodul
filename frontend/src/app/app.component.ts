@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { startWith, switchMap } from 'rxjs';
 import { AuthenticationService } from './services/authentication.service';
 import { OrderService } from './services/order.service';
 
