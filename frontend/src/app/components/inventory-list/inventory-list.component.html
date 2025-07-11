@@ -1,98 +1,98 @@
-<div class="overflow-x-auto w-full">
+<div class="w-full">
 
-  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+  <div class="flex justify-between items-center">
     <!-- Mat Form Field for searching inventory items -->
     <mat-form-field class="w-xl">
       <mat-label>Inventarliste durchsuchen</mat-label>
       <input matInput placeholder="" #input [formControl]="searchText">
     </mat-form-field>
 
-    <button mat-raised-button
-            matTooltip="Gesamte Inventarliste als Excel (.xls) herunterladen."
-            color="primary"
-            class="mt-4"
-            style="margin-left: auto;"
-            (click)="downloadInventoryList()"
-    >
+    @if (showDownloadButton()) {
+    <!-- Button to download the inventory list as an Excel file -->
+    <button mat-raised-button class="ml-4 shrink-0" matTooltip="Gesamte Inventarliste als Excel (.xls) herunterladen."
+      color="primary" (click)="downloadInventoryList()">
       Herunterladen
     </button>
+    }
   </div>
 
   <!-- Inventory Table -->
   <!-- Mat Table to display inventory items with dynamic columns, pagination, and sorting -->
-  <table mat-table [dataSource]="inventoryItems" matSort>
+  <div class="overflow-x-auto w-full">
+    <table mat-table [dataSource]="inventoryItems" matSort>
 
 
-    <!-- Inventarnummer Column -->
-    <!-- Column displaying the inventory number (ID) -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Inventarnummer </th>
-      <td mat-cell *matCellDef="let element">
-        <a mat-stroked-button color="primary" (click)="onButtonClick(element)"> {{element.id}}</a>
-      </td>
-    </ng-container>
+      <!-- Inventarnummer Column -->
+      <!-- Column displaying the inventory number (ID) -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Inventarnummer </th>
+        <td mat-cell *matCellDef="let element">
+          <a mat-stroked-button color="primary" (click)="onButtonClick(element)"> {{element.id}}</a>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="cost_center">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Kostenstelle </th>
-      <td mat-cell *matCellDef="let element"> {{element.cost_center}} </td>
-    </ng-container>
+      <ng-container matColumnDef="cost_center">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Kostenstelle </th>
+        <td mat-cell *matCellDef="let element"> {{element.cost_center}} </td>
+      </ng-container>
 
-    <!-- Produktbeschreibung Column -->
-    <!-- Column displaying the product description -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Produktbeschreibung </th>
-      <td mat-cell *matCellDef="let element"> {{element.description}} </td>
-    </ng-container>
+      <!-- Produktbeschreibung Column -->
+      <!-- Column displaying the product description -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Produktbeschreibung </th>
+        <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+      </ng-container>
 
-    <!-- Unternehmen Column -->
-    <!-- Column displaying the company associated with the inventory item -->
-    <ng-container matColumnDef="company">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Unternehmen </th>
-      <td mat-cell *matCellDef="let element"> {{element.company}} </td>
-    </ng-container>
+      <!-- Unternehmen Column -->
+      <!-- Column displaying the company associated with the inventory item -->
+      <ng-container matColumnDef="company">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Unternehmen </th>
+        <td mat-cell *matCellDef="let element"> {{element.company}} </td>
+      </ng-container>
 
-    <!-- Preis Column -->
-    <!-- Column displaying the price of the inventory item -->
-    <ng-container matColumnDef="price">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Preis </th>
-      <td mat-cell *matCellDef="let element"> {{element.price}} </td>
-    </ng-container>
+      <!-- Preis Column -->
+      <!-- Column displaying the price of the inventory item -->
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Preis </th>
+        <td mat-cell *matCellDef="let element"> {{element.price}} </td>
+      </ng-container>
 
-    <!-- Datum Column -->
-    <!-- Column displaying the creation date of the inventory item -->
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Datum </th>
-      <td mat-cell *matCellDef="let element"> {{element.createdAt}}&nbsp;Uhr </td>
-    </ng-container>
+      <!-- Datum Column -->
+      <!-- Column displaying the creation date of the inventory item -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Datum </th>
+        <td mat-cell *matCellDef="let element"> {{element.createdAt}}&nbsp;Uhr </td>
+      </ng-container>
 
-    <!-- Seriennummer Column -->
-    <!-- Column displaying the serial number of the inventory item -->
-    <ng-container matColumnDef="serialNumber">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Seriennummer </th>
-      <td mat-cell *matCellDef="let element"> {{element.serialNumber}} </td>
-    </ng-container>
+      <!-- Seriennummer Column -->
+      <!-- Column displaying the serial number of the inventory item -->
+      <ng-container matColumnDef="serialNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Seriennummer </th>
+        <td mat-cell *matCellDef="let element"> {{element.serialNumber}} </td>
+      </ng-container>
 
-    <!-- Standort/Benutzer Column -->
-    <!-- Column displaying the location/assigned user of the inventory item -->
-    <ng-container matColumnDef="location">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Standort/Benutzer </th>
-      <td mat-cell *matCellDef="let element"> {{element.location}} </td>
-    </ng-container>
+      <!-- Standort/Benutzer Column -->
+      <!-- Column displaying the location/assigned user of the inventory item -->
+      <ng-container matColumnDef="location">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Standort/Benutzer </th>
+        <td mat-cell *matCellDef="let element"> {{element.location}} </td>
+      </ng-container>
 
-    <!-- Besteller Column -->
-    <!-- Column displaying the orderer or the person who ordered the item -->
-    <ng-container matColumnDef="orderer">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Besteller </th>
-      <td mat-cell *matCellDef="let element"> {{element.orderer}} </td>
-    </ng-container>
+      <!-- Besteller Column -->
+      <!-- Column displaying the orderer or the person who ordered the item -->
+      <ng-container matColumnDef="orderer">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Besteller </th>
+        <td mat-cell *matCellDef="let element"> {{element.orderer}} </td>
+      </ng-container>
 
-    <!-- Table Row Definitions -->
-    <!-- Header row with columns defined in `displayedColumns` array, includes sorting functionality -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns sticky: true"></tr>
-    <!-- Data rows displaying the inventory item details, corresponding to the defined columns -->
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <!-- Table Row Definitions -->
+      <!-- Header row with columns defined in `displayedColumns` array, includes sorting functionality -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns sticky: true"></tr>
+      <!-- Data rows displaying the inventory item details, corresponding to the defined columns -->
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-  </table>
+    </table>
+  </div>
 
   <!-- Paginator -->
   <!-- MatPaginator for handling pagination, displaying page size options and first/last page buttons -->

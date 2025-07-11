@@ -340,7 +340,7 @@ export class ExtensionInventorizationComponent {
       inventories_id: this.inventoryId(),
       is_inventoried: true,
       is_extension: true,
-    } as unknown as Article;
+    } as Partial<Article>;
     this.orderService.updateOrderArticle(this.currentArticleId.orderId, this.currentArticleId.articleId, articleUpdates).subscribe({
       next: (updatedArticle) => {
         console.log('Artikel erfolgreich aktualisiert');
