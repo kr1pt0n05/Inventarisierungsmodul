@@ -15,6 +15,55 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { CacheInventoryService } from '../../services/cache-inventory.service';
 import { InventoriesService } from '../../services/inventories.service';
 
+/**
+ * ItemEditorComponent
+ *
+ * This Angular component provides a form-based editor for inventory items or extensions.
+ * It allows users to view, edit, and validate the properties of an InventoryItem or Extension model.
+ * The component supports autocomplete for selected fields, dynamic validation, and emits changes to parent components.
+ *
+ * Features:
+ * - Dynamically generates form controls for each item property based on provided columns.
+ * - Synchronizes form values with the item model and emits changes.
+ * - Supports two-way data binding between the form and the model.
+ * - Provides autocomplete functionality for selected fields using cached values.
+ * - Automatically fills certain fields (created_at, orderer, id) with default values if not set.
+ * - Allows disabling and requiring of specific input fields via models.
+ * - Emits form validity and changes to parent components.
+ *
+ * Properties:
+ * - item: Model holding the current extension or inventory item being edited.
+ * - disabledInputs: Model holding a list of input fields that should be disabled.
+ * - requiredInputs: Model holding a list of required input fields.
+ * - isValid: Output event emitter, emits boolean indicating form validity.
+ * - changes: Output event emitter, emits the changed fields of the item.
+ * - initialValues: Stores the initial values of the item for change detection.
+ * - itemColumns: Input map defining the fields to display and their labels.
+ * - formControls: Map of FormControl objects for each item property.
+ * - formGroup: FormGroup containing all form controls for validation and value tracking.
+ * - options: Map of autocomplete options for each field.
+ * - filteredOptions: Map of filtered autocomplete options as observables for each field.
+ * - isInitialized: Boolean indicating if the component has been initialized.
+ *
+ * Methods:
+ * - ngOnInit(): Initializes form controls, sets up autocomplete, disables fields as specified, and sets default values for new items.
+ * - ngOnChanges(): Resets form controls and values when the item changes.
+ * - _setupFormControls(): Sets up form controls with initial values, synchronizes form changes with the model, and emits form validity and changes.
+ * - _updateValuesFromInput(): Updates form controls with values from the initial item, sets default values for certain fields if not set.
+ * - _getChanges(): Computes and returns the changed fields of the item compared to the initial values.
+ * - _setupAutocomplete(): Initializes autocomplete options for relevant fields using cached values, and sets up filtered observables for each field.
+ * - _filter(value, id): Filters the autocomplete options for a given field based on the input value.
+ *
+ * Usage:
+ * Place <app-item-editor> in your template. Bind to its inputs and outputs as needed.
+ *
+ * Dependencies:
+ * - Angular Reactive Forms and Material modules.
+ * - InventoryItem and Extension models.
+ * - AuthenticationService for user information.
+ * - CacheInventoryService for cached autocomplete values.
+ * - InventoriesService for backend integration.
+ */
 @Component({
   selector: 'app-item-editor',
   imports: [
@@ -31,7 +80,7 @@ import { InventoriesService } from '../../services/inventories.service';
 })
 export class ItemEditorComponent {
   /**
-   * Holds the current extension being edited.
+   * Holds the current item being edited.
    */
   item = model<Extension | InventoryItem>({} as InventoryItem);
 
@@ -51,23 +100,23 @@ export class ItemEditorComponent {
   isValid = output<boolean>();
 
   /**
-   * Event emitter that emits the current extension object when it changes.
-   * This is used to notify parent components of changes to the extension.
+   * Event emitter that emits when the form changes.
+   * Emits a Partial<Extension | InventoryItem> object containing the changed fields.
    */
   changes = output<Partial<Extension | InventoryItem>>();
 
   /**
-   * Stores the initial values of the extension for change detection.
+   * Stores the initial values of the item for change detection.
    */
   initialValues!: Extension | InventoryItem;
 
   /**
-   * Defines the fields to display in the editor and their labels (for extensions).
+   * Defines the fields to display in the editor and their labels.
    */
   itemColumns = input.required<Map<string, string>>();
 
   /**
-   * Map of FormControl objects for each extension property.
+   * Map of FormControl objects for each item property.
    */
   formControls!: Map<string, FormControl>;
 
@@ -96,7 +145,7 @@ export class ItemEditorComponent {
   /**
    * Angular lifecycle hook.
    * Initializes form controls, sets up autocomplete, disables fields as specified,
-   * and sets default values for new extensions.
+   * and sets default values for new items or extensions.
    */
   ngOnInit() {
     this._setupFormControls();
@@ -109,7 +158,8 @@ export class ItemEditorComponent {
 
   /**
    * Angular lifecycle hook.
-   * Resets form controls and values when the inventory item changes.
+   * Resets form controls and values when the inventory item or extension changes.
+   * Also disables specified fields.
    */
   ngOnChanges() {
     if (!this.isInitialized) {
@@ -128,8 +178,9 @@ export class ItemEditorComponent {
   }
 
   /**
-   * Sets up form controls with initial values from the extension,
-   * synchronizes form changes with the model, and emits form validity.
+   * Sets up form controls with initial values from the item,
+   * synchronizes form changes with the model, and emits form validity and changes.
+   * Adds validation for the price field.
    * @private
    */
   private _setupFormControls() {
@@ -157,8 +208,9 @@ export class ItemEditorComponent {
   }
 
   /**
-   * Updates form controls with values from the initial extension.
-   * Sets default values for 'created_at' and 'orderer' if not already set.
+   * Updates form controls with values from the initial item.
+   * Sets default values for 'created_at', 'orderer', and 'id' if not already set.
+   * Localizes the price field for display.
    * @private
    */
   private _updateValuesFromInput() {
@@ -195,6 +247,11 @@ export class ItemEditorComponent {
       localizePrice(this.formControls.get('price')?.value) ?? '', { emitEvent: false });
   }
 
+  /**
+   * Computes and returns the changed fields of the item compared to the initial values.
+   * Only fields that have been modified and differ from the initial value are included.
+   * @private
+   */
   private _getChanges(): Partial<Extension | InventoryItem> {
     const changes: Partial<Extension | InventoryItem> = {};
     for (const [key, control] of this.formControls.entries()) {
@@ -208,7 +265,7 @@ export class ItemEditorComponent {
 
   /**
    * Initializes autocomplete options for relevant fields using cached values,
-   * and sets up filtered observables for each field.
+   * and sets up filtered observables for each field to support dynamic suggestions.
    * @private
    */
   private _setupAutocomplete() {
@@ -232,6 +289,7 @@ export class ItemEditorComponent {
 
   /**
    * Filters the autocomplete options for a given field based on the input value.
+   * Used to provide dynamic suggestions in the form fields.
    * @param value The current input value.
    * @param id The field identifier.
    * @returns Filtered array of options for the field.
