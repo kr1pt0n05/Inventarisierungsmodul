@@ -18,7 +18,7 @@ import { OrderService } from './services/order.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   constructor(public authService: AuthenticationService,
     private readonly router: Router,
     private readonly orderService: OrderService) {
