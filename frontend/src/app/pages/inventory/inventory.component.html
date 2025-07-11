@@ -3,8 +3,7 @@
   @if (isFiltersVisible()) {
   <!-- Filter Section START -->
   <app-card title="Filter" class="grow min-w-96 max-w-md">
-    <button title-suffix mat-button disabled disabledInteractive
-      (click)="isFiltersVisible.set(false)">ausblenden</button>
+    <button title-suffix mat-button style="color: darkgrey;" (click)="isFiltersVisible.set(false)">ausblenden</button>
     <div card-content class="w-full">
       <!-- Filter Action Buttons -->
       <div class="flex justify-between mb-4">
