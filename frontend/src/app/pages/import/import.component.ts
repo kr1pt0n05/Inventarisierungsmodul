@@ -47,27 +47,29 @@ export class ImportComponent {
   }
 
   upload() {
-    const dialogRef = this.dialog.open(ProcessingIndicatorComponent);
-    if (this.file) this.api.uploadExcel(this.file.file).subscribe({
-      next: (data) => {
-        console.log(data);
-      },
-      error: (err) => {
-        console.log(err);
-        dialogRef.close();
-        this._snackBar.open('Fehler beim Hochladen der Datei', 'Close', {
-          duration: 3000,
-        });
-      },
-      complete: () => {
-        console.log('complete');
-        dialogRef.close();
-        this._snackBar.open('Datei erfolgreich hochgeladen', 'Close', {
-          duration: 3000,
-        });
-        this.file = null;
-      }
-    });
+    if (this.file) {
+      const dialogRef = this.dialog.open(ProcessingIndicatorComponent);
+      this.api.uploadExcel(this.file.file).subscribe({
+        next: (data) => {
+          console.log(data);
+        },
+        error: (err) => {
+          console.log(err);
+          dialogRef.close();
+          this._snackBar.open('Fehler beim Hochladen der Datei', 'Close', {
+            duration: 3000,
+          });
+        },
+        complete: () => {
+          console.log('complete');
+          dialogRef.close();
+          this._snackBar.open('Datei erfolgreich hochgeladen', 'Close', {
+            duration: 3000,
+          });
+          this.file = null;
+        }
+      });
+    }
   }
 
 }
