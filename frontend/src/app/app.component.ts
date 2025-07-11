@@ -35,15 +35,11 @@ export class AppComponent implements OnInit {
 
   numberOfOpenArticles = signal<number>(0);
   ngOnInit() {
-    this.orderService.getNumberOfOpenArticles().subscribe((count) => {
+    this.orderService.openArticlesChanged.pipe(
+      startWith(null), // Trigger the initial load
+      switchMap(() => this.orderService.getNumberOfOpenArticles())
+    ).subscribe((count) => {
       this.numberOfOpenArticles.set(count);
-    });
-
-    // Subscribe to changes in open articles to keep the value updated
-    this.orderService.openArticlesChanged.subscribe(() => {
-      this.orderService.getNumberOfOpenArticles().subscribe((count) => {
-        this.numberOfOpenArticles.set(count);
-      });
     });
   }
 
