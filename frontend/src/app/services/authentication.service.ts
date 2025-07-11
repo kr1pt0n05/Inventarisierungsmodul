@@ -51,7 +51,7 @@ export class AuthenticationService {
       const url = this.oauthService.state;
 
       if (url) {
-        this.router.navigateByUrl(decodeURIComponent(url)).then();
+        this.router.navigateByUrl(decodeURIComponent(url));
       }
     });
   }
