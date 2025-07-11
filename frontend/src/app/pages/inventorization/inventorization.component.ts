@@ -328,7 +328,6 @@ export class InventorizationComponent {
 
   /**
    * Handles changes to comments for the current inventory item.
-   * - Fetches the current item from the backend.
    * - Processes deleted comments and new comments.
    * - Fetches the latest comments from the backend.
    * @returns {Observable<InventoryItem | void[] | Comment | Comment[]>}
