@@ -202,17 +202,16 @@ export class InventoriesService {
 
   /**
    * Updates the tags of a specific inventory item by its ID.
+   * This method first deletes existing tags and then adds the new ones.
    *
-   * @param id - The ID of the inventory item to update.
-   * @param tags - An array of Tag objects to set as the new tags for the inventory item.
+   * @param id - The ID of the inventory item to update tags for.
+   * @param tags - An array of Tag objects to be added to the inventory item.
    * @returns {Observable<InventoryItem>} - An observable containing the updated inventory item.
    */
   updateTagsOfId(id: number, tags: Tag[]): Observable<InventoryItem> {
-    if (tags.length === 0) {
-      this.deleteTagsFromId(id);
-      return of({} as InventoryItem); // Return an empty InventoryItem if no tags are provided
-    }
-    return this.http.post<InventoryItem>(`${this.url}/${id}/tags`, tags.map(tag => tag.id));
+    return this.deleteTagsFromId(id).pipe(
+      switchMap(() => this.http.post<InventoryItem>(`${this.url}/${id}/tags`, tags.map(tag => tag.id)))
+    );
   }
 
   /**

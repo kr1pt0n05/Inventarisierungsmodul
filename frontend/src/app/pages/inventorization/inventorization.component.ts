@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { concat, EMPTY, finalize, forkJoin, map, mergeMap, Observable, of, tap } from 'rxjs';
+import { concat, EMPTY, finalize, forkJoin, map, mergeMap, Observable, tap } from 'rxjs';
 import { CommentsEditorComponent } from "../../components/comments-editor/comments-editor.component";
 import { DialogComponent, DialogData } from '../../components/dialog/dialog.component';
 import { InventoryItemEditorComponent } from "../../components/inventory-item-editor/inventory-item-editor.component";
@@ -544,7 +544,7 @@ export class InventorizationComponent {
   private _createNewTags(): Observable<Tag[]> {
     const newTags = this.newTags();
     if (newTags.length === 0) {
-      return of([]);
+      return this._setTagsOfItem();
     }
     const currentTags = this.tags();
 
@@ -559,7 +559,7 @@ export class InventorizationComponent {
           this._notify('Fehler beim Speichern der Tags', 'error', error);
         }
       }),
-      mergeMap(savedTags => this._setTagsOfItem())
+      mergeMap(() => this._setTagsOfItem())
     );
   }
 
@@ -570,12 +570,12 @@ export class InventorizationComponent {
    * @returns {Observable<Tag[]>} An observable emitting the updated tags.
    */
   private _setTagsOfItem(): Observable<Tag[]> {
-    console.log('tags speichern', this.tags());
     return this.inventoriesService.updateTagsOfId(this.editableInventoryItem().id, this.tags()).pipe(
       map(item => item.tags ?? []),
       tap({
         next: updatedTags => {
           this.tags.set(updatedTags);
+          console.log('Tags aktualisiert', this.tags());
         },
         error: (error) => {
           this._notify('Fehler beim Aktualisieren der Tags', 'error', error);
