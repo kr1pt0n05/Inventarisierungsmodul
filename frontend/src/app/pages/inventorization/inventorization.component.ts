@@ -243,6 +243,9 @@ export class InventorizationComponent {
             } else {
               this._saveNewInventorization();
             }
+          },
+          error: (error) => {
+            this._notify('Der zu inventarisierende Artikel existiert nicht', 'error', error);
           }
         });
       }
