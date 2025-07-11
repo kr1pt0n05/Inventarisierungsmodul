@@ -47,27 +47,29 @@ export class ImportComponent {
   }
 
   upload() {
-    this.openProcessingIndicator();
-    if (this.file) this.api.uploadExcel(this.file.file).subscribe({
-      next: (data) => {
-        console.log(data);
-      },
-      error: (err) => {
-        console.log(err);
-        this.dialog.closeAll();
-        this._snackBar.open('Error uploading file', 'Close', {
-          duration: 3000,
-        });
-      },
-      complete: () => {
-        console.log('complete');
-        this.dialog.closeAll();
-        this._snackBar.open('File uploaded successfully', 'Close', {
-          duration: 3000,
-        });
-        this.file = null;
-      }
-    });
+    if (this.file) {
+      this.openProcessingIndicator();
+      this.api.uploadExcel(this.file.file).subscribe({
+        next: (data) => {
+          console.log(data);
+        },
+        error: (err) => {
+          console.log(err);
+          this.dialog.closeAll();
+          this._snackBar.open('Error uploading file', 'Close', {
+            duration: 3000,
+          });
+        },
+        complete: () => {
+          console.log('complete');
+          this.dialog.closeAll();
+          this._snackBar.open('File uploaded successfully', 'Close', {
+            duration: 3000,
+          });
+          this.file = null;
+        }
+      });
+    }
   }
 
   openProcessingIndicator(): void {
