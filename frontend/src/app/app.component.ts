@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { of, startWith, switchMap } from 'rxjs';
 import { AuthenticationService } from './services/authentication.service';
@@ -14,7 +15,8 @@ import { OrderService } from './services/order.service';
     RouterLinkActive,
     RouterOutlet,
     MatButtonModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatTooltipModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
