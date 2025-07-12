@@ -3,7 +3,7 @@
     <div class="flex items-center">
       <!-- Logo-->
       <img class="h-16 w-auto object-contain mx-8 cursor-pointer" src="images/logo_hochschule_esslingen_negativ_de.png"
-        alt="Logo der Hochschule Esslingen" (click)="updateCurrentPageTitle('Startseite')" routerLink="/homepage">
+        alt="Logo der Hochschule Esslingen" (click)="updateCurrentPageTitle('Startseite')" routerLink="/">
       <!-- Hamburger menu button for mobile view -->
       <button type="button"
         class="xl:hidden relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -62,7 +62,8 @@
       </button>
       @if (authService.validToken()) {
       <div
-        class="flex items-center justify-center ml-4 px-1 pb-0.5 h-12 w-fit min-w-12 rounded-full bg-he-grey text-he-darkblue text-xl font-semibold">
+        class="flex items-center justify-center ml-4 px-1 pb-0.5 h-12 w-fit min-w-12 rounded-full bg-he-grey text-he-darkblue text-xl font-semibold"
+        [matTooltip]="'Angemeldet als \'' + authService.getUsername() + '\''">
         {{getUserInitials()}}
       </div>
       }
