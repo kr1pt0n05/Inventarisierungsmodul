@@ -1,9 +1,9 @@
 <div class="min-h-full">
-  <nav class="flex h-16 items-center justify-between bg-he-darkblue shadow-2xl">
+  <nav class="flex h-20 items-center justify-between bg-he-darkblue shadow-2xl">
     <div class="flex items-center">
       <!-- Logo-->
-      <img class="h-16 w-auto object-contain px-8 cursor-pointer" src="images/logo_hochschule_esslingen_negativ_de.png"
-        alt="Logo der Hochschule Esslingen" (click)="updateCurrentPageTitle('Startseite')" routerLink="/homepage">
+      <img class="h-16 w-auto object-contain mx-8 cursor-pointer" src="images/logo_hochschule_esslingen_negativ_de.png"
+        alt="Logo der Hochschule Esslingen" (click)="updateCurrentPageTitle('Startseite')" routerLink="/">
       <!-- Hamburger menu button for mobile view -->
       <button type="button"
         class="xl:hidden relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -33,8 +33,14 @@
           [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
           [class]="buttonClasses">Inventarliste</a>
         <a (click)="updateCurrentPageTitle('Bestellungen')" routerLink="/orders"
-          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
-          [class]="buttonClasses">Bestellungen</a>
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }" [class]="buttonClasses">
+          @if (authService.validToken()) {
+          <span [matBadge]="numberOfOpenArticles()" matBadgeOverlap="false" matBadgeColor="accent"
+            [matBadgeHidden]="numberOfOpenArticles() === 0">Bestellungen</span>
+          } @else {
+          Bestellungen
+          }
+        </a>
         <a (click)="updateCurrentPageTitle('Neue Inventarisierung')" routerLink="/new"
           [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
           [class]="buttonClasses">Neue&nbsp;Inventarisierung</a>
@@ -45,13 +51,23 @@
           [routerLinkActiveOptions]="{ exact: true }" [class]="buttonClasses">Hochladen</a>
       </div>
     </div>
-    <button mat-button color="accent" class="mx-8" (click)="handleLogInOut()">
+
+    <div class="flex items-center mr-8">
+      <button mat-button color="accent" (click)="handleLogInOut()">
+        @if (authService.validToken()) {
+        Logout
+        } @else {
+        Login
+        }
+      </button>
       @if (authService.validToken()) {
-      Logout
-      } @else {
-      Login
+      <div
+        class="flex items-center justify-center ml-4 px-1 pb-0.5 h-12 w-fit min-w-12 rounded-full bg-he-grey text-he-darkblue text-xl font-semibold"
+        [matTooltip]="'Angemeldet als \'' + authService.getUsername() + '\''">
+        {{getUserInitials()}}
+      </div>
       }
-    </button>
+    </div>
   </nav>
 
   @if (showMobileMenu()) {
@@ -66,8 +82,14 @@
           [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
           [class]="buttonClasses">Inventarliste</a>
         <a (click)="updateCurrentPageTitle('Bestellungen')" routerLink="/orders"
-          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
-          [class]="buttonClasses">Bestellungen</a>
+          [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }" [class]="buttonClasses">
+          @if (authService.validToken()) {
+          <span [matBadge]="numberOfOpenArticles()" matBadgeOverlap="false" matBadgeColor="accent"
+            [matBadgeHidden]="numberOfOpenArticles() === 0">Bestellungen</span>
+          } @else {
+          Bestellungen
+          }
+        </a>
         <a (click)="updateCurrentPageTitle('Neue Inventarisierung')" routerLink="/new"
           [routerLinkActive]="buttonActiveClasses" [routerLinkActiveOptions]="{ exact: true }"
           [class]="buttonClasses">Neue&nbsp;Inventarisierung</a>

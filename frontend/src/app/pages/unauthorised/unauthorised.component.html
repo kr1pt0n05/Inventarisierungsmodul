@@ -2,7 +2,7 @@
     <h1 class="text-4xl font-bold text-he-red">401 - Unauthorised</h1>
     <p class="text-lg text-gray-600 mt-4">You don't have access to this page.</p>
     <p class="text-base text-gray-600 mt-2">Please login or switch to a different user.</p>
-    <a mat-raised-button color="primary" class="mt-4" href="/">
-        Go to Login
-    </a>
+    <button mat-raised-button color="primary" class="mt-4" (click)="authService.login()">
+        Login
+    </button>
 </div>

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { environment } from '../../environment';
 import { Tag } from '../models/tag';
 import { Tags } from '../models/tags';
@@ -35,5 +35,17 @@ export class TagsService {
    */
   addTag(tag: Tag): Observable<Tag> {
     return this.http.post<Tag>(this.url, tag);
+  }
+
+  /**
+   * Adds multiple tags to the backend.
+   *
+   * @param tags - An array of tag names to be added.
+   * @returns {Observable<Tag[]>} - An observable that emits an array of added tags.
+   */
+  addTags(tags: string[]): Observable<Tag[]> {
+    return forkJoin(tags.map(tag =>
+      this.addTag({ name: tag } as Tag)
+    ));
   }
 }
