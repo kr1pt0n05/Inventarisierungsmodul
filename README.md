@@ -2,6 +2,13 @@
 
 Inventarisierungsmodul zur Bestellsoftware für die Hochschule Esslingen in Kooperation mit KEIM.
 
+## Live-Demo
+
+Eine Live-Demo ist verfügbar unter: https://insy.lind3.de
+
+- **Benutzername:** `demo@hs-esslingen.de`
+- **Passwort:** `4dx\("&}+H*em/p5[G0Yx.9fW$SiK+H]`
+
 ## Übersicht
 
 Dieses Projekt besteht aus einem modularen Backend (Spring Boot, Java) und einem modernen Frontend (Angular), um die Inventarisierung und Verwaltung von Beständen effizient zu unterstützen. Es bietet Funktionen wie das Anlegen, Bearbeiten, Kommentieren, Taggen und Erweitern von Inventargegenständen sowie die Integration mit Bestell- und Benutzerverwaltung.
